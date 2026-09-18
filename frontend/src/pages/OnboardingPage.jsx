@@ -284,7 +284,7 @@ export default function OnboardingPage() {
               <span className="text-xs text-slate-400">Ready to explore Delhi?</span>
               <button
                 id="btn-start-exploring"
-                onClick={() => navigate('/discover')}
+                onClick={() => navigate('/home')}
                 className="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all"
               >
                 <span>View 10 Verified Places</span>

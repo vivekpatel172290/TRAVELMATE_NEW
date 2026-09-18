@@ -63,6 +63,20 @@ html.light {
     box-shadow: var(--card-shadow);
   }
 
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 9999px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(16, 185, 129, 0.5);
+  }
+
   .glass-card-hover {
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
