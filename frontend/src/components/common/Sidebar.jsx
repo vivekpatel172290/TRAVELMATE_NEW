@@ -18,7 +18,8 @@ import {
   Sparkles,
   ChevronRight,
   Radio,
-  UserCheck
+  UserCheck,
+  Home
 } from 'lucide-react';
 import { useTraveler } from '../../context/TravelerContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -31,16 +32,24 @@ export default function Sidebar({ isOpenMobile, onCloseMobile, onOpenQR, onOpenL
 
   const navGroups = [
     {
-      title: 'Core Verification',
-      dotColor: 'bg-emerald-400',
+      title: 'Portal & Identity',
+      dotColor: 'bg-indigo-400',
       items: [
         {
           to: '/',
+          label: 'Overview & Radar',
+          badge: 'Live',
+          badgeColor: 'violet',
+          icon: Home,
+          exact: true,
+          description: 'Coder Army style radar & stats'
+        },
+        {
+          to: '/safe-pass',
           label: 'SafeVisit Pass',
-          badge: 'Verified Pass',
+          badge: 'Verified',
           badgeColor: 'emerald',
           icon: QrCode,
-          exact: true,
           description: 'Digital 7-day QR identity'
         },
         {
@@ -212,6 +221,7 @@ export default function Sidebar({ isOpenMobile, onCloseMobile, onOpenQR, onOpenL
                 const isActive = item.exact
                   ? location.pathname === item.to
                   : (item.to === '/home' && (location.pathname === '/home' || location.pathname === '/discover'))
+                    || (item.to === '/safe-pass' && (location.pathname === '/safe-pass' || location.pathname === '/onboarding'))
                     || (location.pathname.startsWith(item.to) && (item.to !== '/' || location.pathname === '/'));
 
                 return (
@@ -222,7 +232,7 @@ export default function Sidebar({ isOpenMobile, onCloseMobile, onOpenQR, onOpenL
                     id={`sidebar-nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                     className={`relative flex items-center justify-between px-3 py-2.5 rounded-xl text-xs transition-all duration-200 group ${
                       isActive
-                        ? 'bg-gradient-to-r from-emerald-500/20 via-emerald-500/10 to-transparent text-white font-semibold border-l-[3px] border-emerald-400 shadow-sm'
+                        ? 'bg-gradient-to-r from-indigo-500/25 via-purple-500/10 to-transparent text-white font-semibold border-l-[3px] border-indigo-400 shadow-sm'
                         : 'text-slate-400 hover:text-white hover:bg-white/[0.05] border-l-[3px] border-transparent hover:translate-x-0.5'
                     }`}
                   >
@@ -230,7 +240,7 @@ export default function Sidebar({ isOpenMobile, onCloseMobile, onOpenQR, onOpenL
                       <div
                         className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-all ${
                           isActive
-                            ? 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/40'
+                            ? 'bg-indigo-500/20 text-indigo-300 ring-1 ring-indigo-500/40 shadow-sm shadow-indigo-500/30'
                             : 'bg-white/[0.04] text-slate-400 group-hover:text-slate-200 group-hover:bg-white/[0.08]'
                         }`}
                       >
@@ -250,7 +260,11 @@ export default function Sidebar({ isOpenMobile, onCloseMobile, onOpenQR, onOpenL
                       <span
                         className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold uppercase tracking-wider shrink-0 ml-1.5 ${
                           isActive
-                            ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 shadow-[0_0_10px_rgba(16,185,129,0.2)]'
+                            ? 'bg-indigo-500/25 text-indigo-300 border border-indigo-500/40 shadow-[0_0_10px_rgba(99,102,241,0.25)]'
+                            : item.badgeColor === 'violet'
+                            ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                            : item.badgeColor === 'emerald'
+                            ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
                             : item.badgeColor === 'indigo'
                             ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30'
                             : item.badgeColor === 'cyan'

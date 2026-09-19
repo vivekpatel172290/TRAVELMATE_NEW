@@ -10,6 +10,7 @@ import ClaudeChatbotModal from './components/chat/ClaudeChatbotModal';
 import LanguageSupportModal from './components/common/LanguageSupportModal';
 
 // Pages
+import HomePage from './pages/HomePage';
 import OnboardingPage from './pages/OnboardingPage';
 import DiscoverPage from './pages/DiscoverPage';
 import FareMeterPage from './pages/FareMeterPage';
@@ -53,7 +54,9 @@ export default function App() {
               {/* Main Routing Container */}
               <main className="flex-1 pb-24 md:pb-16 overflow-x-hidden">
                 <Routes>
-                  <Route path="/" element={<OnboardingPage />} />
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/safe-pass" element={<OnboardingPage />} />
+                  <Route path="/onboarding" element={<OnboardingPage />} />
                   <Route path="/home" element={<DiscoverPage />} />
                   <Route path="/discover" element={<DiscoverPage />} />
                   <Route path="/planner" element={<TripPlannerPage />} />
