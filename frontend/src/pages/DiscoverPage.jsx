@@ -208,12 +208,22 @@ export default function DiscoverPage() {
             className="coder-card bg-[#111318]/90 hover:bg-[#151922] border border-white/[0.08] hover:border-indigo-500/50 rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-indigo-500/10 flex flex-col justify-between"
           >
             <div>
-              {/* Photo Header */}
-              <div className="relative w-full h-40 sm:h-44 overflow-hidden bg-slate-900">
+              {/* Photo Header with Ambient Backdrop Fill so 100% full picture is visible */}
+              <div className="relative w-full h-44 sm:h-48 overflow-hidden bg-[#090b10] flex items-center justify-center border-b border-white/[0.06]">
+                {/* Blurred ambient background fill */}
+                <img
+                  src={place.image_url || DEFAULT_PLACE_IMAGE}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40 scale-125 pointer-events-none"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#111318] via-transparent to-black/30 pointer-events-none" />
+
+                {/* 100% Uncropped Full Picture */}
                 <img
                   src={place.image_url || DEFAULT_PLACE_IMAGE}
                   alt={place.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="relative z-10 max-h-full max-w-full object-contain p-2 group-hover:scale-105 transition-transform duration-500 drop-shadow-md"
                   loading="lazy"
                   onError={(e) => {
                     if (!e.currentTarget.dataset.fallback) {
@@ -222,11 +232,10 @@ export default function DiscoverPage() {
                     }
                   }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#111318] via-[#111318]/20 to-black/30 pointer-events-none" />
 
                 {/* Badges */}
-                <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none">
-                  <span className="px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-[10px] font-bold text-slate-200 border border-white/10 uppercase tracking-wider">
+                <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none z-20">
+                  <span className="px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-md text-[10px] font-bold text-slate-200 border border-white/10 uppercase tracking-wider">
                     {place.category}
                   </span>
                   <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-extrabold uppercase">
@@ -235,7 +244,7 @@ export default function DiscoverPage() {
                 </div>
 
                 {/* Bottom Crowd Pill */}
-                <div className="absolute bottom-2 left-2.5 pointer-events-none">
+                <div className="absolute bottom-2 left-2.5 pointer-events-none z-20">
                   <span
                     className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-md border shadow-sm ${
                       place.crowd_data?.estimated_crowd === 'High'
@@ -298,11 +307,18 @@ export default function DiscoverPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
           <div className="place-modal-card relative w-full max-w-2xl bg-surface border border-surface-border rounded-3xl p-6 sm:p-8 overflow-y-auto max-h-[88vh] shadow-2xl">
             {/* Modal Header Photo */}
-            <div className="relative w-full h-48 sm:h-56 rounded-2xl overflow-hidden mb-6 bg-slate-900 border border-white/10">
+            <div className="relative w-full h-48 sm:h-56 rounded-2xl overflow-hidden mb-6 bg-[#080a0f] border border-white/10 flex items-center justify-center">
+              <img
+                src={selectedPlace.image_url || DEFAULT_PLACE_IMAGE}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40 scale-125 pointer-events-none"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
               <img
                 src={selectedPlace.image_url || DEFAULT_PLACE_IMAGE}
                 alt={selectedPlace.name}
-                className="w-full h-full object-cover"
+                className="relative z-10 max-h-full max-w-full object-contain p-2 drop-shadow-xl"
                 referrerPolicy="no-referrer"
                 onError={(e) => {
                   if (!e.currentTarget.dataset.fallback) {
@@ -311,17 +327,16 @@ export default function DiscoverPage() {
                   }
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
               <button
                 id="btn-close-place-modal"
                 onClick={() => setSelectedPlace(null)}
-                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition-all"
+                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/70 hover:bg-black text-white flex items-center justify-center transition-all z-30"
               >
                 ✕
               </button>
-              <div className="absolute bottom-3 left-3 right-3">
+              <div className="absolute bottom-3 left-3 right-3 z-30">
                 <div className="flex items-center space-x-2">
-                  <span className="px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-slate-100 font-bold text-[10px] border border-white/20">
+                  <span className="px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-slate-100 font-bold text-[10px] border border-white/20">
                     {selectedPlace.category}
                   </span>
                   <StatusBadge status={selectedPlace.verification_status} />

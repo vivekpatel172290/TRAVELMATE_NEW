@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   ShieldCheck,
-  MapPin,
   Clock,
   Ticket,
   ExternalLink,
@@ -10,11 +9,11 @@ import {
   AlertTriangle,
   ArrowLeft,
   CheckCircle2,
-  Calendar,
   Camera,
   Star,
-  Sparkles,
-  Share2
+  Share2,
+  Maximize2,
+  X
 } from 'lucide-react';
 import seedPlaces from '../data/seedPlaces.json';
 import { api, API_BASE } from '../services/api';
@@ -30,6 +29,7 @@ export default function PlaceDetailPage() {
 
   const [place, setPlace] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [visitedPlaces, setVisitedPlaces] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('tm_visited_places') || '["pl-red-fort-01", "red-fort"]');
@@ -117,7 +117,7 @@ export default function PlaceDetailPage() {
 
   if (loading || !place) {
     return (
-      <div className="min-h-screen bg-[#0a0c10] flex items-center justify-center text-slate-400">
+      <div className="h-full w-full bg-[#0a0c10] flex items-center justify-center text-slate-400">
         <div className="flex items-center space-x-3">
           <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
           <span className="text-sm font-semibold">Loading Verified Place Details...</span>
@@ -127,116 +127,144 @@ export default function PlaceDetailPage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#0a0c10] text-slate-100 overflow-hidden font-sans selection:bg-indigo-500/30 selection:text-indigo-200 py-6 sm:py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
+    <div className="w-full h-full max-h-full overflow-hidden bg-[#0a0c10] text-slate-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 p-2 sm:p-4 md:p-6 flex flex-col items-center justify-center relative select-none">
       {/* Background Cyber Grid & Radial Glow Orbs */}
       <div className="absolute inset-0 coder-grid-bg pointer-events-none z-0" />
       <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-gradient-to-tr from-indigo-600/25 via-purple-600/25 to-cyan-500/20 rounded-full blur-[140px] pointer-events-none z-0" />
       <div className="absolute top-[600px] -left-48 w-[500px] h-[500px] bg-purple-700/15 rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute top-[1200px] -right-48 w-[550px] h-[550px] bg-cyan-600/15 rounded-full blur-[120px] pointer-events-none z-0" />
 
-      {/* Main Container - Breadth ~60-65% viewport ("little bit more than half"), Height ~65-80% viewport ("height more than half") */}
-      <div className="relative z-10 w-full md:w-[62vw] max-w-4xl min-h-[65vh] max-h-[88vh] flex flex-col my-auto">
+      {/* Main Centered Fixed Card Container: Breadth ~62vw, Height ~85vh */}
+      <div className="relative z-10 w-full md:w-[62vw] max-w-4xl h-[calc(100vh-6.5rem)] max-h-[85vh] flex flex-col min-h-0 my-auto">
         
-        {/* Top Controls Bar */}
-        <div className="flex items-center justify-between mb-4 px-1">
-          <button
-            onClick={() => navigate('/home')}
-            className="inline-flex items-center space-x-2 text-xs sm:text-sm font-bold text-slate-300 hover:text-white px-3.5 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.08] hover:border-indigo-500/40 transition-all group"
-          >
-            <ArrowLeft className="w-4 h-4 text-indigo-400 group-hover:-translate-x-1 transition-transform" />
-            <span>Back to Verified Places</span>
-          </button>
-
-          <button
-            onClick={handleShare}
-            className="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-400 hover:text-white px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.08] transition-all"
-          >
-            <Share2 className="w-3.5 h-3.5" />
-            <span>{isCopied ? 'Link Copied!' : 'Share'}</span>
-          </button>
-        </div>
-
-        {/* The Verified Place Card (Centered Majestic Card) */}
-        <div className="coder-card bg-[#111318]/95 border border-white/[0.1] rounded-3xl shadow-2xl overflow-hidden backdrop-blur-2xl flex-1 flex flex-col overflow-y-auto custom-scrollbar">
+        {/* The Verified Place Card (Frame stays firmly fixed on screen) */}
+        <div className="coder-card bg-[#111318]/95 border border-white/[0.1] rounded-3xl shadow-2xl overflow-hidden backdrop-blur-2xl flex-1 flex flex-col min-h-0">
           
-          {/* 1. Monument Photo Header Banner */}
-          <div className="relative w-full h-56 sm:h-64 shrink-0 bg-slate-900 overflow-hidden">
-            <img
-              src={place.image_url || DEFAULT_PLACE_IMAGE}
-              alt={place.name}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                if (!e.currentTarget.dataset.fallback) {
-                  e.currentTarget.dataset.fallback = 'true';
-                  e.currentTarget.src = DEFAULT_PLACE_IMAGE;
-                }
-              }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#111318] via-[#111318]/40 to-black/40 pointer-events-none" />
-
-            {/* Pinned Badges */}
-            <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none">
-              <span className="px-3 py-1 rounded-xl bg-black/70 backdrop-blur-md text-xs font-bold text-slate-200 border border-white/15 uppercase tracking-wider shadow-lg">
-                {place.category}
-              </span>
-              <StatusBadge status={place.verification_status || 'Official'} />
-            </div>
-
-            {/* Pinned Bottom Info */}
-            <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
-              <span
-                className={`inline-flex items-center text-xs font-bold px-3 py-1 rounded-xl backdrop-blur-md border shadow-lg ${
-                  place.crowd_data?.estimated_crowd === 'High'
-                    ? 'bg-rose-950/80 text-rose-300 border-rose-500/40'
-                    : place.crowd_data?.estimated_crowd === 'Medium'
-                    ? 'bg-amber-950/80 text-amber-300 border-amber-500/40'
-                    : 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40'
-                }`}
+          {/* FIXED CARD TOP NAVIGATION BAR */}
+          <div className="p-3 sm:p-4 px-4 sm:px-6 border-b border-white/[0.08] flex items-center justify-between shrink-0 bg-[#0d0f15]/95 backdrop-blur-md z-30">
+            <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
+              <button
+                onClick={() => navigate('/home')}
+                className="inline-flex items-center space-x-1.5 text-xs sm:text-sm font-bold text-slate-300 hover:text-white px-3 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] hover:border-indigo-500/40 transition-all group shrink-0"
               >
-                <Users className="w-3.5 h-3.5 mr-1.5" />
-                {place.crowd_data?.estimated_crowd || 'Medium'} Crowd Density
-              </span>
+                <ArrowLeft className="w-4 h-4 text-indigo-400 group-hover:-translate-x-1 transition-transform" />
+                <span className="hidden xs:inline">Back to Places</span>
+                <span className="xs:hidden">Back</span>
+              </button>
 
-              {isVisited && (
-                <span className="px-3 py-1 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-extrabold flex items-center space-x-1.5 shadow-lg">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Visited & Checked In</span>
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* 2. Card Content Body */}
-          <div className="p-6 sm:p-8 space-y-6 flex-1">
-            
-            {/* Title & Registry Authority */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-4">
-              <div>
-                <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-cyan-400 uppercase tracking-widest mb-1">
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>ASI Authenticated Directory</span>
-                </div>
-                <h1 className="text-2xl sm:text-3xl font-black font-display text-white tracking-tight">
+              <div className="flex items-center space-x-2 min-w-0">
+                <h2 className="text-sm sm:text-base font-black font-display text-white truncate">
                   {place.name}
-                </h1>
-                <p className="text-sm font-semibold text-emerald-400 mt-0.5">
-                  {place.hindi_name}
-                </p>
+                </h2>
+                <span className="hidden sm:inline">
+                  <StatusBadge status={place.verification_status || 'Official'} />
+                </span>
               </div>
+            </div>
 
-              {/* Official Booking Button */}
+            <div className="flex items-center space-x-2 shrink-0">
               {place.official_ticket_url && (
                 <a
                   href={place.official_ticket_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="coder-btn-primary px-5 py-2.5 rounded-xl text-white text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/30 hover:scale-105 active:scale-95 transition-all shrink-0"
+                  className="coder-btn-primary px-3 sm:px-4 py-1.5 rounded-xl text-white text-xs font-bold flex items-center space-x-1.5 shadow-md shadow-indigo-600/20 hover:scale-105 active:scale-95 transition-all"
                 >
-                  <Ticket className="w-4 h-4" />
-                  <span>Book on Official ASI Portal</span>
-                  <ExternalLink className="w-3.5 h-3.5 ml-0.5" />
+                  <Ticket className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Book on ASI</span>
+                  <span className="sm:hidden">Tickets</span>
+                  <ExternalLink className="w-3 h-3" />
                 </a>
               )}
+
+              <button
+                onClick={handleShare}
+                className="inline-flex items-center space-x-1 text-xs font-bold text-slate-400 hover:text-white px-2.5 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.08] transition-all"
+                title="Share link"
+              >
+                <Share2 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{isCopied ? 'Copied' : 'Share'}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* SCROLLABLE CARD BODY (Card frame remains fixed, content scrolls inside smoothly) */}
+          <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 sm:p-6 md:p-8 space-y-6">
+            
+            {/* 1. Monument Photo Banner - 100% Full Picture Visible with Ambient Backdrop Fill */}
+            <div className="relative w-full h-56 sm:h-64 md:h-76 shrink-0 bg-[#080a0f] overflow-hidden flex items-center justify-center rounded-2xl border border-white/[0.08] group">
+              {/* Ambient Blurred Fill */}
+              <img
+                src={place.image_url || DEFAULT_PLACE_IMAGE}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-40 scale-125 pointer-events-none"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#111318] via-transparent to-black/40 pointer-events-none" />
+
+              {/* 100% UN-CROPPED FULL PICTURE */}
+              <img
+                src={place.image_url || DEFAULT_PLACE_IMAGE}
+                alt={place.name}
+                className="relative z-10 max-h-full max-w-full object-contain p-2 drop-shadow-2xl transition-transform duration-300 group-hover:scale-[1.02] cursor-pointer"
+                onClick={() => setIsImageModalOpen(true)}
+                title="Click to view full screen high-resolution image"
+                onError={(e) => {
+                  if (!e.currentTarget.dataset.fallback) {
+                    e.currentTarget.dataset.fallback = 'true';
+                    e.currentTarget.src = DEFAULT_PLACE_IMAGE;
+                  }
+                }}
+              />
+
+              {/* Badges on Photo */}
+              <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-20">
+                <span className="px-3 py-1 rounded-xl bg-black/75 backdrop-blur-md text-xs font-bold text-slate-200 border border-white/15 uppercase tracking-wider shadow-lg">
+                  {place.category}
+                </span>
+                <span className="px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-extrabold uppercase shadow-md">
+                  ASI Verified
+                </span>
+              </div>
+
+              {/* Bottom Info on Photo Banner */}
+              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between z-20">
+                <span
+                  className={`inline-flex items-center text-xs font-bold px-3 py-1 rounded-xl backdrop-blur-md border shadow-lg ${
+                    place.crowd_data?.estimated_crowd === 'High'
+                      ? 'bg-rose-950/80 text-rose-300 border-rose-500/40'
+                      : place.crowd_data?.estimated_crowd === 'Medium'
+                      ? 'bg-amber-950/80 text-amber-300 border-amber-500/40'
+                      : 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40'
+                  }`}
+                >
+                  <Users className="w-3.5 h-3.5 mr-1.5" />
+                  {place.crowd_data?.estimated_crowd || 'Medium'} Crowd
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => setIsImageModalOpen(true)}
+                  className="px-2.5 py-1 rounded-xl bg-black/70 hover:bg-black text-white text-xs font-semibold backdrop-blur-md border border-white/20 transition-all flex items-center space-x-1 hover:border-indigo-400 cursor-pointer shadow-lg"
+                >
+                  <Maximize2 className="w-3.5 h-3.5 text-indigo-400" />
+                  <span className="hidden sm:inline">View Full Picture</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Title & Official Identity */}
+            <div className="border-b border-white/[0.08] pb-4">
+              <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-cyan-400 uppercase tracking-widest mb-1">
+                <ShieldCheck className="w-4 h-4" />
+                <span>ASI Authenticated Directory Entry</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-black font-display text-white tracking-tight">
+                {place.name}
+              </h1>
+              <p className="text-sm font-semibold text-emerald-400 mt-0.5">
+                {place.hindi_name}
+              </p>
             </div>
 
             {/* Two-Column Verified Details Grid */}
@@ -414,6 +442,40 @@ export default function PlaceDetailPage() {
         </div>
 
       </div>
+
+      {/* FULL RESOLUTION PHOTO LIGHTBOX MODAL */}
+      {isImageModalOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-2xl flex items-center justify-center p-4 sm:p-6"
+          onClick={() => setIsImageModalOpen(false)}
+        >
+          <div
+            className="relative max-w-4xl max-h-[90vh] flex flex-col items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setIsImageModalOpen(false)}
+              className="absolute -top-12 right-0 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+              <span>Close</span>
+            </button>
+            <img
+              src={place.image_url || DEFAULT_PLACE_IMAGE}
+              alt={place.name}
+              className="max-w-full max-h-[80vh] object-contain rounded-2xl border border-white/20 shadow-2xl"
+            />
+            <div className="mt-3 text-center">
+              <span className="text-sm font-bold text-white font-display">
+                {place.name} ({place.hindi_name})
+              </span>
+              <span className="block text-xs text-slate-400 mt-0.5">
+                Archaeological Survey of India (ASI) Verified Record
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
