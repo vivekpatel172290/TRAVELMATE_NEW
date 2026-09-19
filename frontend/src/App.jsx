@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { TravelerProvider } from './context/TravelerContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -28,13 +28,50 @@ export default function App() {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
+  // YouTube / GitHub style collapsible sidebar persistence
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('tm_sidebar_collapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleSidebarCollapse = () => {
+    setIsSidebarCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('tm_sidebar_collapsed', String(next));
+      } catch (_) {}
+      return next;
+    });
+  };
+
+  // Keyboard shortcut: Press '[' or 'Ctrl+B' to toggle sidebar
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Don't trigger if user is typing in an input or textarea
+      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+
+      if (e.key === '[' || (e.ctrlKey && e.key.toLowerCase() === 'b')) {
+        e.preventDefault();
+        toggleSidebarCollapse();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <ThemeProvider>
       <TravelerProvider>
         <BrowserRouter>
-          <div className="min-h-screen bg-background text-slate-100 flex selection:bg-emerald-500/30 selection:text-emerald-200">
-            {/* Left Sidebar (Desktop Fixed/Sticky + Mobile Slide-Out Drawer) */}
+          <div className="min-h-screen bg-[#0a0c10] text-slate-100 flex selection:bg-indigo-500/30 selection:text-indigo-200">
+            {/* Left Sidebar (Desktop Collapsible Rail vs Full + Mobile Slide-Out Drawer) */}
             <Sidebar
+              isCollapsed={isSidebarCollapsed}
+              onToggleCollapse={toggleSidebarCollapse}
               isOpenMobile={isMobileNavOpen}
               onCloseMobile={() => setIsMobileNavOpen(false)}
               onOpenQR={() => setIsQROpen(true)}
@@ -42,9 +79,11 @@ export default function App() {
             />
 
             {/* Right Main Application Column */}
-            <div className="flex-1 flex flex-col min-w-0">
+            <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
               {/* Header */}
               <Header
+                isSidebarCollapsed={isSidebarCollapsed}
+                onToggleCollapse={toggleSidebarCollapse}
                 isMobileNavOpen={isMobileNavOpen}
                 onToggleMobileNav={() => setIsMobileNavOpen((prev) => !prev)}
                 onOpenQR={() => setIsQROpen(true)}
@@ -73,12 +112,18 @@ export default function App() {
               </main>
             </div>
 
-            {/* Floating Claude Chatbot Launcher Button - Positioned clear of sidebar */}
-            <div className="fixed bottom-4 left-4 z-30 md:bottom-6 md:left-[18rem] lg:left-[20rem]">
+            {/* Floating Claude Chatbot Launcher Button - Dynamically adapts to collapsed/expanded sidebar */}
+            <div
+              className={`fixed bottom-4 left-4 z-30 transition-all duration-300 ${
+                isSidebarCollapsed
+                  ? 'md:bottom-6 md:left-[6rem]'
+                  : 'md:bottom-6 md:left-[19rem] lg:left-[21rem]'
+              }`}
+            >
               <button
                 id="btn-floating-claude-chat"
                 onClick={() => setIsChatOpen(true)}
-                className="flex items-center space-x-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white px-3.5 py-2.5 rounded-full shadow-xl shadow-indigo-600/30 border border-indigo-400/40 transition-all duration-200 hover:scale-105 active:scale-95"
+                className="flex items-center space-x-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white px-3.5 py-2.5 rounded-full shadow-xl shadow-indigo-600/35 border border-indigo-400/40 transition-all duration-200 hover:scale-105 active:scale-95"
               >
                 <Bot className="w-4 h-4" />
                 <span className="text-xs font-semibold tracking-wide font-display hidden sm:inline">
