@@ -208,22 +208,14 @@ export default function DiscoverPage() {
             className="coder-card bg-[#111318]/90 hover:bg-[#151922] border border-white/[0.08] hover:border-indigo-500/50 rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-indigo-500/10 flex flex-col justify-between"
           >
             <div>
-              {/* Photo Header with Ambient Backdrop Fill so 100% full picture is visible */}
-              <div className="relative w-full h-44 sm:h-48 overflow-hidden bg-[#090b10] flex items-center justify-center border-b border-white/[0.06]">
-                {/* Blurred ambient background fill */}
-                <img
-                  src={place.image_url || DEFAULT_PLACE_IMAGE}
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40 scale-125 pointer-events-none"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#111318] via-transparent to-black/30 pointer-events-none" />
-
-                {/* 100% Uncropped Full Picture */}
+              {/* Uniform Even-Sized Photo Container */}
+              <div className="relative w-full h-48 sm:h-52 overflow-hidden bg-[#090b10] border-b border-white/[0.08]">
                 <img
                   src={place.image_url || DEFAULT_PLACE_IMAGE}
                   alt={place.name}
-                  className="relative z-10 max-h-full max-w-full object-contain p-2 group-hover:scale-105 transition-transform duration-500 drop-shadow-md"
+                  className={`w-full h-full object-cover ${
+                    place.place_key === 'qutub-minar' ? 'object-[center_25%]' : 'object-center'
+                  } group-hover:scale-105 transition-transform duration-500`}
                   loading="lazy"
                   onError={(e) => {
                     if (!e.currentTarget.dataset.fallback) {
@@ -232,6 +224,7 @@ export default function DiscoverPage() {
                     }
                   }}
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#111318] via-transparent to-black/20 pointer-events-none" />
 
                 {/* Badges */}
                 <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none z-20">
