@@ -82,11 +82,11 @@ function AnimatedText() {
   const displayedText = activeWord.text.slice(0, currentCharIdx);
 
   return (
-    <span className="inline-flex items-baseline font-bold font-display">
-      <span className={`bg-gradient-to-r ${activeWord.gradient} bg-clip-text text-transparent inline-block drop-shadow-[0_0_12px_rgba(129,140,248,0.25)]`}>
+    <span className="inline-flex items-baseline font-black font-display text-xl sm:text-2xl lg:text-3xl">
+      <span className={`bg-gradient-to-r ${activeWord.gradient} bg-clip-text text-transparent inline-block drop-shadow-[0_0_18px_rgba(129,140,248,0.45)] tracking-tight`}>
         {displayedText}
       </span>
-      <span className={`inline-block w-[2.5px] h-[1em] ${activeWord.cursorColor} ml-1 rounded-sm animate-pulse align-baseline translate-y-0.5`} />
+      <span className={`inline-block w-[3px] sm:w-[3.5px] h-[0.9em] ${activeWord.cursorColor} ml-1.5 rounded-sm animate-pulse align-baseline translate-y-0.5`} />
     </span>
   );
 }
@@ -341,8 +341,8 @@ export default function HomePage() {
               </h1>
 
               {/* Typewriter Animated Tagline (Exact Coder Army Style) */}
-              <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-base sm:text-lg lg:text-xl font-medium text-slate-300 py-1">
-                <span className="text-slate-200 font-semibold tracking-wide">
+              <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1 text-lg sm:text-2xl lg:text-3xl font-semibold text-slate-200 py-1.5 leading-snug">
+                <span className="text-slate-100 font-bold tracking-tight">
                   Travel is meant to create memories — not
                 </span>
                 <AnimatedText />
