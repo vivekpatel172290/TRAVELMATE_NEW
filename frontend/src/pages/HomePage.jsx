@@ -83,18 +83,43 @@ export default function HomePage() {
     return Math.round(total);
   };
 
-  // Coder Army Style Upward Scrolling Stream Feed: Statements & Verified Places
-  const scrollingFeed = [
+  // 1. Scroll-driven tilt-to-flat 3D animation (Coder Army signature scroll effect)
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Compute 3D perspective to flat transformation as user scrolls
+  const scrollProgress = Math.min(1, Math.max(0, scrollY / 320));
+  const rotateX = (1 - scrollProgress) * 16; // 16deg tilted back -> 0deg completely flat
+  const scale = 0.94 + scrollProgress * 0.06; // 0.94 -> 1.0 full size
+  const translateY = (1 - scrollProgress) * -10; // subtle elevation lift
+
+  // 2. Rotating text under "Unmatched Trust & Safety" (Coder Army style)
+  const rotatingWords = [
+    { text: 'uncertainty', color: 'text-cyan-300 bg-cyan-500/15 border-cyan-500/30' },
+    { text: 'ticket scams', color: 'text-rose-300 bg-rose-500/15 border-rose-500/30' },
+    { text: 'fare overcharging', color: 'text-amber-300 bg-amber-500/15 border-amber-500/30' },
+    { text: 'unsafe detours', color: 'text-purple-300 bg-purple-500/15 border-purple-500/30' }
+  ];
+
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentWordIndex((prev) => (prev + 1) % rotatingWords.length);
+    }, 2800);
+    return () => clearInterval(interval);
+  }, []);
+
+  // 3. Verified Places purely for the upward scrolling stream (image + few essential info)
+  const scrollingPlaces = [
     {
-      type: 'statement',
-      id: 'stmt-asi',
-      tag: 'ASI Official Ticketing',
-      tagColor: 'text-emerald-300 bg-emerald-500/20 border-emerald-500/30',
-      title: '100% Genuine Monument Gate Pricing',
-      desc: 'Direct links to official ASI booking gateway (asi.payumoney.com). Zero duplicate paper slips.'
-    },
-    {
-      type: 'place',
       id: 'pl-red-fort-01',
       name: 'Red Fort (Lal Qila)',
       category: 'UNESCO World Heritage',
@@ -106,15 +131,6 @@ export default function HomePage() {
       crowd: 'High'
     },
     {
-      type: 'statement',
-      id: 'stmt-fare',
-      tag: 'Delhi Govt Fair Fare Meter',
-      tagColor: 'text-cyan-300 bg-cyan-500/20 border-cyan-500/30',
-      title: 'Fair Fare Auto & Taxi Benchmark',
-      desc: 'Official ₹30 base + ₹11/km rate verification prevents auto-rickshaw meter tampering.'
-    },
-    {
-      type: 'place',
       id: 'pl-qutub-minar-02',
       name: 'Qutub Minar Complex',
       category: 'UNESCO World Heritage',
@@ -126,15 +142,6 @@ export default function HomePage() {
       crowd: 'Medium'
     },
     {
-      type: 'statement',
-      id: 'stmt-police',
-      tag: 'Delhi Police 112 Ready',
-      tagColor: 'text-indigo-300 bg-indigo-500/20 border-indigo-500/30',
-      title: 'Live Patrolled Safe Corridors',
-      desc: 'Continuously monitored PCR van beats with 1-tap SOS telemetry transmission.'
-    },
-    {
-      type: 'place',
       id: 'pl-humayuns-tomb-03',
       name: 'Humayun’s Tomb',
       category: 'Mughal Architecture',
@@ -146,15 +153,6 @@ export default function HomePage() {
       crowd: 'Low'
     },
     {
-      type: 'statement',
-      id: 'stmt-pass',
-      tag: 'SafeVisit Pass ID',
-      tagColor: 'text-purple-300 bg-purple-500/20 border-purple-500/30',
-      title: 'Zero Passport / Govt ID Storage',
-      desc: 'Temporary 7-day cryptographic Journey QR ensures your personal privacy is 100% protected.'
-    },
-    {
-      type: 'place',
       id: 'pl-india-gate-04',
       name: 'India Gate & Kartavya Path',
       category: 'National Memorial',
@@ -162,7 +160,51 @@ export default function HomePage() {
       imagePos: 'object-center',
       indianPrice: 'Free Entry',
       foreignPrice: 'Free Entry',
-      timings: 'Open 24/7 (High-Safety Corridor)',
+      timings: 'Open 24/7 (Patrolled High-Safety)',
+      crowd: 'High'
+    },
+    {
+      id: 'pl-lotus-temple-05',
+      name: 'Lotus Temple (Bahá\'í House)',
+      category: 'Modern Architectural Wonder',
+      image: '/places/lotus-temple.jpg',
+      imagePos: 'object-center',
+      indianPrice: 'Free Entry',
+      foreignPrice: 'Free Entry',
+      timings: '09:00 AM - 05:30 PM (Mon Closed)',
+      crowd: 'Medium'
+    },
+    {
+      id: 'pl-akshardham-06',
+      name: 'Swaminarayan Akshardham',
+      category: 'Cultural Landmark Complex',
+      image: '/places/swaminarayan-akshardham.jpg',
+      imagePos: 'object-center',
+      indianPrice: 'Free Entry',
+      foreignPrice: 'Free Entry',
+      timings: '09:30 AM - 06:30 PM (Mon Closed)',
+      crowd: 'High'
+    },
+    {
+      id: 'pl-jama-masjid-07',
+      name: 'Jama Masjid Delhi',
+      category: 'Historic Mughal Mosque',
+      image: '/places/jama-masjid.jpg',
+      imagePos: 'object-center',
+      indianPrice: 'Free Entry',
+      foreignPrice: 'Free Entry',
+      timings: '07:00 AM - 06:30 PM (Daily)',
+      crowd: 'Medium'
+    },
+    {
+      id: 'pl-bangla-sahib-08',
+      name: 'Gurudwara Bangla Sahib',
+      category: 'Spiritual Sanctuary & Langar',
+      image: '/places/gurudwara-bangla-sahib.jpg',
+      imagePos: 'object-center',
+      indianPrice: 'Free Entry',
+      foreignPrice: 'Free Entry',
+      timings: 'Open 24/7 (High-Safety Lit Corridor)',
       crowd: 'High'
     }
   ];
@@ -264,6 +306,17 @@ export default function HomePage() {
                 </span>
               </h1>
 
+              {/* Rotating Tagline Under Unmatched Trust & Safety (Coder Army Style) */}
+              <div className="flex flex-wrap items-center gap-2 text-base sm:text-lg lg:text-xl font-medium text-slate-300 py-1">
+                <span className="text-slate-200">Travel is meant to create memories—not</span>
+                <span
+                  key={currentWordIndex}
+                  className={`animate-coder-flip inline-flex items-center px-2.5 py-0.5 rounded-lg border text-sm sm:text-base font-bold tracking-wide shadow-sm ${rotatingWords[currentWordIndex].color}`}
+                >
+                  {rotatingWords[currentWordIndex].text}
+                </span>
+              </div>
+
               {/* Subtitle Description */}
               <p className="text-sm sm:text-base lg:text-lg text-slate-300 max-w-xl leading-relaxed font-normal">
                 Eliminate counterfeit monument tickets, verify official Delhi Transport fares, track police-patrolled safe corridors, and communicate effortlessly in Hindi with Bhashini AI.
@@ -322,8 +375,15 @@ export default function HomePage() {
               {/* Ambient Multi-Color Glow Backdrop (signature Coder Army glow) */}
               <div className="absolute -inset-4 sm:-inset-6 rounded-[36px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 blur-3xl animate-pulse pointer-events-none" />
 
-              {/* Outer Hardware-Style Shell */}
-              <div className="relative rounded-[24px] sm:rounded-[30px] p-2 border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl overflow-hidden">
+              {/* Outer Hardware-Style Shell with Coder Army 3D Scroll-to-Flat Tilt Effect */}
+              <div
+                className="relative rounded-[24px] sm:rounded-[30px] p-2 border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl overflow-hidden will-change-transform"
+                style={{
+                  transform: `perspective(1000px) rotateX(${rotateX}deg) scale(${scale}) translateY(${translateY}px)`,
+                  transformOrigin: 'center top',
+                  transition: 'transform 0.12s cubic-bezier(0.16, 1, 0.3, 1)'
+                }}
+              >
                 
                 {/* Window Chrome Header Bar: Mac Dots + Address + Live Badge (NO play/pause button) */}
                 <div className="flex items-center justify-between px-3.5 py-2.5 bg-[#0d0f14]/95 border-b border-white/[0.07] rounded-t-[18px] sm:rounded-t-[22px]">
@@ -353,61 +413,49 @@ export default function HomePage() {
                   <div className="absolute top-0 inset-x-0 h-14 bg-gradient-to-b from-[#0b0d12] via-[#0b0d12]/80 to-transparent z-10 pointer-events-none" />
                   <div className="absolute bottom-0 inset-x-0 h-14 bg-gradient-to-t from-[#0b0d12] via-[#0b0d12]/80 to-transparent z-10 pointer-events-none" />
 
-                  {/* Upward Scrolling Stream */}
+                  {/* Upward Scrolling Stream: Verified Places Only (Image & Few Essential Info) */}
                   <div className="animate-scroll-up space-y-3.5">
-                    {[...scrollingFeed, ...scrollingFeed].map((item, idx) => (
-                      <React.Fragment key={`${item.id}-${idx}`}>
-                        {item.type === 'statement' ? (
-                          <div className="bg-[#121622]/90 border border-white/[0.08] hover:border-cyan-500/40 rounded-2xl p-4 shadow-md transition-all group">
-                            <div className="flex items-center justify-between mb-1.5">
-                              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${item.tagColor}`}>
-                                {item.tag}
-                              </span>
-                              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                            </div>
-                            <h4 className="text-sm font-bold text-white font-display group-hover:text-cyan-300 transition-colors">
-                              {item.title}
-                            </h4>
-                            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                              {item.desc}
-                            </p>
+                    {[...scrollingPlaces, ...scrollingPlaces].map((item, idx) => (
+                      <div
+                        key={`${item.id}-${idx}`}
+                        onClick={() => navigate(`/place/${item.id}`)}
+                        className="bg-[#121622]/90 border border-white/[0.08] hover:border-cyan-500/50 rounded-2xl overflow-hidden shadow-md cursor-pointer transition-all hover:scale-[1.01] hover:bg-[#161b2a] group flex items-center gap-3.5 p-3"
+                      >
+                        <div className="relative w-24 sm:w-28 h-20 sm:h-22 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-white/10">
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className={`w-full h-full object-cover ${item.imagePos || 'object-center'} group-hover:scale-105 transition-transform duration-500`}
+                          />
+                          <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[9px] font-bold text-emerald-300 border border-emerald-500/30">
+                            ASI
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1 mb-0.5">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
+                              {item.category}
+                            </span>
+                            <span className="text-[10px] font-bold text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded shrink-0">
+                              Verified
+                            </span>
                           </div>
-                        ) : (
-                          <div
-                            onClick={() => navigate(`/place/${item.id}`)}
-                            className="bg-[#121622]/90 border border-white/[0.08] hover:border-indigo-500/50 rounded-2xl overflow-hidden shadow-md cursor-pointer transition-all hover:scale-[1.01] group flex items-center gap-3.5 p-3"
-                          >
-                            <div className="relative w-24 sm:w-28 h-20 sm:h-22 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-white/10">
-                              <img
-                                src={item.image}
-                                alt={item.name}
-                                className={`w-full h-full object-cover ${item.imagePos || 'object-center'} group-hover:scale-105 transition-transform duration-500`}
-                              />
-                              <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[9px] font-bold text-emerald-300 border border-emerald-500/30">
-                                ASI
-                              </span>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between gap-1 mb-0.5">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
-                                  {item.category}
-                                </span>
-                                <span className="text-[10px] font-bold text-emerald-300 bg-emerald-500/10 px-1.5 py-0.2 rounded shrink-0">
-                                  Verified
-                                </span>
-                              </div>
-                              <h4 className="text-sm font-bold text-white font-display truncate group-hover:text-indigo-300 transition-colors">
-                                {item.name}
-                              </h4>
-                              <div className="flex items-center space-x-2 text-xs text-slate-300 mt-1 font-mono">
-                                <span className="text-white font-bold">{item.indianPrice} / {item.foreignPrice}</span>
-                                <span className="text-slate-500">•</span>
-                                <span className="text-[11px] text-slate-400 truncate">{item.timings.split('(')[0]}</span>
-                              </div>
-                            </div>
+                          <h4 className="text-sm font-bold text-white font-display truncate group-hover:text-cyan-300 transition-colors">
+                            {item.name}
+                          </h4>
+                          <div className="flex items-center space-x-2 text-xs text-slate-300 mt-1 font-mono">
+                            <span className="text-white font-bold">{item.indianPrice} / {item.foreignPrice}</span>
+                            <span className="text-slate-500">•</span>
+                            <span className="text-[11px] text-slate-400 truncate">{item.timings.split('(')[0]}</span>
                           </div>
-                        )}
-                      </React.Fragment>
+                          <div className="flex items-center space-x-2 text-[11px] text-slate-400 mt-1">
+                            <span className="flex items-center gap-1">
+                              <span className={`w-1.5 h-1.5 rounded-full ${item.crowd === 'High' ? 'bg-amber-400' : item.crowd === 'Medium' ? 'bg-cyan-400' : 'bg-emerald-400'}`} />
+                              <span>Crowd: {item.crowd}</span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     ))}
                   </div>
 
