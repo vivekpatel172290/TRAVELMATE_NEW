@@ -158,7 +158,16 @@ export default function Sidebar({
         {/* Mobile Slide-over Header (Only visible on mobile drawer) */}
         {forceExpanded && (
           <div className="p-4 border-b border-white/[0.08] flex items-center justify-between shrink-0 bg-white/[0.02]">
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-300">Navigation Menu</span>
+            <Link to="/" onClick={onCloseMobile} className="flex items-center space-x-2.5">
+              <img
+                src="/logo.jpg"
+                alt="TravelMate Official Logo"
+                className="w-8 h-8 rounded-xl object-cover ring-1 ring-white/20 shadow-md shadow-cyan-500/20"
+              />
+              <span className="text-base font-black tracking-tight font-display text-white">
+                TRAVEL<span className="coder-text-gradient">MATE</span>
+              </span>
+            </Link>
             <button
               onClick={onCloseMobile}
               className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 border border-white/5 transition-colors"

@@ -89,7 +89,7 @@ export default function AdminDashboardPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
             <div className="inline-flex items-center space-x-2 text-indigo-400 text-xs font-bold uppercase tracking-wider mb-1">
-              <Shield className="w-4 h-4" />
+              <img src="/logo.jpg" alt="TravelMate" className="w-4.5 h-4.5 rounded object-cover ring-1 ring-white/20" />
               <span>Delhi Police & Ministry of Tourism Control Room</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-white">

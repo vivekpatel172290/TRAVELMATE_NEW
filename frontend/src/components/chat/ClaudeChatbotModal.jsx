@@ -93,9 +93,11 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
         {/* Header */}
         <div className="p-4 bg-surface-card border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white">
-              <Bot className="w-5 h-5" />
-            </div>
+            <img
+              src="/logo.jpg"
+              alt="TravelMate Assistant"
+              className="w-9 h-9 rounded-xl object-cover ring-1 ring-white/20 shadow-md shadow-cyan-500/20"
+            />
             <div>
               <div className="flex items-center space-x-2">
                 <h3 className="text-sm font-bold text-white">TravelMate Claude Assistant</h3>

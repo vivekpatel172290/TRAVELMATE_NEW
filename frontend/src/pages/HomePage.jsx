@@ -999,9 +999,11 @@ export default function HomePage() {
             {/* Col 1: Brand & Purpose */}
             <div className="space-y-3.5">
               <div className="flex items-center space-x-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center p-2 shadow-md shadow-cyan-500/20">
-                  <Shield className="w-5 h-5 text-white" />
-                </div>
+                <img
+                  src="/logo.jpg"
+                  alt="TravelMate Official Logo"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl object-cover ring-1 ring-white/20 shadow-md shadow-cyan-500/20"
+                />
                 <span className="text-xl font-black tracking-tight font-display text-white">
                   TRAVEL<span className="coder-text-gradient">MATE</span>
                 </span>

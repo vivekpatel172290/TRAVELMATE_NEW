@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, QrCode, Menu, X } from 'lucide-react';
+import { QrCode, Menu, X } from 'lucide-react';
 import { useTraveler } from '../../context/TravelerContext';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -51,9 +51,11 @@ export default function Header({
 
           {/* Fixed Brand Logo & Name */}
           <Link to="/" className="flex items-center space-x-2.5 group">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-indigo-600 flex items-center justify-center p-1.5 shadow-md shadow-emerald-500/20 ring-1 ring-white/20 group-hover:scale-105 transition-transform">
-              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-            </div>
+            <img
+              src="/logo.jpg"
+              alt="TravelMate Official Logo"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl object-cover ring-1 ring-white/25 shadow-md shadow-cyan-500/20 group-hover:scale-105 group-hover:ring-cyan-400/60 transition-all duration-200"
+            />
             <div className="flex items-center space-x-1.5">
               <span className="text-base sm:text-lg font-black tracking-tight font-display text-white">
                 TRAVEL<span className="coder-text-gradient">MATE</span>

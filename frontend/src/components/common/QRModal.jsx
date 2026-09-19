@@ -38,7 +38,7 @@ export default function QRModal({ isOpen, onClose }) {
         </button>
 
         <div className="flex items-center justify-center space-x-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2">
-          <ShieldCheck className="w-4 h-4" />
+          <img src="/logo.jpg" alt="TravelMate" className="w-4.5 h-4.5 rounded object-cover ring-1 ring-white/20" />
           <span>Delhi SafeVisit Pass</span>
         </div>
 
