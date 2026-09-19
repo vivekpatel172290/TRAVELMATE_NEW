@@ -67,57 +67,57 @@ export default function App() {
     <ThemeProvider>
       <TravelerProvider>
         <BrowserRouter>
-          <div className="min-h-screen bg-[#0a0c10] text-slate-100 flex selection:bg-indigo-500/30 selection:text-indigo-200">
-            {/* Left Sidebar (Desktop Collapsible Rail vs Full + Mobile Slide-Out Drawer) */}
-            <Sidebar
-              isCollapsed={isSidebarCollapsed}
+          <div className="min-h-screen bg-[#0a0c10] text-slate-100 flex flex-col selection:bg-indigo-500/30 selection:text-indigo-200">
+            {/* Top Fixed / Sticky Navigation Bar across 100% full width */}
+            <Header
+              isSidebarCollapsed={isSidebarCollapsed}
               onToggleCollapse={toggleSidebarCollapse}
-              isOpenMobile={isMobileNavOpen}
-              onCloseMobile={() => setIsMobileNavOpen(false)}
+              isMobileNavOpen={isMobileNavOpen}
+              onToggleMobileNav={() => setIsMobileNavOpen((prev) => !prev)}
               onOpenQR={() => setIsQROpen(true)}
-              onOpenLang={() => setIsLangOpen(true)}
             />
 
-            {/* Right Main Application Column */}
-            <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
-              {/* Header */}
-              <Header
-                isSidebarCollapsed={isSidebarCollapsed}
+            {/* Main Body: Left YouTube-style Sidebar + Right Page Content */}
+            <div className="flex flex-1 min-h-0 relative">
+              {/* Left Sidebar (Desktop Collapsible Rail vs Full + Mobile Slide-Out Drawer) */}
+              <Sidebar
+                isCollapsed={isSidebarCollapsed}
                 onToggleCollapse={toggleSidebarCollapse}
-                isMobileNavOpen={isMobileNavOpen}
-                onToggleMobileNav={() => setIsMobileNavOpen((prev) => !prev)}
+                isOpenMobile={isMobileNavOpen}
+                onCloseMobile={() => setIsMobileNavOpen(false)}
                 onOpenQR={() => setIsQROpen(true)}
-                onOpenLang={() => setIsLangOpen(true)}
               />
 
               {/* Main Routing Container */}
-              <main className="flex-1 pb-24 md:pb-16 overflow-x-hidden">
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/safe-pass" element={<OnboardingPage />} />
-                  <Route path="/onboarding" element={<OnboardingPage />} />
-                  <Route path="/home" element={<DiscoverPage />} />
-                  <Route path="/discover" element={<DiscoverPage />} />
-                  <Route path="/planner" element={<TripPlannerPage />} />
-                  <Route path="/trip-planner" element={<TripPlannerPage />} />
-                  <Route path="/phrase-helper" element={<PhraseHelperPage />} />
-                  <Route path="/language" element={<PhraseHelperPage />} />
-                  <Route path="/fare-meter" element={<FareMeterPage />} />
-                  <Route path="/safe-journey" element={<SafeJourneyPage />} />
-                  <Route path="/vault" element={<EvidenceVaultPage />} />
-                  <Route path="/incident" element={<IncidentReportPage />} />
-                  <Route path="/emergency" element={<IncidentReportPage />} />
-                  <Route path="/admin" element={<AdminDashboardPage />} />
-                </Routes>
-              </main>
+              <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
+                <main className="flex-1 pb-24 md:pb-16 overflow-x-hidden">
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/safe-pass" element={<OnboardingPage />} />
+                    <Route path="/onboarding" element={<OnboardingPage />} />
+                    <Route path="/home" element={<DiscoverPage />} />
+                    <Route path="/discover" element={<DiscoverPage />} />
+                    <Route path="/planner" element={<TripPlannerPage />} />
+                    <Route path="/trip-planner" element={<TripPlannerPage />} />
+                    <Route path="/phrase-helper" element={<PhraseHelperPage />} />
+                    <Route path="/language" element={<PhraseHelperPage />} />
+                    <Route path="/fare-meter" element={<FareMeterPage />} />
+                    <Route path="/safe-journey" element={<SafeJourneyPage />} />
+                    <Route path="/vault" element={<EvidenceVaultPage />} />
+                    <Route path="/incident" element={<IncidentReportPage />} />
+                    <Route path="/emergency" element={<IncidentReportPage />} />
+                    <Route path="/admin" element={<AdminDashboardPage />} />
+                  </Routes>
+                </main>
+              </div>
             </div>
 
             {/* Floating Claude Chatbot Launcher Button - Dynamically adapts to collapsed/expanded sidebar */}
             <div
               className={`fixed bottom-4 left-4 z-30 transition-all duration-300 ${
                 isSidebarCollapsed
-                  ? 'md:bottom-6 md:left-[6rem]'
-                  : 'md:bottom-6 md:left-[19rem] lg:left-[21rem]'
+                  ? 'md:bottom-6 md:left-[5.5rem]'
+                  : 'md:bottom-6 md:left-[17.5rem]'
               }`}
             >
               <button
