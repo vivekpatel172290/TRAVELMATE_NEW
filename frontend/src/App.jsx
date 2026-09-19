@@ -20,6 +20,7 @@ import IncidentReportPage from './pages/IncidentReportPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import TripPlannerPage from './pages/TripPlannerPage';
 import PhraseHelperPage from './pages/PhraseHelperPage';
+import PlaceDetailPage from './pages/PlaceDetailPage';
 import { Bot } from 'lucide-react';
 
 export default function App() {
@@ -97,6 +98,8 @@ export default function App() {
                     <Route path="/onboarding" element={<OnboardingPage />} />
                     <Route path="/home" element={<DiscoverPage />} />
                     <Route path="/discover" element={<DiscoverPage />} />
+                    <Route path="/place/:id" element={<PlaceDetailPage />} />
+                    <Route path="/places/:id" element={<PlaceDetailPage />} />
                     <Route path="/planner" element={<TripPlannerPage />} />
                     <Route path="/trip-planner" element={<TripPlannerPage />} />
                     <Route path="/phrase-helper" element={<PhraseHelperPage />} />

@@ -75,40 +75,44 @@ export default function HomePage() {
 
   const sampleMonuments = [
     {
+      id: 'pl-red-fort-01',
       name: 'Red Fort (Lal Qila)',
       img: '/places/red-fort.jpg',
       category: 'UNESCO Heritage Site',
       indianPrice: '₹35',
       foreignPrice: '₹550',
       timings: '09:30 AM - 04:30 PM (Mon Closed)',
-      link: '/home'
+      link: '/place/pl-red-fort-01'
     },
     {
+      id: 'pl-qutub-minar-02',
       name: 'Qutub Minar',
       img: '/places/qutub-minar.jpg',
       category: 'UNESCO Monument',
       indianPrice: '₹35',
       foreignPrice: '₹550',
       timings: '07:00 AM - 08:00 PM (Daily)',
-      link: '/home'
+      link: '/place/pl-qutub-minar-02'
     },
     {
+      id: 'pl-humayuns-tomb-03',
       name: 'Humayun’s Tomb',
       img: '/places/humayuns-tomb.jpg',
       category: 'Mughal Architecture',
       indianPrice: '₹35',
       foreignPrice: '₹550',
       timings: '06:00 AM - 06:00 PM (Daily)',
-      link: '/home'
+      link: '/place/pl-humayuns-tomb-03'
     },
     {
+      id: 'pl-india-gate-04',
       name: 'India Gate & Kartavya Path',
       img: '/places/india-gate.jpg',
       category: 'National Memorial',
       indianPrice: 'Free',
       foreignPrice: 'Free',
       timings: 'Open 24/7 (Well-lit beat)',
-      link: '/home'
+      link: '/place/pl-india-gate-04'
     }
   ];
 
@@ -725,7 +729,8 @@ export default function HomePage() {
             {sampleMonuments.map((m) => (
               <div
                 key={m.name}
-                className="coder-card rounded-2xl overflow-hidden group flex flex-col justify-between"
+                onClick={() => navigate(m.link)}
+                className="coder-card rounded-2xl overflow-hidden group flex flex-col justify-between cursor-pointer hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/10 hover:scale-[1.02] transition-all duration-300"
               >
                 <div className="relative h-44 overflow-hidden bg-slate-900">
                   <img
@@ -739,11 +744,14 @@ export default function HomePage() {
                   <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/70 backdrop-blur-md text-emerald-300 border border-emerald-500/30">
                     {m.category}
                   </span>
+                  <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                    ASI Verified
+                  </span>
                 </div>
 
                 <div className="p-4 flex-1 flex flex-col justify-between">
                   <div>
-                    <h4 className="font-bold text-white text-sm font-display mb-1 group-hover:text-emerald-400 transition-colors">
+                    <h4 className="font-bold text-white text-sm font-display mb-1 group-hover:text-indigo-300 transition-colors">
                       {m.name}
                     </h4>
                     <p className="text-[11px] text-slate-400 mb-3 flex items-center space-x-1">
@@ -757,12 +765,12 @@ export default function HomePage() {
                       <span className="text-[10px] text-slate-500 block">INDIAN / FOREIGNER</span>
                       <strong className="text-white font-mono">{m.indianPrice} / {m.foreignPrice}</strong>
                     </div>
-                    <Link
-                      to="/home"
-                      className="px-2.5 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-white text-xs font-semibold"
+                    <span
+                      className="px-2.5 py-1.5 rounded-lg bg-indigo-600/20 group-hover:bg-indigo-600 text-indigo-300 group-hover:text-white text-xs font-bold transition-colors flex items-center space-x-1"
                     >
-                      Verify
-                    </Link>
+                      <span>Details</span>
+                      <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                    </span>
                   </div>
                 </div>
               </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Search, MapPin, Ticket, ExternalLink, ShieldCheck, Clock, Users, AlertTriangle, Star, CheckCircle, LayoutGrid, Compass, Sun, Camera } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Search, MapPin, Ticket, ExternalLink, ShieldCheck, Clock, Users, AlertTriangle, Star, CheckCircle, LayoutGrid, Compass, Sun, Camera, ArrowRight } from 'lucide-react';
 import { api, API_BASE } from '../services/api';
 import { useTraveler } from '../context/TravelerContext';
 import StatusBadge from '../components/common/StatusBadge';
@@ -9,6 +10,7 @@ const CATEGORIES = ['All', 'Heritage', 'UNESCO', 'Place of Worship', 'Memorial',
 const DEFAULT_PLACE_IMAGE = '/places/red-fort.jpg';
 
 export default function DiscoverPage() {
+  const navigate = useNavigate();
   const { journey } = useTraveler();
   const [places, setPlaces] = useState([]);
   const [activeCategory, setActiveCategory] = useState('All');
@@ -197,22 +199,22 @@ export default function DiscoverPage() {
         </div>
       )}
 
-      {/* Places Grid */}
-      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${viewMode === 'map' ? 'hidden' : 'grid'}`}>
+      {/* Places Grid - Coder Army inspired compact, clickable cards */}
+      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 ${viewMode === 'map' ? 'hidden' : 'grid'}`}>
         {places.map((place) => (
           <div
             key={place.id || place.place_key}
-            className="glass-card glass-card-hover rounded-2xl overflow-hidden flex flex-col justify-between border border-surface-border group transition-all"
+            onClick={() => navigate(`/place/${place.id || place.place_key}`)}
+            className="coder-card bg-[#111318]/90 hover:bg-[#151922] border border-white/[0.08] hover:border-indigo-500/50 rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-indigo-500/10 flex flex-col justify-between"
           >
             <div>
-              {/* 1. Monument Photo Header */}
-              <div className="relative w-full h-44 sm:h-48 overflow-hidden bg-slate-900">
+              {/* Photo Header */}
+              <div className="relative w-full h-40 sm:h-44 overflow-hidden bg-slate-900">
                 <img
                   src={place.image_url || DEFAULT_PLACE_IMAGE}
                   alt={place.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   loading="lazy"
-                  referrerPolicy="no-referrer"
                   onError={(e) => {
                     if (!e.currentTarget.dataset.fallback) {
                       e.currentTarget.dataset.fallback = 'true';
@@ -220,26 +222,27 @@ export default function DiscoverPage() {
                     }
                   }}
                 />
-                {/* Image Gradient Scrim */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-black/30 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#111318] via-[#111318]/20 to-black/30 pointer-events-none" />
 
-                {/* Badges Pinned to Photo Header */}
+                {/* Badges */}
                 <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none">
-                  <span className="px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-[10px] font-bold text-slate-200 uppercase tracking-wider border border-white/10 shadow-sm">
+                  <span className="px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-[10px] font-bold text-slate-200 border border-white/10 uppercase tracking-wider">
                     {place.category}
                   </span>
-                  <StatusBadge status={place.verification_status || 'Official'} />
+                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-extrabold uppercase">
+                    ASI Verified
+                  </span>
                 </div>
 
-                {/* Crowd Density Pill Pinned to Bottom of Image */}
-                <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none">
+                {/* Bottom Crowd Pill */}
+                <div className="absolute bottom-2 left-2.5 pointer-events-none">
                   <span
-                    className={`crowd-pill inline-flex items-center text-[10px] font-bold px-2.5 py-0.5 rounded-md backdrop-blur-md border shadow-sm ${
+                    className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-md border shadow-sm ${
                       place.crowd_data?.estimated_crowd === 'High'
-                        ? 'crowd-high bg-rose-950/80 text-rose-300 border-rose-500/30'
+                        ? 'bg-rose-950/80 text-rose-300 border-rose-500/30'
                         : place.crowd_data?.estimated_crowd === 'Medium'
-                        ? 'crowd-medium bg-amber-950/80 text-amber-300 border-amber-500/30'
-                        : 'crowd-low bg-emerald-950/80 text-emerald-300 border-emerald-500/30'
+                        ? 'bg-amber-950/80 text-amber-300 border-amber-500/30'
+                        : 'bg-emerald-950/80 text-emerald-300 border-emerald-500/30'
                     }`}
                   >
                     <Users className="w-3 h-3 mr-1" />
@@ -248,107 +251,42 @@ export default function DiscoverPage() {
                 </div>
               </div>
 
-              {/* Card Body Content */}
-              <div className="p-5 pb-0">
-                {/* Title & Hindi Name */}
-                <h3 className="text-lg font-bold font-display text-white group-hover:text-emerald-300 transition-colors">
-                  {place.name}
-                </h3>
-                <p className="text-xs text-emerald-400/90 font-medium mb-3">
-                  {place.hindi_name}
-                </p>
-
-                {/* 2. Best Time to Visit Recommendation Banner */}
-                {(place.best_time_to_visit || place.crowd_data?.best_time) && (
-                  <div className="best-time-box p-3 rounded-xl border mb-3.5 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <div className="best-time-header flex items-center space-x-1.5 text-xs font-bold">
-                        <Clock className="w-3.5 h-3.5 shrink-0" />
-                        <span>Best Time to Visit</span>
-                      </div>
-                      <span className="best-time-pill text-[10px] px-1.5 py-0.5 rounded font-semibold border">
-                        ASI Advisory
-                      </span>
-                    </div>
-                    <p className="best-time-desc text-xs leading-relaxed">
-                      {place.best_time_to_visit || `Recommended: ${place.crowd_data.best_time}`}
-                    </p>
-                    {place.lighting_tip && (
-                      <p className="best-time-tip text-[11px] italic pt-0.5 flex items-center gap-1">
-                        <Camera className="w-3 h-3 shrink-0" />
-                        <span>{place.lighting_tip}</span>
-                      </p>
-                    )}
-                  </div>
-                )}
-
-                {/* Dual Fee Matrix & Timings Data Box (Issue #2) */}
-                <div className="monument-data-box p-3 rounded-xl border mb-4 space-y-1.5 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="data-box-label">Foreign Visitors:</span>
-                    <span className="data-box-val font-mono font-bold">
-                      {place.fee?.foreigner === 0 ? 'Free Entry' : `₹${place.fee?.foreigner}`}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="data-box-label">Indian Citizens / SAARC:</span>
-                    <span className="data-box-subval font-mono font-semibold">
-                      {place.fee?.indian === 0 ? 'Free' : `₹${place.fee?.indian}`}
-                    </span>
-                  </div>
-                  <div className="data-box-divider pt-1 border-t flex items-center justify-between text-[10px]">
-                    <span className="data-box-timings">Timings: {place.timings?.opening} - {place.timings?.closing}</span>
-                    <span className="data-box-closed">{place.timings?.closed_on || 'Open All Days'}</span>
-                  </div>
+              {/* Card Body - Essential info only */}
+              <div className="p-4 space-y-2.5">
+                <div>
+                  <h3 className="text-sm sm:text-base font-bold font-display text-white group-hover:text-indigo-300 transition-colors line-clamp-1">
+                    {place.name}
+                  </h3>
+                  <p className="text-xs text-slate-400 truncate">
+                    {place.hindi_name}
+                  </p>
                 </div>
 
-                {/* Cultural & Scam Advisory Preview (Issue #3) */}
-                {place.safety_notes && place.safety_notes[0] && (
-                  <div className="scam-advisory-box p-2.5 rounded-lg border mb-4 flex items-start space-x-2 text-[11px]">
-                    <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                    <p className="line-clamp-2 leading-relaxed">{place.safety_notes[0]}</p>
-                  </div>
-                )}
+                {/* Entry Fee Box */}
+                <div className="flex items-center justify-between text-xs py-1.5 px-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                  <span className="text-slate-400 text-[11px]">Official Fee</span>
+                  <span className="font-mono font-bold text-slate-100">
+                    {place.fee?.foreigner === 0 ? 'Free Entry' : `₹${place.fee?.foreigner}`}
+                    {place.fee?.foreigner > 0 && <span className="text-[10px] text-slate-400 font-normal ml-1">(Intl)</span>}
+                  </span>
+                </div>
+
+                {/* Timings */}
+                <div className="flex items-center justify-between text-[11px] text-slate-400 px-0.5">
+                  <span className="flex items-center space-x-1">
+                    <Clock className="w-3 h-3 text-indigo-400 shrink-0" />
+                    <span>{place.timings?.opening} - {place.timings?.closing}</span>
+                  </span>
+                  <span className="text-slate-500 font-medium">{place.timings?.closed_on || 'Open Daily'}</span>
+                </div>
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="card-actions-bar p-5 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2">
-              <button
-                id={`btn-details-${place.place_key}`}
-                onClick={() => setSelectedPlace(place)}
-                className="card-details-btn text-xs font-semibold transition-colors"
-              >
-                Safety Notes & Details →
-              </button>
-
-              <div className="flex items-center space-x-2">
-                {isPlaceVisited(place) ? (
-                  <span className="badge-visited px-2 py-1 rounded-lg text-[10px] font-bold flex items-center border">
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                    Visited
-                  </span>
-                ) : (
-                  <button
-                    onClick={() => handleCheckIn(place)}
-                    className="btn-checkin px-2.5 py-1 rounded-lg text-[10px] font-semibold border transition-all"
-                  >
-                    + Check In
-                  </button>
-                )}
-
-                {/* Official Ticket Link */}
-                <a
-                  href={place.official_ticket_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  id={`link-ticket-${place.place_key}`}
-                  className="btn-booking py-1.5 px-3 rounded-lg text-xs font-bold flex items-center space-x-1 border transition-all"
-                >
-                  <Ticket className="w-3.5 h-3.5" />
-                  <span>Official Booking</span>
-                  <ExternalLink className="w-3 h-3 ml-0.5" />
-                </a>
+            {/* Click to Open Details Footer */}
+            <div className="p-4 pt-0">
+              <div className="pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs text-indigo-400 group-hover:text-indigo-300 font-bold">
+                <span>View Verified Info</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
           </div>

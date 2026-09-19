@@ -67,14 +67,14 @@ export default function Header({
 
         {/* Center: Permanently Fixed & Visible Top Navigation Links */}
         <nav
-          className="hidden md:flex items-center justify-center flex-1 max-w-4xl mx-auto"
+          className="hidden md:flex items-center justify-center flex-1 max-w-5xl mx-2 lg:mx-4"
           aria-label="Quick Top Navigation"
         >
-          <div className="flex items-center space-x-1 p-1 bg-white/[0.04] border border-white/[0.08] rounded-2xl shadow-xl shadow-black/30 backdrop-blur-md overflow-x-auto no-scrollbar">
+          <div className="grid grid-cols-7 gap-1 p-1.5 w-full bg-white/[0.04] border border-white/[0.08] rounded-2xl shadow-xl shadow-black/30 backdrop-blur-md">
             {topNavLinks.map((item) => {
               const isActive = item.exact
                 ? location.pathname === item.to
-                : (item.to === '/home' && (location.pathname === '/home' || location.pathname === '/discover'))
+                : (item.to === '/home' && (location.pathname === '/home' || location.pathname === '/discover' || location.pathname.startsWith('/place')))
                   || (item.to === '/safe-pass' && (location.pathname === '/safe-pass' || location.pathname === '/onboarding'))
                   || (item.to === '/planner' && (location.pathname === '/planner' || location.pathname === '/trip-planner'))
                   || (item.to === '/vault' && location.pathname === '/vault')
@@ -85,9 +85,9 @@ export default function Header({
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center justify-center text-center transition-all duration-200 whitespace-nowrap ${
+                  className={`px-2 lg:px-3 py-2 rounded-xl text-[12px] lg:text-[13px] font-bold flex items-center justify-center text-center transition-all duration-200 whitespace-nowrap overflow-hidden text-ellipsis ${
                     isActive
-                      ? 'bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 text-white shadow-md shadow-indigo-600/30 ring-1 ring-white/20 font-bold'
+                      ? 'bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 text-white shadow-md shadow-indigo-600/30 ring-1 ring-white/20 font-extrabold'
                       : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
                   }`}
                 >
