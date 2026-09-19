@@ -45,9 +45,9 @@ function AnimatedText() {
   const words = [
     { text: 'uncertainty!', gradient: 'from-cyan-400 via-sky-300 to-indigo-400', cursorColor: 'bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.9)]' },
     { text: 'scams!', gradient: 'from-rose-400 via-pink-400 to-red-400', cursorColor: 'bg-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.9)]' },
-    { text: 'fare overcharging!', gradient: 'from-amber-300 via-orange-400 to-yellow-400', cursorColor: 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.9)]' },
+    { text: 'overcharging!', gradient: 'from-amber-300 via-orange-400 to-yellow-400', cursorColor: 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.9)]' },
     { text: 'unsafe detours!', gradient: 'from-purple-400 via-fuchsia-400 to-indigo-400', cursorColor: 'bg-purple-400 shadow-[0_0_8px_rgba(192,132,252,0.9)]' },
-    { text: 'counterfeit passes!', gradient: 'from-emerald-300 via-teal-400 to-cyan-400', cursorColor: 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]' }
+    { text: 'counterfeits!', gradient: 'from-emerald-300 via-teal-400 to-cyan-400', cursorColor: 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]' }
   ];
 
   const [currentWordIdx, setCurrentWordIdx] = useState(0);
@@ -82,11 +82,11 @@ function AnimatedText() {
   const displayedText = activeWord.text.slice(0, currentCharIdx);
 
   return (
-    <span className="inline-flex items-baseline font-black font-display text-xl sm:text-2xl lg:text-3xl">
-      <span className={`bg-gradient-to-r ${activeWord.gradient} bg-clip-text text-transparent inline-block drop-shadow-[0_0_18px_rgba(129,140,248,0.45)] tracking-tight`}>
+    <span className="inline-flex items-baseline font-black font-display text-inherit">
+      <span className={`bg-gradient-to-r ${activeWord.gradient} bg-clip-text text-transparent inline-block drop-shadow-[0_0_14px_rgba(129,140,248,0.35)] tracking-tight`}>
         {displayedText}
       </span>
-      <span className={`inline-block w-[3px] sm:w-[3.5px] h-[0.9em] ${activeWord.cursorColor} ml-1.5 rounded-sm animate-pulse align-baseline translate-y-0.5`} />
+      <span className={`inline-block w-[2.5px] sm:w-[3px] h-[0.9em] ${activeWord.cursorColor} ml-1 rounded-sm animate-pulse align-baseline translate-y-0.5`} />
     </span>
   );
 }
@@ -340,9 +340,9 @@ export default function HomePage() {
                 </span>
               </h1>
 
-              {/* Typewriter Animated Tagline (Exact Coder Army Style) */}
-              <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1 text-lg sm:text-2xl lg:text-3xl font-semibold text-slate-200 py-1.5 leading-snug">
-                <span className="text-slate-100 font-bold tracking-tight">
+              {/* Typewriter Animated Tagline (Exact Coder Army Style - Single Line) */}
+              <div className="flex items-baseline gap-x-2 text-base sm:text-lg lg:text-xl xl:text-[22px] font-semibold text-slate-200 py-1 whitespace-nowrap overflow-hidden">
+                <span className="text-slate-100 font-bold tracking-tight shrink-0">
                   Travel is meant to create memories — not
                 </span>
                 <AnimatedText />
