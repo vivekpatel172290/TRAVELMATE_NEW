@@ -40,6 +40,57 @@ import {
 } from 'lucide-react';
 import { useTraveler } from '../context/TravelerContext';
 
+// Signature Typewriter Animated Text (Exact Coder Army "Army! -> Family! -> Future!" typewriter mechanism)
+function AnimatedText() {
+  const words = [
+    { text: 'uncertainty!', gradient: 'from-cyan-400 via-sky-300 to-indigo-400', cursorColor: 'bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.9)]' },
+    { text: 'scams!', gradient: 'from-rose-400 via-pink-400 to-red-400', cursorColor: 'bg-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.9)]' },
+    { text: 'fare overcharging!', gradient: 'from-amber-300 via-orange-400 to-yellow-400', cursorColor: 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.9)]' },
+    { text: 'unsafe detours!', gradient: 'from-purple-400 via-fuchsia-400 to-indigo-400', cursorColor: 'bg-purple-400 shadow-[0_0_8px_rgba(192,132,252,0.9)]' },
+    { text: 'counterfeit passes!', gradient: 'from-emerald-300 via-teal-400 to-cyan-400', cursorColor: 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]' }
+  ];
+
+  const [currentWordIdx, setCurrentWordIdx] = useState(0);
+  const [currentCharIdx, setCurrentCharIdx] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    let timeout;
+    const currentWord = words[currentWordIdx].text;
+
+    if (!isDeleting && currentCharIdx < currentWord.length) {
+      // Type forward character-by-character (80ms per char, matching Coder Army)
+      timeout = setTimeout(() => setCurrentCharIdx((prev) => prev + 1), 80);
+    } else if (!isDeleting && currentCharIdx === currentWord.length) {
+      // Pause at full word before backspacing (1400ms)
+      timeout = setTimeout(() => setIsDeleting(true), 1400);
+    } else if (isDeleting && currentCharIdx > 0) {
+      // Backspace character-by-character (40ms per char, matching Coder Army)
+      timeout = setTimeout(() => setCurrentCharIdx((prev) => prev - 1), 40);
+    } else if (isDeleting && currentCharIdx === 0) {
+      // Brief pause before typing next word
+      timeout = setTimeout(() => {
+        setIsDeleting(false);
+        setCurrentWordIdx((prev) => (prev + 1) % words.length);
+      }, 200);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [currentCharIdx, isDeleting, currentWordIdx, words]);
+
+  const activeWord = words[currentWordIdx];
+  const displayedText = activeWord.text.slice(0, currentCharIdx);
+
+  return (
+    <span className="inline-flex items-baseline font-bold font-display">
+      <span className={`bg-gradient-to-r ${activeWord.gradient} bg-clip-text text-transparent inline-block drop-shadow-[0_0_12px_rgba(129,140,248,0.25)]`}>
+        {displayedText}
+      </span>
+      <span className={`inline-block w-[2.5px] h-[1em] ${activeWord.cursorColor} ml-1 rounded-sm animate-pulse align-baseline translate-y-0.5`} />
+    </span>
+  );
+}
+
 export default function HomePage() {
   const { traveler, journey } = useTraveler();
   const navigate = useNavigate();
@@ -100,24 +151,7 @@ export default function HomePage() {
   const scale = 0.94 + scrollProgress * 0.06; // 0.94 -> 1.0 full size
   const translateY = (1 - scrollProgress) * -10; // subtle elevation lift
 
-  // 2. Rotating text under "Unmatched Trust & Safety" (Coder Army style)
-  const rotatingWords = [
-    { text: 'uncertainty', color: 'text-cyan-300 bg-cyan-500/15 border-cyan-500/30' },
-    { text: 'ticket scams', color: 'text-rose-300 bg-rose-500/15 border-rose-500/30' },
-    { text: 'fare overcharging', color: 'text-amber-300 bg-amber-500/15 border-amber-500/30' },
-    { text: 'unsafe detours', color: 'text-purple-300 bg-purple-500/15 border-purple-500/30' }
-  ];
-
-  const [currentWordIndex, setCurrentWordIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentWordIndex((prev) => (prev + 1) % rotatingWords.length);
-    }, 2800);
-    return () => clearInterval(interval);
-  }, []);
-
-  // 3. Verified Places purely for the upward scrolling stream (image + few essential info)
+  // 2. Verified Places purely for the upward scrolling stream (image + few essential info)
   const scrollingPlaces = [
     {
       id: 'pl-red-fort-01',
@@ -306,15 +340,12 @@ export default function HomePage() {
                 </span>
               </h1>
 
-              {/* Rotating Tagline Under Unmatched Trust & Safety (Coder Army Style) */}
-              <div className="flex flex-wrap items-center gap-2 text-base sm:text-lg lg:text-xl font-medium text-slate-300 py-1">
-                <span className="text-slate-200">Travel is meant to create memories—not</span>
-                <span
-                  key={currentWordIndex}
-                  className={`animate-coder-flip inline-flex items-center px-2.5 py-0.5 rounded-lg border text-sm sm:text-base font-bold tracking-wide shadow-sm ${rotatingWords[currentWordIndex].color}`}
-                >
-                  {rotatingWords[currentWordIndex].text}
+              {/* Typewriter Animated Tagline (Exact Coder Army Style) */}
+              <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-base sm:text-lg lg:text-xl font-medium text-slate-300 py-1">
+                <span className="text-slate-200 font-semibold tracking-wide">
+                  Travel is meant to create memories — not
                 </span>
+                <AnimatedText />
               </div>
 
               {/* Subtitle Description */}
