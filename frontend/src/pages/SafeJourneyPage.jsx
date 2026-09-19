@@ -355,21 +355,28 @@ export default function SafeJourneyPage() {
   const activeSelectedRoute = availableRoutes[selectedRouteIndex] || availableRoutes[0];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <div className="inline-flex items-center space-x-2 text-cyan-400 text-xs font-bold uppercase tracking-wider mb-1">
-            <Compass className="w-4 h-4" />
-            <span>Google Maps Platform & Delhi Safety Overlay</span>
+    <div className="relative min-h-screen bg-[#0a0c10] text-slate-100 overflow-hidden font-sans selection:bg-indigo-500/30 selection:text-indigo-200 py-8 px-4 sm:px-6 lg:px-8">
+      {/* Background Cyber Grid & Radial Glow Orbs */}
+      <div className="absolute inset-0 coder-grid-bg pointer-events-none z-0" />
+      <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-gradient-to-tr from-indigo-600/20 via-purple-600/25 to-cyan-500/15 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="absolute top-[600px] -left-48 w-[500px] h-[500px] bg-purple-700/10 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="absolute top-[1400px] -right-48 w-[550px] h-[550px] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none z-0" />
+
+      <div className="relative z-10 max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <div className="inline-flex items-center space-x-2 text-cyan-400 text-xs font-bold uppercase tracking-wider mb-1">
+              <Compass className="w-4 h-4" />
+              <span>Google Maps Platform & Delhi Safety Overlay</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-white">
+              Safe Journey & <span className="coder-text-gradient">Multi-Route Safety Monitor</span>
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">
+              Real-time live GPS tracking, unbiased destination geocoding, and multi-corridor safety comparison with active police beat overlays.
+            </p>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-white">
-            Safe Journey & Multi-Route Safety Monitor
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Real-time live GPS tracking, unbiased destination geocoding, and multi-corridor safety comparison with active police beat overlays.
-          </p>
-        </div>
 
         {/* Tab Controls */}
         <div className="flex items-center space-x-2 bg-surface-card p-1 rounded-2xl border border-surface-border shrink-0">
@@ -1074,5 +1081,6 @@ export default function SafeJourneyPage() {
         </div>
       </div>
     </div>
+  </div>
   );
 }

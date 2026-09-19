@@ -56,24 +56,31 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      {/* Hero Banner */}
-      <div className="relative rounded-3xl p-8 overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950/40 to-slate-900 border border-white/10 shadow-2xl mb-8">
-        <div className="absolute -right-12 -top-12 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-4">
-            <ShieldCheck className="w-4 h-4" />
-            <span>SIH 2026 • Verified Tourist Trust Architecture</span>
+    <div className="relative min-h-screen bg-[#0a0c10] text-slate-100 overflow-hidden font-sans selection:bg-indigo-500/30 selection:text-indigo-200 py-8 px-4 sm:px-6 lg:px-8">
+      {/* Background Cyber Grid & Radial Glow Orbs */}
+      <div className="absolute inset-0 coder-grid-bg pointer-events-none z-0" />
+      <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-gradient-to-tr from-indigo-600/20 via-purple-600/25 to-cyan-500/15 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="absolute top-[600px] -left-48 w-[500px] h-[500px] bg-purple-700/10 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="absolute top-[1200px] -right-48 w-[550px] h-[550px] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none z-0" />
+
+      <div className="relative z-10 max-w-6xl mx-auto">
+        {/* Hero Banner */}
+        <div className="relative rounded-3xl p-8 overflow-hidden coder-card border border-white/[0.08] shadow-2xl mb-8 bg-[#111318]/90 backdrop-blur-xl">
+          <div className="absolute -right-12 -top-12 w-64 h-64 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative z-10 max-w-2xl">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold mb-4">
+              <ShieldCheck className="w-4 h-4" />
+              <span>SIH 2026 • Verified Tourist Trust Architecture</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-extrabold font-display text-white tracking-tight leading-tight">
+              One Tourist. One Journey ID. <span className="coder-text-gradient">Total Delhi Safety.</span>
+            </h1>
+            <p className="mt-3 text-sm sm:text-base text-slate-300 leading-relaxed">
+              TravelMate replaces 12 fragmented apps with an interconnected journey layer.
+              Zero passport upload, auto-expiring QR identity, verified monument access, and fair fare protection.
+            </p>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold font-display text-white tracking-tight leading-tight">
-            One Tourist. One Journey ID. <span className="text-gradient-emerald">Total Delhi Safety.</span>
-          </h1>
-          <p className="mt-3 text-sm sm:text-base text-slate-300 leading-relaxed">
-            TravelMate replaces 12 fragmented apps with an interconnected journey layer.
-            Zero passport upload, auto-expiring QR identity, verified monument access, and fair fare protection.
-          </p>
         </div>
-      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Onboarding Form */}
@@ -295,5 +302,6 @@ export default function OnboardingPage() {
         </div>
       </div>
     </div>
+  </div>
   );
 }

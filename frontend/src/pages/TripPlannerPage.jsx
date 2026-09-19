@@ -204,9 +204,16 @@ export default function TripPlannerPage() {
   const activePlaceEval = evaluateDestinationSafety(selectedPlaceKey);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8 animate-in fade-in duration-300">
-      {/* Modal for Add / Edit Plan */}
-      {isModalOpen && (
+    <div className="relative min-h-screen bg-[#0a0c10] text-slate-100 overflow-hidden font-sans selection:bg-indigo-500/30 selection:text-indigo-200 py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+      {/* Background Cyber Grid & Radial Glow Orbs */}
+      <div className="absolute inset-0 coder-grid-bg pointer-events-none z-0" />
+      <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-gradient-to-tr from-indigo-600/20 via-purple-600/25 to-cyan-500/15 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="absolute top-[600px] -left-48 w-[500px] h-[500px] bg-purple-700/10 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="absolute top-[1400px] -right-48 w-[550px] h-[550px] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none z-0" />
+
+      <div className="relative z-10 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-300">
+        {/* Modal for Add / Edit Plan */}
+        {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
           <div className="relative w-full max-w-lg bg-surface border border-surface-border rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
@@ -695,5 +702,6 @@ export default function TripPlannerPage() {
         </div>
       </div>
     </div>
+  </div>
   );
 }

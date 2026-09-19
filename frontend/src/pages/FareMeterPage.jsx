@@ -194,17 +194,24 @@ export default function FareMeterPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      {/* Page Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <div className="inline-flex items-center space-x-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-1">
-            <Calculator className="w-4 h-4" />
-            <span>Delhi Transport Department Reference Model</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-white">
-            Fair Fare Meter & Discrepancy Advisor
-          </h1>
+    <div className="relative min-h-screen bg-[#0a0c10] text-slate-100 overflow-hidden font-sans selection:bg-indigo-500/30 selection:text-indigo-200 py-8 px-4 sm:px-6 lg:px-8">
+      {/* Background Cyber Grid & Radial Glow Orbs */}
+      <div className="absolute inset-0 coder-grid-bg pointer-events-none z-0" />
+      <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-gradient-to-tr from-indigo-600/20 via-purple-600/25 to-cyan-500/15 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="absolute top-[600px] -left-48 w-[500px] h-[500px] bg-purple-700/10 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="absolute top-[1200px] -right-48 w-[550px] h-[550px] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none z-0" />
+
+      <div className="relative z-10 max-w-5xl mx-auto">
+        {/* Page Title */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <div className="inline-flex items-center space-x-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-1">
+              <Calculator className="w-4 h-4" />
+              <span>Delhi Transport Department Reference Model</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-white">
+              Fair Fare Meter & <span className="coder-text-gradient">Discrepancy Advisor</span>
+            </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
             Verify quoted auto/cab fares against official Delhi Government gazette rates before paying.
           </p>
@@ -583,5 +590,6 @@ export default function FareMeterPage() {
       {/* Language Support & Bhashini Phrase Cards Modal */}
       <LanguageSupportModal isOpen={isLangModalOpen} onClose={() => setIsLangModalOpen(false)} />
     </div>
+  </div>
   );
 }
