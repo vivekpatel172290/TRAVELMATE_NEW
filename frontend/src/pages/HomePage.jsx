@@ -144,24 +144,12 @@ export default function HomePage() {
       <div className="absolute top-[1500px] -right-48 w-[550px] h-[550px] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none z-0" />
 
       {/* Main Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-20">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-20">
         
         {/* ==================================================================== */}
         {/* 1. HERO SECTION */}
         {/* ==================================================================== */}
-        <section className="text-center pt-8 sm:pt-14 pb-12 max-w-4xl mx-auto">
-          {/* Top Glowing Hackathon Pill Badge */}
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 shadow-lg shadow-purple-500/10 mb-6 hover:border-purple-500/40 transition-all duration-300">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <span className="text-xs font-bold text-slate-300 tracking-wide font-display">
-              Smart India Hackathon 2026 Prototype
-            </span>
-            <span className="text-slate-500">•</span>
-            <span className="text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">
-              Delhi Tourist Trust Layer
-            </span>
-          </div>
-
+        <section className="text-center pt-3 sm:pt-6 pb-8 sm:pb-10 max-w-4xl mx-auto">
           {/* Main Display Headline */}
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight font-display leading-[1.15] text-white">
             Explore Delhi With{' '}
@@ -226,7 +214,7 @@ export default function HomePage() {
         {/* ==================================================================== */}
         {/* 2. SIGNATURE CODER ARMY 3D DEVICE WINDOW MOCKUP */}
         {/* ==================================================================== */}
-        <section className="relative max-w-5xl mx-auto my-8 sm:my-14">
+        <section className="relative max-w-5xl mx-auto my-6 sm:my-10">
           {/* Ambient Multi-Color Glow Backdrop */}
           <div className="absolute -inset-4 sm:-inset-6 rounded-[40px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-25 blur-3xl animate-pulse pointer-events-none" />
 
