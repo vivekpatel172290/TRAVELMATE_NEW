@@ -997,57 +997,57 @@ export default function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 pb-6 sm:pb-8">
             
             {/* Col 1: Brand & Purpose */}
-            <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center p-1.5 shadow-md shadow-cyan-500/20">
-                  <Shield className="w-4 h-4 text-white" />
+            <div className="space-y-3.5">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center p-2 shadow-md shadow-cyan-500/20">
+                  <Shield className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-lg font-black tracking-tight font-display text-white">
+                <span className="text-xl font-black tracking-tight font-display text-white">
                   TRAVEL<span className="coder-text-gradient">MATE</span>
                 </span>
               </div>
-              <p className="text-xs sm:text-[13px] text-slate-300 leading-relaxed max-w-sm">
+              <p className="text-sm text-slate-200 leading-relaxed max-w-sm font-normal">
                 India's premier digital tourist safety ecosystem. Built to protect domestic and international visitors from ticket counterfeiting, unauthorized transport overcharging, and unsafe travel routes across Delhi NCR.
               </p>
-              <div className="flex items-center space-x-1.5 text-xs font-medium text-cyan-400 pt-0.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
+              <div className="flex items-center space-x-2 text-xs sm:text-sm font-semibold text-cyan-400 pt-0.5">
+                <CheckCircle2 className="w-4 h-4 text-cyan-400 flex-shrink-0" />
                 <span>Smart India Hackathon 2026 Initiative</span>
               </div>
             </div>
 
             {/* Col 2: Verified Monuments */}
             <div>
-              <h5 className="font-bold text-white text-xs sm:text-sm uppercase tracking-wider mb-3 flex items-center space-x-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <h5 className="font-bold text-white text-sm sm:text-base uppercase tracking-wider mb-3.5 flex items-center space-x-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
                 <span>Verified Sites</span>
               </h5>
-              <ul className="space-y-2 text-xs sm:text-[13px]">
+              <ul className="space-y-2.5 text-sm sm:text-[15px]">
                 <li>
-                  <Link to="/place/pl-red-fort-01" className="text-slate-300 hover:text-white transition-colors flex items-center space-x-1.5">
-                    <span className="text-slate-500">›</span>
+                  <Link to="/place/pl-red-fort-01" className="text-slate-200 hover:text-cyan-300 font-medium transition-colors flex items-center space-x-2">
+                    <span className="text-slate-400 font-bold">›</span>
                     <span>Red Fort (Lal Qila)</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/place/pl-qutub-minar-02" className="text-slate-300 hover:text-white transition-colors flex items-center space-x-1.5">
-                    <span className="text-slate-500">›</span>
+                  <Link to="/place/pl-qutub-minar-02" className="text-slate-200 hover:text-cyan-300 font-medium transition-colors flex items-center space-x-2">
+                    <span className="text-slate-400 font-bold">›</span>
                     <span>Qutub Minar Complex</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/place/pl-humayuns-tomb-03" className="text-slate-300 hover:text-white transition-colors flex items-center space-x-1.5">
-                    <span className="text-slate-500">›</span>
+                  <Link to="/place/pl-humayuns-tomb-03" className="text-slate-200 hover:text-cyan-300 font-medium transition-colors flex items-center space-x-2">
+                    <span className="text-slate-400 font-bold">›</span>
                     <span>Humayun’s Tomb</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/place/pl-india-gate-04" className="text-slate-300 hover:text-white transition-colors flex items-center space-x-1.5">
-                    <span className="text-slate-500">›</span>
+                  <Link to="/place/pl-india-gate-04" className="text-slate-200 hover:text-cyan-300 font-medium transition-colors flex items-center space-x-2">
+                    <span className="text-slate-400 font-bold">›</span>
                     <span>India Gate Memorial</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/home" className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors flex items-center space-x-1.5 pt-0.5">
+                  <Link to="/home" className="text-cyan-400 hover:text-cyan-300 font-bold transition-colors flex items-center space-x-1.5 pt-1">
                     <span>View All 10 ASI Monuments →</span>
                   </Link>
                 </li>
@@ -1056,44 +1056,44 @@ export default function HomePage() {
 
             {/* Col 3: Tourist Safety Suite */}
             <div>
-              <h5 className="font-bold text-white text-xs sm:text-sm uppercase tracking-wider mb-3 flex items-center space-x-1.5">
-                <span className="w-2 h-2 rounded-full bg-cyan-400" />
+              <h5 className="font-bold text-white text-sm sm:text-base uppercase tracking-wider mb-3.5 flex items-center space-x-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
                 <span>Safety Suite</span>
               </h5>
-              <ul className="space-y-2 text-xs sm:text-[13px]">
+              <ul className="space-y-2.5 text-sm sm:text-[15px]">
                 <li>
-                  <Link to="/safe-pass" className="text-slate-300 hover:text-white transition-colors flex items-center space-x-1.5">
-                    <span className="text-slate-500">›</span>
+                  <Link to="/safe-pass" className="text-slate-200 hover:text-cyan-300 font-medium transition-colors flex items-center space-x-2">
+                    <span className="text-slate-400 font-bold">›</span>
                     <span>SafeVisit Pass (Zero Storage)</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/phrase-helper" className="text-slate-300 hover:text-white transition-colors flex items-center space-x-1.5">
-                    <span className="text-slate-500">›</span>
+                  <Link to="/phrase-helper" className="text-slate-200 hover:text-cyan-300 font-medium transition-colors flex items-center space-x-2">
+                    <span className="text-slate-400 font-bold">›</span>
                     <span>Bhashini Hindi Phrase Helper</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/fare-meter" className="text-slate-300 hover:text-white transition-colors flex items-center space-x-1.5">
-                    <span className="text-slate-500">›</span>
+                  <Link to="/fare-meter" className="text-slate-200 hover:text-cyan-300 font-medium transition-colors flex items-center space-x-2">
+                    <span className="text-slate-400 font-bold">›</span>
                     <span>Delhi Govt Fair Fare Meter</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/safe-journey" className="text-slate-300 hover:text-white transition-colors flex items-center space-x-1.5">
-                    <span className="text-slate-500">›</span>
+                  <Link to="/safe-journey" className="text-slate-200 hover:text-cyan-300 font-medium transition-colors flex items-center space-x-2">
+                    <span className="text-slate-400 font-bold">›</span>
                     <span>Safe Track & Police Corridors</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/vault" className="text-slate-300 hover:text-white transition-colors flex items-center space-x-1.5">
-                    <span className="text-slate-500">›</span>
+                  <Link to="/vault" className="text-slate-200 hover:text-cyan-300 font-medium transition-colors flex items-center space-x-2">
+                    <span className="text-slate-400 font-bold">›</span>
                     <span>RideSafe Vehicle Evidence Vault</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/incident" className="text-slate-300 hover:text-white transition-colors flex items-center space-x-1.5">
-                    <span className="text-slate-500">›</span>
+                  <Link to="/incident" className="text-slate-200 hover:text-cyan-300 font-medium transition-colors flex items-center space-x-2">
+                    <span className="text-slate-400 font-bold">›</span>
                     <span>File Incident Report</span>
                   </Link>
                 </li>
@@ -1102,40 +1102,40 @@ export default function HomePage() {
 
             {/* Col 4: Official Emergency Helplines */}
             <div>
-              <h5 className="font-bold text-white text-xs sm:text-sm uppercase tracking-wider mb-3 flex items-center space-x-1.5">
-                <span className="w-2 h-2 rounded-full bg-rose-400" />
+              <h5 className="font-bold text-white text-sm sm:text-base uppercase tracking-wider mb-3.5 flex items-center space-x-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-400" />
                 <span>24/7 Helplines</span>
               </h5>
-              <div className="space-y-2 text-xs sm:text-[13px]">
+              <div className="space-y-2.5 text-sm sm:text-[15px]">
                 <a
                   href="tel:112"
-                  className="flex items-center justify-between text-white font-mono bg-white/[0.05] hover:bg-white/[0.1] p-2.5 rounded-lg border border-white/[0.08] transition-colors group"
+                  className="flex items-center justify-between text-white font-mono bg-white/[0.05] hover:bg-white/[0.1] p-2.5 sm:p-3 rounded-xl border border-white/[0.08] transition-colors group"
                 >
-                  <span className="text-slate-300 group-hover:text-white font-sans font-medium">Police Central</span>
-                  <span className="text-red-400 font-extrabold text-xs sm:text-sm bg-red-500/20 px-2 py-0.5 rounded-md border border-red-500/30">112</span>
+                  <span className="text-slate-200 group-hover:text-white font-sans font-semibold text-sm sm:text-[15px]">Police Central</span>
+                  <span className="text-red-400 font-extrabold text-sm sm:text-base bg-red-500/20 px-2.5 py-0.5 rounded-lg border border-red-500/30">112</span>
                 </a>
                 <a
                   href="tel:1363"
-                  className="flex items-center justify-between text-white font-mono bg-white/[0.05] hover:bg-white/[0.1] p-2.5 rounded-lg border border-white/[0.08] transition-colors group"
+                  className="flex items-center justify-between text-white font-mono bg-white/[0.05] hover:bg-white/[0.1] p-2.5 sm:p-3 rounded-xl border border-white/[0.08] transition-colors group"
                 >
-                  <span className="text-slate-300 group-hover:text-white font-sans font-medium">Tourist Helpline</span>
-                  <span className="text-amber-400 font-extrabold text-xs sm:text-sm bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-500/30">1363</span>
+                  <span className="text-slate-200 group-hover:text-white font-sans font-semibold text-sm sm:text-[15px]">Tourist Helpline</span>
+                  <span className="text-amber-400 font-extrabold text-sm sm:text-base bg-amber-500/20 px-2.5 py-0.5 rounded-lg border border-amber-500/30">1363</span>
                 </a>
                 <a
                   href="tel:1091"
-                  className="flex items-center justify-between text-white font-mono bg-white/[0.05] hover:bg-white/[0.1] p-2.5 rounded-lg border border-white/[0.08] transition-colors group"
+                  className="flex items-center justify-between text-white font-mono bg-white/[0.05] hover:bg-white/[0.1] p-2.5 sm:p-3 rounded-xl border border-white/[0.08] transition-colors group"
                 >
-                  <span className="text-slate-300 group-hover:text-white font-sans font-medium">Women Safety</span>
-                  <span className="text-purple-400 font-extrabold text-xs sm:text-sm bg-purple-500/20 px-2 py-0.5 rounded-md border border-purple-500/30">1091</span>
+                  <span className="text-slate-200 group-hover:text-white font-sans font-semibold text-sm sm:text-[15px]">Women Safety</span>
+                  <span className="text-purple-400 font-extrabold text-sm sm:text-base bg-purple-500/20 px-2.5 py-0.5 rounded-lg border border-purple-500/30">1091</span>
                 </a>
                 <a
                   href="https://wa.me/918750871493"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between text-white font-mono bg-white/[0.05] hover:bg-white/[0.1] p-2.5 rounded-lg border border-white/[0.08] transition-colors group text-xs"
+                  className="flex items-center justify-between text-white font-mono bg-white/[0.05] hover:bg-white/[0.1] p-2.5 sm:p-3 rounded-xl border border-white/[0.08] transition-colors group"
                 >
-                  <span className="text-slate-300 group-hover:text-white font-sans font-medium">Traffic WhatsApp</span>
-                  <span className="text-emerald-400 font-bold font-mono">8750871493</span>
+                  <span className="text-slate-200 group-hover:text-white font-sans font-semibold text-sm sm:text-[15px]">Traffic WhatsApp</span>
+                  <span className="text-emerald-400 font-bold font-mono text-sm sm:text-base">8750871493</span>
                 </a>
               </div>
             </div>
@@ -1144,9 +1144,9 @@ export default function HomePage() {
 
           {/* Coder Army Bottom Divider & Legal Bar */}
           <hr className="border-0 border-t border-[var(--border-glass)] my-6 sm:my-7" />
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-[13px] text-slate-400">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-300">
             <p>© 2026 TravelMate Platform • Smart India Hackathon Prototype. All rights reserved.</p>
-            <div className="flex items-center space-x-1.5 text-xs text-emerald-400 font-medium">
+            <div className="flex items-center space-x-2 text-xs sm:text-sm font-medium text-emerald-400">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>Delhi Police 112 & ASI Telemetry Active</span>
             </div>
