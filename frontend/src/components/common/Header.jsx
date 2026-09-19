@@ -24,7 +24,7 @@ export default function Header({
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#0a0c10]/95 backdrop-blur-xl border-b border-white/[0.08] shadow-md shadow-black/50 select-none transition-colors duration-300">
+    <header className="sticky top-0 z-40 w-full bg-[#0b0e14]/90 backdrop-blur-2xl border-b border-white/[0.08] shadow-lg shadow-black/40 select-none transition-colors duration-300">
       <div className="w-full px-3 sm:px-5 lg:px-6 h-16 flex items-center justify-between gap-2 sm:gap-4">
         
         {/* Left: YouTube-style Hamburger Toggle + Fixed TravelMate Brand (Never shifts on sidebar toggle) */}
@@ -70,7 +70,7 @@ export default function Header({
           className="hidden md:flex items-center justify-center flex-1 max-w-5xl mx-2 lg:mx-4"
           aria-label="Quick Top Navigation"
         >
-          <div className="grid grid-cols-7 gap-1 p-1.5 w-full bg-white/[0.04] border border-white/[0.08] rounded-2xl shadow-xl shadow-black/30 backdrop-blur-md">
+          <div className="grid grid-cols-7 gap-1 p-1.5 w-full bg-[#121622]/80 border border-white/[0.08] rounded-2xl shadow-xl shadow-black/30 backdrop-blur-md">
             {topNavLinks.map((item) => {
               const isActive = item.exact
                 ? location.pathname === item.to

@@ -83,116 +83,89 @@ export default function HomePage() {
     return Math.round(total);
   };
 
-  // Verified Places Video / Animated Walkthrough Data & State
-  const walkthroughMonuments = [
+  // Coder Army Style Upward Scrolling Stream Feed: Statements & Verified Places
+  const scrollingFeed = [
     {
+      type: 'statement',
+      id: 'stmt-asi',
+      tag: 'ASI Official Ticketing',
+      tagColor: 'text-emerald-300 bg-emerald-500/20 border-emerald-500/30',
+      title: '100% Genuine Monument Gate Pricing',
+      desc: 'Direct links to official ASI booking gateway (asi.payumoney.com). Zero duplicate paper slips.'
+    },
+    {
+      type: 'place',
       id: 'pl-red-fort-01',
       name: 'Red Fort (Lal Qila)',
-      hindiName: 'लाल किला',
-      category: 'UNESCO World Heritage Site',
+      category: 'UNESCO World Heritage',
       image: '/places/red-fort.jpg',
       imagePos: 'object-center',
       indianPrice: '₹35',
       foreignPrice: '₹550',
-      saarcPrice: '₹35',
-      childrenPrice: 'Free (Under 15)',
-      timings: '09:30 AM - 04:30 PM',
-      closedDay: 'Mondays',
-      crowd: 'High',
-      metro: 'Lal Quila Metro (Violet Line, Gate 4)',
-      bookingUrl: 'https://asi.payumoney.com',
-      scamWarning: 'Strict Advisory: Avoid unauthorized roadside touts claiming counters are closed or selling fake ₹500 paper slips. Entry is strictly by authentic ASI QR barcode.',
-      highlights: ['Diwan-i-Aam & Diwan-i-Khas', 'Sound & Light Show (7:30 PM)', 'Direct ASI Cashless Gate']
+      timings: '09:30 AM - 04:30 PM (Mon Closed)',
+      crowd: 'High'
     },
     {
+      type: 'statement',
+      id: 'stmt-fare',
+      tag: 'Delhi Govt Fair Fare Meter',
+      tagColor: 'text-cyan-300 bg-cyan-500/20 border-cyan-500/30',
+      title: 'Fair Fare Auto & Taxi Benchmark',
+      desc: 'Official ₹30 base + ₹11/km rate verification prevents auto-rickshaw meter tampering.'
+    },
+    {
+      type: 'place',
       id: 'pl-qutub-minar-02',
       name: 'Qutub Minar Complex',
-      hindiName: 'क़ुतुब मीनार',
-      category: 'UNESCO World Heritage Site',
+      category: 'UNESCO World Heritage',
       image: '/places/qutub-minar.jpg',
       imagePos: 'object-[center_25%]',
       indianPrice: '₹35',
       foreignPrice: '₹550',
-      saarcPrice: '₹35',
-      childrenPrice: 'Free (Under 15)',
-      timings: '07:00 AM - 08:00 PM',
-      closedDay: 'Open All 7 Days',
-      crowd: 'Medium',
-      metro: 'Qutub Minar Metro (Yellow Line, Gate 2)',
-      bookingUrl: 'https://asi.payumoney.com',
-      scamWarning: 'Strict Advisory: Private guides are not compulsory. Official ASI audio guides and digital QR ticketing are available at the entrance counter for ₹100.',
-      highlights: ['73-Meter Victory Minaret', '4th Century Rustless Iron Pillar', 'Alai Darwaza & Quwwat-ul-Islam']
+      timings: '07:00 AM - 08:00 PM (Daily)',
+      crowd: 'Medium'
     },
     {
+      type: 'statement',
+      id: 'stmt-police',
+      tag: 'Delhi Police 112 Ready',
+      tagColor: 'text-indigo-300 bg-indigo-500/20 border-indigo-500/30',
+      title: 'Live Patrolled Safe Corridors',
+      desc: 'Continuously monitored PCR van beats with 1-tap SOS telemetry transmission.'
+    },
+    {
+      type: 'place',
       id: 'pl-humayuns-tomb-03',
       name: 'Humayun’s Tomb',
-      hindiName: 'हुमायूँ का मक़बरा',
-      category: 'Mughal Architecture & Garden Tomb',
+      category: 'Mughal Architecture',
       image: '/places/humayuns-tomb.jpg',
       imagePos: 'object-center',
       indianPrice: '₹35',
       foreignPrice: '₹550',
-      saarcPrice: '₹35',
-      childrenPrice: 'Free (Under 15)',
-      timings: '06:00 AM - 06:00 PM (Sunrise to Sunset)',
-      closedDay: 'Open All 7 Days',
-      crowd: 'Low',
-      metro: 'JLN Stadium Metro (Violet Line)',
-      bookingUrl: 'https://asi.payumoney.com',
-      scamWarning: 'Strict Advisory: Ignore auto-rickshaw drivers demanding ₹300 for a 1.2 km ride from Nizamuddin. Use Delhi Govt Fair Fare meter (₹30 first 1.5 km).',
-      highlights: ['Charbagh Persian Garden Style', 'Precursor to the Taj Mahal', 'Isa Khan Tomb Complex']
+      timings: '06:00 AM - 06:00 PM (Daily)',
+      crowd: 'Low'
     },
     {
+      type: 'statement',
+      id: 'stmt-pass',
+      tag: 'SafeVisit Pass ID',
+      tagColor: 'text-purple-300 bg-purple-500/20 border-purple-500/30',
+      title: 'Zero Passport / Govt ID Storage',
+      desc: 'Temporary 7-day cryptographic Journey QR ensures your personal privacy is 100% protected.'
+    },
+    {
+      type: 'place',
       id: 'pl-india-gate-04',
       name: 'India Gate & Kartavya Path',
-      hindiName: 'इण्डिया गेट',
-      category: 'National Memorial & High-Safety Corridor',
+      category: 'National Memorial',
       image: '/places/india-gate.jpg',
       imagePos: 'object-center',
       indianPrice: 'Free Entry',
       foreignPrice: 'Free Entry',
-      saarcPrice: 'Free Entry',
-      childrenPrice: 'Free Entry',
-      timings: 'Open 24/7 (Continuous Beat Patrolled)',
-      closedDay: 'Open All 7 Days',
-      crowd: 'High',
-      metro: 'Central Secretariat Metro (Yellow/Violet Line)',
-      bookingUrl: 'https://delhitourism.gov.in',
-      scamWarning: 'Strict Advisory: No ticket required for India Gate or Kartavya Path. Beware of unauthorized photographers selling overpriced instant prints.',
-      highlights: ['National War Memorial adjacent', 'Amar Jawan Jyoti', 'Evening laser projection shows']
+      timings: 'Open 24/7 (High-Safety Corridor)',
+      crowd: 'High'
     }
   ];
-
-  const [walkthroughActiveIndex, setWalkthroughActiveIndex] = useState(0);
-  const [walkthroughMode, setWalkthroughMode] = useState('list'); // 'list' | 'detail'
-  const [isWalkthroughPlaying, setIsWalkthroughPlaying] = useState(true);
-  const [walkthroughProgress, setWalkthroughProgress] = useState(0);
-
-  // Auto-playing walkthrough loop simulation
-  useEffect(() => {
-    if (!isWalkthroughPlaying) return;
-
-    const duration = walkthroughMode === 'list' ? 4000 : 5000;
-    const interval = 50;
-    let elapsed = 0;
-
-    const timer = setInterval(() => {
-      elapsed += interval;
-      setWalkthroughProgress(Math.min(100, Math.round((elapsed / duration) * 100)));
-
-      if (elapsed >= duration) {
-        setWalkthroughProgress(0);
-        if (walkthroughMode === 'list') {
-          setWalkthroughMode('detail');
-        } else {
-          setWalkthroughMode('list');
-          setWalkthroughActiveIndex((prev) => (prev + 1) % walkthroughMonuments.length);
-        }
-      }
-    }, interval);
-
-    return () => clearInterval(timer);
-  }, [isWalkthroughPlaying, walkthroughMode, walkthroughActiveIndex]);
 
   const sampleMonuments = [
     {
@@ -268,457 +241,181 @@ export default function HomePage() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-20">
         
         {/* ==================================================================== */}
-        {/* 1. HERO SECTION */}
+        {/* 1. SIGNATURE CODER ARMY 2-COLUMN HERO (TEXT ASIDE + ANIMATION ON RIGHT) */}
         {/* ==================================================================== */}
-        <section className="text-center pt-3 sm:pt-6 pb-8 sm:pb-10 max-w-4xl mx-auto">
-          {/* Main Display Headline */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight font-display leading-[1.15] text-white">
-            Explore Delhi With{' '}
-            <span className="coder-text-gradient block mt-1 sm:mt-2">
-              Unmatched Trust & Safety
-            </span>
-          </h1>
-
-          {/* Subtitle Description */}
-          <p className="mt-5 text-sm sm:text-base lg:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed font-normal">
-            Eliminate counterfeit monument tickets, verify official Delhi Transport fares, track police-patrolled safe corridors, and communicate effortlessly in Hindi with Bhashini AI.
-          </p>
-
-          {/* Dual Action Buttons */}
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5">
-            <Link
-              to="/safe-pass"
-              id="hero-btn-get-pass"
-              className="w-full sm:w-auto coder-btn-primary text-white font-bold px-7 py-3.5 rounded-xl text-sm flex items-center justify-center space-x-2.5 shadow-xl shadow-indigo-600/30 transition-all group"
-            >
-              <QrCode className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-              <span>Get Free SafeVisit Pass</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-
-            <Link
-              to="/home"
-              id="hero-btn-explore-places"
-              className="w-full sm:w-auto coder-btn-secondary text-slate-200 font-semibold px-6 py-3.5 rounded-xl text-sm flex items-center justify-center space-x-2 transition-all hover:text-white"
-            >
-              <MapPin className="w-4 h-4 text-cyan-400" />
-              <span>Explore 10 Verified Places</span>
-            </Link>
-
-            <Link
-              to="/phrase-helper"
-              id="hero-btn-phrase-converter"
-              className="w-full sm:w-auto coder-btn-secondary text-slate-200 font-semibold px-6 py-3.5 rounded-xl text-sm flex items-center justify-center space-x-2 transition-all hover:text-white"
-            >
-              <Globe className="w-4 h-4 text-purple-400" />
-              <span>Bhashini Phrase Converter</span>
-            </Link>
-          </div>
-
-          {/* Live Trust Badges Pill */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-xs text-slate-400">
-            <span className="flex items-center space-x-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              <span>ASI Official Ticketing Auth</span>
-            </span>
-            <span className="flex items-center space-x-1.5">
-              <CheckCircle2 className="w-4 h-4 text-indigo-400" />
-              <span>Delhi Police 112 Ready</span>
-            </span>
-            <span className="flex items-center space-x-1.5">
-              <CheckCircle2 className="w-4 h-4 text-cyan-400" />
-              <span>Zero Passport Uploads</span>
-            </span>
-          </div>
-        </section>
-
-        {/* ==================================================================== */}
-        {/* 2. SIGNATURE CODER ARMY 3D DEVICE WINDOW: INTERACTIVE VERIFIED PLACES DEMO */}
-        {/* ==================================================================== */}
-        <section className="relative max-w-5xl mx-auto my-6 sm:my-10">
-          {/* Ambient Multi-Color Glow Backdrop (Coder Army signature glowing background) */}
-          <div className="absolute -inset-4 sm:-inset-6 rounded-[40px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-25 blur-3xl animate-pulse pointer-events-none" />
-
-          {/* Outer Hardware-Style Shell */}
-          <div className="relative rounded-[24px] sm:rounded-[32px] p-2 sm:p-3 border-2 sm:border-4 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl overflow-hidden">
+        <section className="pt-4 sm:pt-8 pb-10 sm:pb-14">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             
-            {/* Window Chrome Header Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 bg-[#0d0f14]/90 border-b border-white/[0.07] rounded-t-[18px] sm:rounded-t-[24px]">
-              {/* Traffic Lights (Red, Yellow, Green Mac Dots) + URL */}
-              <div className="flex items-center space-x-2">
-                <span className="w-3 h-3 rounded-full bg-[#ef4444] cursor-pointer hover:opacity-80 transition-opacity shadow-sm shadow-red-500/40" />
-                <span className="w-3 h-3 rounded-full bg-[#f59e0b] cursor-pointer hover:opacity-80 transition-opacity shadow-sm shadow-amber-500/40" />
-                <span className="w-3 h-3 rounded-full bg-[#10b981] cursor-pointer hover:opacity-80 transition-opacity shadow-sm shadow-emerald-500/40" />
-                
-                {/* Browser Address Pill */}
-                <div className="flex items-center space-x-1.5 bg-black/60 border border-white/[0.08] px-3 py-1 rounded-full text-[11px] font-mono text-slate-300 ml-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
-                  <span className="text-slate-400">travelmate.delhi.gov.in/</span>
-                  <span className="text-cyan-300 font-semibold">
-                    {walkthroughMode === 'list' ? 'verified-places' : `place/${walkthroughMonuments[walkthroughActiveIndex].id}`}
-                  </span>
-                </div>
+            {/* Left Column: Text Aside (Coder Army Style) */}
+            <div className="lg:col-span-7 text-left space-y-6">
+              {/* Trust Badge Pill */}
+              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md text-xs font-semibold text-slate-300 shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-emerald-300 font-bold">Smart India Hackathon 2026</span>
+                <span className="text-slate-500">•</span>
+                <span className="text-cyan-300">Delhi Tourism Safety Suite</span>
               </div>
 
-              {/* Player Controls & Live Status */}
-              <div className="flex items-center space-x-2.5">
-                <span className="hidden sm:inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>{walkthroughMode === 'list' ? 'AUTOPLAY: SCROLLING DIRECTORY' : 'AUTOPLAY: OPENED PLACE CARD'}</span>
+              {/* Main Display Headline */}
+              <h1 className="text-3xl sm:text-5xl xl:text-6xl font-extrabold tracking-tight font-display leading-[1.12] text-white">
+                Explore Delhi With{' '}
+                <span className="coder-text-gradient block mt-1 sm:mt-2">
+                  Unmatched Trust & Safety
                 </span>
+              </h1>
 
-                <button
-                  type="button"
-                  onClick={() => setIsWalkthroughPlaying(!isWalkthroughPlaying)}
-                  className="px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-xs text-slate-300 hover:text-white flex items-center space-x-1.5 transition-colors cursor-pointer"
-                  title={isWalkthroughPlaying ? 'Pause interactive preview' : 'Play interactive preview'}
+              {/* Subtitle Description */}
+              <p className="text-sm sm:text-base lg:text-lg text-slate-300 max-w-xl leading-relaxed font-normal">
+                Eliminate counterfeit monument tickets, verify official Delhi Transport fares, track police-patrolled safe corridors, and communicate effortlessly in Hindi with Bhashini AI.
+              </p>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <Link
+                  to="/safe-pass"
+                  id="hero-btn-get-pass"
+                  className="coder-btn-primary text-white font-bold px-6 py-3.5 rounded-xl text-sm flex items-center space-x-2 shadow-xl shadow-indigo-600/30 transition-all group"
                 >
-                  {isWalkthroughPlaying ? (
-                    <>
-                      <Pause className="w-3.5 h-3.5 text-amber-400" />
-                      <span className="text-[11px] font-medium hidden md:inline">Pause</span>
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-3.5 h-3.5 text-emerald-400" />
-                      <span className="text-[11px] font-medium hidden md:inline">Play</span>
-                    </>
-                  )}
-                </button>
+                  <QrCode className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                  <span>Get Free SafeVisit Pass</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+
+                <Link
+                  to="/home"
+                  id="hero-btn-explore-places"
+                  className="coder-btn-secondary text-slate-200 font-semibold px-5 py-3.5 rounded-xl text-sm flex items-center space-x-2 transition-all hover:text-white"
+                >
+                  <MapPin className="w-4 h-4 text-cyan-400" />
+                  <span>Explore Verified Places</span>
+                </Link>
+
+                <Link
+                  to="/phrase-helper"
+                  id="hero-btn-phrase-converter"
+                  className="coder-btn-secondary text-slate-200 font-semibold px-5 py-3.5 rounded-xl text-sm flex items-center space-x-2 transition-all hover:text-white"
+                >
+                  <Globe className="w-4 h-4 text-purple-400" />
+                  <span>Hindi Translator</span>
+                </Link>
+              </div>
+
+              {/* Live Trust Badges Strip */}
+              <div className="pt-6 border-t border-white/[0.08] grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-slate-300">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span className="font-medium">ASI Ticketing Auth</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle2 className="w-4 h-4 text-indigo-400 shrink-0" />
+                  <span className="font-medium">Delhi Police 112 Ready</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
+                  <span className="font-medium">Zero Passport Uploads</span>
+                </div>
               </div>
             </div>
 
-            {/* Inner Interactive Canvas */}
-            <div className="bg-[#0b0d12] p-4 sm:p-6 rounded-b-[18px] sm:rounded-b-[24px]">
-              
-              {/* ======================================================= */}
-              {/* MODE 1: SCROLLING VERIFIED PLACES DIRECTORY */}
-              {/* ======================================================= */}
-              {walkthroughMode === 'list' && (
-                <div className="space-y-4 animate-in fade-in duration-300">
-                  {/* Top Directory Bar */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-white/[0.08]">
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <ShieldCheck className="w-4 h-4 text-cyan-400" />
-                        <h3 className="text-sm sm:text-base font-bold text-white font-display">
-                          Delhi Verified Monuments & Archaeological Directory
-                        </h3>
-                      </div>
-                      <p className="text-xs text-slate-400 mt-0.5">
-                        Authentic ASI entry tariffs, live crowd telemetry, and official cashless booking links
-                      </p>
-                    </div>
+            {/* Right Column: Animation Part on Right Side (Upward Scrolling Stream in 3D Glowing Window) */}
+            <div className="lg:col-span-5 relative mt-6 lg:mt-0">
+              {/* Ambient Multi-Color Glow Backdrop (signature Coder Army glow) */}
+              <div className="absolute -inset-4 sm:-inset-6 rounded-[36px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 blur-3xl animate-pulse pointer-events-none" />
 
-                    <div className="flex items-center space-x-2">
-                      <span className="text-[11px] text-cyan-300 font-mono bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-1 rounded-lg">
-                        Auto-selecting place #{walkthroughActiveIndex + 1}...
-                      </span>
+              {/* Outer Hardware-Style Shell */}
+              <div className="relative rounded-[24px] sm:rounded-[30px] p-2 border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl overflow-hidden">
+                
+                {/* Window Chrome Header Bar: Mac Dots + Address + Live Badge (NO play/pause button) */}
+                <div className="flex items-center justify-between px-3.5 py-2.5 bg-[#0d0f14]/95 border-b border-white/[0.07] rounded-t-[18px] sm:rounded-t-[22px]">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-3 h-3 rounded-full bg-[#ef4444] shadow-sm shadow-red-500/40" />
+                    <span className="w-3 h-3 rounded-full bg-[#f59e0b] shadow-sm shadow-amber-500/40" />
+                    <span className="w-3 h-3 rounded-full bg-[#10b981] shadow-sm shadow-emerald-500/40" />
+                    
+                    {/* URL Pill */}
+                    <div className="flex items-center space-x-1.5 bg-black/60 border border-white/[0.08] px-2.5 py-0.5 rounded-full text-[10px] font-mono text-slate-300 ml-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+                      <span className="text-slate-400">travelmate.gov.in/</span>
+                      <span className="text-cyan-300 font-semibold">verified-feed</span>
                     </div>
                   </div>
 
-                  {/* Scrolling / Rotating Place Cards */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                    {walkthroughMonuments.map((m, idx) => {
-                      const isTarget = idx === walkthroughActiveIndex;
-                      return (
-                        <div
-                          key={m.id}
-                          onClick={() => {
-                            setWalkthroughActiveIndex(idx);
-                            setWalkthroughMode('detail');
-                          }}
-                          className={`relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 border flex flex-col justify-between ${
-                            isTarget
-                              ? 'bg-[#151924] border-cyan-400 shadow-lg shadow-cyan-500/20 scale-[1.03] ring-1 ring-cyan-400/60'
-                              : 'bg-[#101217] border-white/[0.08] hover:border-white/20 hover:scale-[1.01]'
-                          }`}
-                        >
-                          <div>
-                            {/* Photo Container */}
-                            <div className="relative h-32 sm:h-36 w-full overflow-hidden bg-[#090b10] border-b border-white/[0.08]">
-                              <img
-                                src={m.image}
-                                alt={m.name}
-                                className={`w-full h-full object-cover ${m.imagePos || 'object-center'} transition-transform duration-500 ${
-                                  isTarget ? 'scale-105' : ''
-                                }`}
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-[#101217] via-transparent to-black/20" />
-
-                              {/* Badges */}
-                              <div className="absolute top-2 left-2 right-2 flex items-center justify-between pointer-events-none">
-                                <span className="px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-md text-[9px] font-bold text-slate-200 border border-white/10 uppercase">
-                                  ASI Verified
-                                </span>
-                                <span
-                                  className={`px-2 py-0.5 rounded-md text-[9px] font-extrabold backdrop-blur-md border ${
-                                    m.crowd === 'High'
-                                      ? 'bg-rose-950/80 text-rose-300 border-rose-500/30'
-                                      : m.crowd === 'Medium'
-                                      ? 'bg-amber-950/80 text-amber-300 border-amber-500/30'
-                                      : 'bg-emerald-950/80 text-emerald-300 border-emerald-500/30'
-                                  }`}
-                                >
-                                  {m.crowd} Crowd
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Card Content */}
-                            <div className="p-3">
-                              <h4 className="font-bold text-white text-xs font-display line-clamp-1">
-                                {m.name}
-                              </h4>
-                              <p className="text-[10px] text-slate-400 mt-0.5 flex items-center space-x-1">
-                                <Clock className="w-3 h-3 text-slate-500 shrink-0" />
-                                <span className="truncate">{m.timings}</span>
-                              </p>
-
-                              <div className="mt-2.5 pt-2 border-t border-white/[0.07] flex items-center justify-between text-[11px]">
-                                <div>
-                                  <span className="text-[9px] text-slate-500 block uppercase">Indian / Foreigner</span>
-                                  <span className="font-mono font-bold text-white">{m.indianPrice} / {m.foreignPrice}</span>
-                                </div>
-                                <span className={`text-[10px] font-bold px-2 py-1 rounded-lg transition-colors flex items-center space-x-1 ${
-                                  isTarget
-                                    ? 'bg-cyan-500 text-black shadow-md shadow-cyan-500/30'
-                                    : 'bg-white/[0.06] text-slate-300'
-                                }`}>
-                                  <span>{isTarget ? 'Opening...' : 'View'}</span>
-                                  <ArrowRight className="w-3 h-3" />
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Animated Click Pointer Effect on Active Card */}
-                          {isTarget && (
-                            <div className="px-3 pb-2 pt-0 flex items-center justify-between text-[10px] text-cyan-300 font-medium">
-                              <span className="flex items-center space-x-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
-                                <span>Simulating click to open card...</span>
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
+                  <div className="flex items-center space-x-1.5 text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>LIVE FEED</span>
                   </div>
                 </div>
-              )}
 
-              {/* ======================================================= */}
-              {/* MODE 2: OPENED VERIFIED PLACE CARD (DETAIL VIEW) */}
-              {/* ======================================================= */}
-              {walkthroughMode === 'detail' && (
-                <div className="space-y-4 animate-in fade-in zoom-in-95 duration-300">
-                  {/* Top Bar of Opened Card */}
-                  <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-white/[0.08]">
-                    <button
-                      type="button"
-                      onClick={() => setWalkthroughMode('list')}
-                      className="px-3 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-300 hover:text-white text-xs font-bold transition-all flex items-center space-x-1.5 group cursor-pointer"
-                    >
-                      <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-                      <span>← Back to Verified Places</span>
-                      <span className="text-[10px] text-cyan-200/70 font-mono ml-1">
-                        (Auto-returning soon)
-                      </span>
-                    </button>
+                {/* Inner Canvas: Upward Scrolling Stream with Top & Bottom Fade Masks */}
+                <div className="relative bg-[#0b0d12] p-3 sm:p-4 rounded-b-[18px] sm:rounded-b-[22px] h-[460px] sm:h-[500px] overflow-hidden">
+                  
+                  {/* Top & Bottom Gradient Fade Masks */}
+                  <div className="absolute top-0 inset-x-0 h-14 bg-gradient-to-b from-[#0b0d12] via-[#0b0d12]/80 to-transparent z-10 pointer-events-none" />
+                  <div className="absolute bottom-0 inset-x-0 h-14 bg-gradient-to-t from-[#0b0d12] via-[#0b0d12]/80 to-transparent z-10 pointer-events-none" />
 
-                    <div className="flex items-center space-x-2 text-xs">
-                      <span className="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold flex items-center space-x-1">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>ASI Authenticated Card</span>
-                      </span>
-                      <Link
-                        to={`/place/${walkthroughMonuments[walkthroughActiveIndex].id}`}
-                        className="px-2.5 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-slate-300 hover:text-white font-medium border border-white/10 flex items-center space-x-1 transition-colors"
-                      >
-                        <span>Open Full Screen</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* Opened Card Body */}
-                  {(() => {
-                    const place = walkthroughMonuments[walkthroughActiveIndex];
-                    return (
-                      <div className="bg-[#11141c] border border-white/[0.08] rounded-2xl p-4 sm:p-5 grid grid-cols-1 md:grid-cols-12 gap-5">
-                        {/* Left Column: Photo & Direct Booking */}
-                        <div className="md:col-span-5 space-y-3">
-                          <div className="relative h-44 sm:h-52 w-full rounded-xl overflow-hidden bg-black border border-white/10">
-                            <img
-                              src={place.image}
-                              alt={place.name}
-                              className={`w-full h-full object-cover ${place.imagePos || 'object-center'}`}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                            <div className="absolute bottom-2.5 left-3 right-3">
-                              <span className="text-[10px] font-bold text-cyan-300 uppercase tracking-wider block">
-                                {place.category}
+                  {/* Upward Scrolling Stream */}
+                  <div className="animate-scroll-up space-y-3.5">
+                    {[...scrollingFeed, ...scrollingFeed].map((item, idx) => (
+                      <React.Fragment key={`${item.id}-${idx}`}>
+                        {item.type === 'statement' ? (
+                          <div className="bg-[#121622]/90 border border-white/[0.08] hover:border-cyan-500/40 rounded-2xl p-4 shadow-md transition-all group">
+                            <div className="flex items-center justify-between mb-1.5">
+                              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${item.tagColor}`}>
+                                {item.tag}
                               </span>
-                              <h4 className="text-base font-bold text-white font-display leading-tight">
-                                {place.name}
-                              </h4>
-                              <p className="text-[11px] text-slate-300 font-sans">
-                                {place.hindiName}
-                              </p>
+                              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
                             </div>
+                            <h4 className="text-sm font-bold text-white font-display group-hover:text-cyan-300 transition-colors">
+                              {item.title}
+                            </h4>
+                            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                              {item.desc}
+                            </p>
                           </div>
-
-                          {/* Nearest Metro */}
-                          <div className="bg-black/50 p-2.5 rounded-xl border border-white/[0.06] flex items-center space-x-2 text-xs text-slate-300">
-                            <MapPin className="w-4 h-4 text-cyan-400 shrink-0" />
-                            <span className="truncate">{place.metro}</span>
-                          </div>
-
-                          {/* Direct Official Link */}
-                          <a
-                            href={place.bookingUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs flex items-center justify-center space-x-2 transition-all shadow-lg shadow-emerald-500/20"
+                        ) : (
+                          <div
+                            onClick={() => navigate(`/place/${item.id}`)}
+                            className="bg-[#121622]/90 border border-white/[0.08] hover:border-indigo-500/50 rounded-2xl overflow-hidden shadow-md cursor-pointer transition-all hover:scale-[1.01] group flex items-center gap-3.5 p-3"
                           >
-                            <Ticket className="w-3.5 h-3.5" />
-                            <span>Direct Official ASI Portal</span>
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </a>
-                        </div>
-
-                        {/* Right Column: Pricing Breakdown & Anti-Fraud Advisory */}
-                        <div className="md:col-span-7 space-y-3.5 flex flex-col justify-between">
-                          <div>
-                            {/* Official Entry Fees Grid */}
-                            <div className="bg-black/40 rounded-xl border border-white/[0.06] p-3.5 space-y-2">
-                              <div className="flex items-center justify-between text-xs pb-1.5 border-b border-white/[0.06]">
-                                <span className="font-bold text-slate-300 uppercase tracking-wider text-[10px]">
-                                  Official Gazetted Pricing (No Surcharge)
-                                </span>
-                                <span className="text-[10px] text-emerald-400 font-mono font-bold">
-                                  ● Cashless Direct
-                                </span>
-                              </div>
-
-                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                                <div className="bg-[#171b24] p-2 rounded-lg border border-white/[0.05]">
-                                  <span className="text-[10px] text-slate-400 block">Indian Citizens</span>
-                                  <strong className="text-white font-mono text-sm">{place.indianPrice}</strong>
-                                </div>
-                                <div className="bg-[#171b24] p-2 rounded-lg border border-white/[0.05]">
-                                  <span className="text-[10px] text-slate-400 block">Foreign Tourists</span>
-                                  <strong className="text-white font-mono text-sm">{place.foreignPrice}</strong>
-                                </div>
-                                <div className="bg-[#171b24] p-2 rounded-lg border border-white/[0.05]">
-                                  <span className="text-[10px] text-slate-400 block">SAARC / BIMSTEC</span>
-                                  <strong className="text-white font-mono text-sm">{place.saarcPrice}</strong>
-                                </div>
-                                <div className="bg-[#171b24] p-2 rounded-lg border border-white/[0.05]">
-                                  <span className="text-[10px] text-slate-400 block">Children &lt;15</span>
-                                  <strong className="text-emerald-400 font-mono text-sm">{place.childrenPrice}</strong>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Timings & Operating Days */}
-                            <div className="grid grid-cols-2 gap-2 mt-2.5 text-xs">
-                              <div className="bg-black/30 p-2.5 rounded-xl border border-white/[0.06]">
-                                <span className="text-[10px] text-slate-500 block">VISITING HOURS</span>
-                                <strong className="text-slate-200 font-medium">{place.timings}</strong>
-                              </div>
-                              <div className="bg-black/30 p-2.5 rounded-xl border border-white/[0.06]">
-                                <span className="text-[10px] text-slate-500 block">CLOSURE DAY</span>
-                                <strong className="text-amber-300 font-medium">{place.closedDay}</strong>
-                              </div>
-                            </div>
-
-                            {/* Anti-Tout Warning Box */}
-                            <div className="mt-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs flex items-start space-x-2.5">
-                              <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                              <p className="leading-relaxed text-[11px]">
-                                {place.scamWarning}
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* Key Highlights */}
-                          <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                            {place.highlights.map((h, i) => (
-                              <span
-                                key={i}
-                                className="px-2.5 py-1 rounded-md bg-white/[0.04] border border-white/[0.06] text-[10px] text-slate-300 font-medium"
-                              >
-                                ✓ {h}
+                            <div className="relative w-24 sm:w-28 h-20 sm:h-22 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-white/10">
+                              <img
+                                src={item.image}
+                                alt={item.name}
+                                className={`w-full h-full object-cover ${item.imagePos || 'object-center'} group-hover:scale-105 transition-transform duration-500`}
+                              />
+                              <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[9px] font-bold text-emerald-300 border border-emerald-500/30">
+                                ASI
                               </span>
-                            ))}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-1 mb-0.5">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
+                                  {item.category}
+                                </span>
+                                <span className="text-[10px] font-bold text-emerald-300 bg-emerald-500/10 px-1.5 py-0.2 rounded shrink-0">
+                                  Verified
+                                </span>
+                              </div>
+                              <h4 className="text-sm font-bold text-white font-display truncate group-hover:text-indigo-300 transition-colors">
+                                {item.name}
+                              </h4>
+                              <div className="flex items-center space-x-2 text-xs text-slate-300 mt-1 font-mono">
+                                <span className="text-white font-bold">{item.indianPrice} / {item.foreignPrice}</span>
+                                <span className="text-slate-500">•</span>
+                                <span className="text-[11px] text-slate-400 truncate">{item.timings.split('(')[0]}</span>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    );
-                  })()}
-                </div>
-              )}
-
-              {/* ======================================================= */}
-              {/* BOTTOM SCRUBBER / VIDEO PLAYER TIMELINE BAR */}
-              {/* ======================================================= */}
-              <div className="mt-5 pt-4 border-t border-white/[0.08] space-y-2.5">
-                {/* Progress Bar */}
-                <div className="w-full h-1.5 bg-slate-800/80 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-cyan-400 via-indigo-500 to-purple-500 transition-all duration-75"
-                    style={{ width: `${walkthroughProgress}%` }}
-                  />
-                </div>
-
-                {/* Monument Selector Buttons & Controls */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                  <div className="flex items-center space-x-2 text-slate-400 text-[11px]">
-                    <span className="text-slate-500 font-mono">DEMO SEQUENCE:</span>
-                    <div className="flex items-center space-x-1.5">
-                      {walkthroughMonuments.map((m, idx) => (
-                        <button
-                          key={m.id}
-                          type="button"
-                          onClick={() => {
-                            setWalkthroughActiveIndex(idx);
-                            setWalkthroughMode('detail');
-                          }}
-                          className={`px-2 py-0.5 rounded-md font-mono text-[10px] transition-all cursor-pointer ${
-                            walkthroughActiveIndex === idx
-                              ? 'bg-cyan-500 text-black font-bold shadow-sm shadow-cyan-500/40'
-                              : 'bg-white/[0.05] text-slate-400 hover:text-white'
-                          }`}
-                        >
-                          {idx + 1}. {m.name.split(' ')[0]}
-                        </button>
-                      ))}
-                    </div>
+                        )}
+                      </React.Fragment>
+                    ))}
                   </div>
 
-                  <div className="flex items-center space-x-3 text-[11px] text-slate-400">
-                    <span>
-                      {walkthroughMode === 'list' ? 'Showing Directory' : 'Viewing Detail Card'}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setWalkthroughMode(walkthroughMode === 'list' ? 'detail' : 'list');
-                        if (walkthroughMode === 'detail') {
-                          setWalkthroughActiveIndex((prev) => (prev + 1) % walkthroughMonuments.length);
-                        }
-                      }}
-                      className="text-cyan-400 hover:text-cyan-300 font-bold underline cursor-pointer"
-                    >
-                      {walkthroughMode === 'list' ? 'Open Place Card →' : '← Back to List'}
-                    </button>
-                  </div>
                 </div>
+
               </div>
-
             </div>
+
           </div>
         </section>
 
