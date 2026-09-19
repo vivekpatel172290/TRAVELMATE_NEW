@@ -32,13 +32,13 @@ export default function Sidebar({
       items: [
         {
           to: '/',
-          label: 'Overview & Radar',
+          label: 'Home',
           shortLabel: 'Home',
           badge: 'Live',
           badgeColor: 'violet',
           icon: Home,
           exact: true,
-          description: 'Coder Army style radar & stats'
+          description: 'Home portal & verified stream'
         },
         {
           to: '/safe-pass',

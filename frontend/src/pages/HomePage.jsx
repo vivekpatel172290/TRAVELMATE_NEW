@@ -296,8 +296,8 @@ export default function HomePage() {
       a: 'The Fair Fare Meter uses the official Delhi Transport Department gazetted fare model (Auto: ₹30 first 1.5 km, ₹11/km thereafter; Non-AC Taxi: ₹40 first 1 km, ₹17/km thereafter; +25% night surcharge from 11 PM to 5 AM). It generates a non-accusatory dispute card you can show drivers.'
     },
     {
-      q: 'What is the SafeVisit Pass and does it store passport photos?',
-      a: 'Zero passport or government ID scans are ever saved. The SafeVisit Pass generates a temporary 7-day cryptographic Journey ID (e.g. TM-DEL-2026-X89K) encoded in a QR code, allowing emergency verification without compromising your personal privacy.'
+      q: 'What is the SafeVisit Pass and how does it protect my privacy?',
+      a: 'The SafeVisit Pass generates a temporary 7-day cryptographic Journey ID (e.g. TM-DEL-2026-X89K) encoded in a QR code, allowing instant emergency contact verification without requiring or storing any sensitive personal identification documents.'
     },
     {
       q: 'What happens when I press Emergency SOS 112 or shake my phone?',
@@ -385,7 +385,7 @@ export default function HomePage() {
               </div>
 
               {/* Live Trust Badges Strip */}
-              <div className="pt-6 border-t border-white/[0.08] grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-slate-300">
+              <div className="pt-6 border-t border-white/[0.08] grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-300">
                 <div className="flex items-center space-x-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span className="font-medium">ASI Ticketing Auth</span>
@@ -393,10 +393,6 @@ export default function HomePage() {
                 <div className="flex items-center space-x-2">
                   <CheckCircle2 className="w-4 h-4 text-indigo-400 shrink-0" />
                   <span className="font-medium">Delhi Police 112 Ready</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
-                  <span className="font-medium">Zero Passport Uploads</span>
                 </div>
               </div>
             </div>
@@ -581,11 +577,11 @@ export default function HomePage() {
                     SafeVisit Pass
                   </h3>
                   <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase tracking-wider">
-                    Zero Passports
+                    Instant QR Pass
                   </span>
                 </div>
                 <p className="text-sm sm:text-[15px] text-slate-300 leading-relaxed mb-5">
-                  Generates a cryptographic 7-day QR identity without requiring sensitive passport copies or personal documents.
+                  Generates a verified 7-day cryptographic QR identity for safety check-ins and emergency contact throughout your Delhi trip.
                 </p>
               </div>
               <Link
@@ -738,95 +734,179 @@ export default function HomePage() {
         </section>
 
         {/* ==================================================================== */}
+        {/* ==================================================================== */}
         {/* 5. INTERACTIVE LIVE FARE CALCULATOR WIDGET (CODER ARMY STYLE) */}
         {/* ==================================================================== */}
-        <section className="my-16 max-w-4xl mx-auto">
-          <div className="coder-card rounded-3xl p-6 sm:p-8 relative overflow-hidden">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-5 border-b border-white/[0.08]">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 font-bold">
-                  INTERACTIVE RATE BENCHMARK
-                </span>
-                <h3 className="text-xl sm:text-2xl font-bold text-white font-display mt-0.5">
+        <section className="my-16 sm:my-20">
+          <div className="relative rounded-3xl sm:rounded-[32px] p-7 sm:p-10 lg:p-12 border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl overflow-hidden group">
+            {/* Ambient Glow Aura */}
+            <div className="absolute -top-28 -right-28 w-96 h-96 bg-cyan-500/15 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute -bottom-28 -left-28 w-96 h-96 bg-indigo-500/15 rounded-full blur-[120px] pointer-events-none" />
+
+            {/* Header Strip */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8 sm:mb-10 pb-6 sm:pb-8 border-b border-white/[0.08] relative z-10">
+              <div className="space-y-2">
+                <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/25 text-cyan-300 text-xs font-mono font-bold uppercase tracking-wider">
+                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                  <span>Delhi Govt Gazetted Fare Model</span>
+                </div>
+                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white font-display tracking-tight">
                   Live Delhi Transport Department Fare Checker
                 </h3>
+                <p className="text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed">
+                  Verify official government-regulated tariffs for Delhi Autos and Taxis in real time. Avoid meter tampering, excessive flat rates, and illegal route surcharges.
+                </p>
               </div>
               <Link
                 to="/fare-meter"
-                className="text-xs font-bold text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 shrink-0"
+                className="coder-btn-primary text-white font-bold px-6 py-3.5 rounded-xl text-sm flex items-center space-x-2 shadow-xl shadow-cyan-600/20 shrink-0 self-start lg:self-center hover:scale-105 transition-all group"
               >
                 <span>Full Meter & Dispute Card</span>
-                <ExternalLink className="w-3.5 h-3.5" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 items-center">
-              {/* Vehicle Type Picker */}
-              <div>
-                <label className="text-xs text-slate-400 block mb-1.5 font-medium">
-                  Select Vehicle Type
-                </label>
-                <div className="grid grid-cols-3 gap-1.5 bg-black/50 p-1.5 rounded-xl border border-white/[0.08]">
-                  {[
-                    { id: 'auto', label: 'Auto' },
-                    { id: 'non_ac_taxi', label: 'Taxi' },
-                    { id: 'ac_taxi', label: 'AC Taxi' }
-                  ].map((v) => (
-                    <button
-                      key={v.id}
-                      onClick={() => setVehicleType(v.id)}
-                      className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all ${
-                        vehicleType === v.id
-                          ? 'bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-md'
-                          : 'text-slate-400 hover:text-white'
-                      }`}
-                    >
-                      {v.label}
-                    </button>
-                  ))}
+            {/* Main Interactive Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+              {/* Left 7 Columns: Interactive Controls */}
+              <div className="lg:col-span-7 space-y-6">
+                
+                {/* 1. Vehicle Selection */}
+                <div>
+                  <div className="flex items-center justify-between mb-2.5">
+                    <label className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                      <span>1. Vehicle Category</span>
+                      <span className="text-xs font-normal text-slate-400">(Official Tariff)</span>
+                    </label>
+                    <span className="text-xs font-mono text-cyan-400 font-semibold">
+                      {vehicleType === 'auto' ? 'Base: ₹30 (1.5 km) + ₹11/km' : vehicleType === 'non_ac_taxi' ? 'Base: ₹40 (1.0 km) + ₹17/km' : 'Base: ₹40 (1.0 km) + ₹20/km'}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+                    {[
+                      { id: 'auto', name: 'Auto Rickshaw', tag: 'Green/Yellow CNG', desc: '₹11/km' },
+                      { id: 'non_ac_taxi', name: 'Non-AC Taxi', tag: 'Black & Yellow', desc: '₹17/km' },
+                      { id: 'ac_taxi', name: 'AC Taxi', tag: 'Radio Cab / Sedan', desc: '₹20/km' }
+                    ].map((v) => (
+                      <button
+                        key={v.id}
+                        onClick={() => setVehicleType(v.id)}
+                        className={`p-3 sm:p-4 rounded-2xl text-left border transition-all ${
+                          vehicleType === v.id
+                            ? 'bg-gradient-to-br from-cyan-500/20 via-indigo-600/20 to-purple-600/10 border-cyan-500/60 shadow-lg shadow-cyan-500/10 text-white'
+                            : 'bg-[#121622]/70 border-white/[0.08] text-slate-400 hover:text-slate-200 hover:border-white/20'
+                        }`}
+                      >
+                        <div className="text-sm sm:text-base font-bold font-display text-white">{v.name}</div>
+                        <div className="text-[11px] text-slate-400 mt-0.5">{v.tag}</div>
+                        <div className="text-xs font-mono font-bold text-cyan-400 mt-1">{v.desc}</div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* Distance Slider */}
-              <div>
-                <div className="flex justify-between text-xs text-slate-400 mb-1.5 font-medium">
-                  <span>Journey Distance</span>
-                  <span className="text-white font-bold font-mono">{distanceKm} km</span>
-                </div>
-                <input
-                  type="range"
-                  min="1"
-                  max="40"
-                  step="0.5"
-                  value={distanceKm}
-                  onChange={(e) => setDistanceKm(Number(e.target.value))}
-                  className="w-full accent-cyan-400 cursor-pointer"
-                />
-                <div className="flex justify-between text-[10px] text-slate-500 mt-1">
-                  <span>1 km</span>
-                  <span>20 km</span>
-                  <span>40 km</span>
-                </div>
-              </div>
-
-              {/* Night Toggle & Calculated Output */}
-              <div className="bg-black/60 p-4 rounded-2xl border border-cyan-500/20 text-center">
-                <div className="flex items-center justify-between text-xs mb-2">
-                  <span className="text-slate-400 text-[11px]">Night Surcharge (25%)</span>
+                {/* 2. Journey Distance Slider with Quick Presets */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-sm sm:text-base font-bold text-white">
+                      2. Journey Distance
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl font-black font-mono text-cyan-300">{distanceKm}</span>
+                      <span className="text-sm font-bold text-slate-400 font-mono">km</span>
+                    </div>
+                  </div>
                   <input
-                    type="checkbox"
-                    checked={isNight}
-                    onChange={(e) => setIsNight(e.target.checked)}
-                    className="accent-cyan-400 w-4 h-4 cursor-pointer"
+                    type="range"
+                    min="1"
+                    max="50"
+                    step="0.5"
+                    value={distanceKm}
+                    onChange={(e) => setDistanceKm(Number(e.target.value))}
+                    className="w-full h-2.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
                   />
+                  <div className="flex items-center justify-between text-xs text-slate-400 mt-2 font-mono">
+                    <span>1 km (Local Run)</span>
+                    <span>25 km (City Cross)</span>
+                    <span>50 km (Airport/NCR)</span>
+                  </div>
+                  {/* Quick Distance Preset Pills */}
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {[3, 5, 8, 12, 18, 25].map((preset) => (
+                      <button
+                        key={preset}
+                        onClick={() => setDistanceKm(preset)}
+                        className={`px-3 py-1 rounded-lg text-xs font-mono font-bold border transition-all ${
+                          distanceKm === preset
+                            ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300'
+                            : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        {preset} km
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div className="text-[10px] text-slate-500 uppercase tracking-wider">
-                  OFFICIAL GOVERNMENT RATE
+
+                {/* 3. Night Surcharge Bar */}
+                <div className="flex items-center justify-between p-4 rounded-2xl bg-[#121622]/80 border border-white/[0.08]">
+                  <div>
+                    <div className="text-sm font-bold text-white">Night Time Surcharge (+25%)</div>
+                    <div className="text-xs text-slate-400 mt-0.5">Applies officially between 11:00 PM and 05:00 AM</div>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isNight}
+                      onChange={(e) => setIsNight(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-500"></div>
+                  </label>
                 </div>
-                <div className="text-2xl sm:text-3xl font-black font-mono text-cyan-300">
-                  ₹{calculateQuickFare()}
+
+              </div>
+
+              {/* Right 5 Columns: Big Glowing Computed Fare Card */}
+              <div className="lg:col-span-5">
+                <div className="rounded-3xl p-7 sm:p-9 bg-gradient-to-br from-[#0f1420] via-[#121828] to-[#0a0d14] border-2 border-cyan-500/40 shadow-2xl shadow-cyan-500/10 text-center flex flex-col justify-between relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+                  
+                  <div>
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold uppercase tracking-wider mb-4">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>GOVT GAZETTED ESTIMATE</span>
+                    </div>
+                    
+                    <div className="text-xs uppercase font-bold tracking-widest text-slate-400 mb-1">
+                      Estimated Official Fare
+                    </div>
+                    
+                    <div className="text-5xl sm:text-6xl lg:text-7xl font-black font-mono text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-200 to-indigo-300 my-2 drop-shadow-[0_0_25px_rgba(34,211,238,0.4)]">
+                      ₹{calculateQuickFare()}
+                    </div>
+
+                    <p className="text-xs sm:text-sm text-slate-300 mt-2 font-mono">
+                      {distanceKm} km trip • {vehicleType === 'auto' ? 'Auto Rickshaw' : vehicleType === 'non_ac_taxi' ? 'Non-AC Taxi' : 'AC Taxi'} {isNight && '(+25% Night)'}
+                    </p>
+                  </div>
+
+                  <div className="mt-6 pt-5 border-t border-white/[0.08] space-y-3">
+                    <Link
+                      to="/fare-meter"
+                      className="w-full coder-btn-primary text-white font-bold py-3.5 rounded-xl text-sm flex items-center justify-center space-x-2 shadow-lg shadow-cyan-600/25 transition-all hover:scale-[1.02]"
+                    >
+                      <Calculator className="w-4 h-4" />
+                      <span>Generate Driver Dispute Card</span>
+                    </Link>
+                    <p className="text-[11px] text-slate-400">
+                      Show this rate directly to driver if asked for ₹{Math.round(calculateQuickFare() * 1.8)}+ flat fare
+                    </p>
+                  </div>
+
                 </div>
               </div>
+
             </div>
           </div>
         </section>
