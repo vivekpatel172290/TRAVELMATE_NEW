@@ -314,7 +314,7 @@ export default function HomePage() {
       <div className="absolute top-[1500px] -right-48 w-[550px] h-[550px] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none z-0" />
 
       {/* Main Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-20">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-10 sm:pb-12">
         
         {/* ==================================================================== */}
         {/* 1. SIGNATURE CODER ARMY 2-COLUMN HERO (TEXT ASIDE + ANIMATION ON RIGHT) */}
@@ -985,42 +985,43 @@ export default function HomePage() {
       </div>
 
       {/* ==================================================================== */}
-      {/* 8. CODER ARMY STYLE FOOTER (EXACT BORDER & GRADIENT ACCENT STRIP) */}
+      {/* ==================================================================== */}
+      {/* 8. CODER ARMY STYLE FOOTER (COMPACT & BALANCED) */}
       {/* ==================================================================== */}
       <div className="bg-[var(--surface-bg)] transition-colors duration-300 w-full" style={{ backgroundColor: 'var(--surface-bg)' }}>
-        <footer className="relative z-10 py-16 px-4 sm:px-8 lg:px-[9%] border-t border-[var(--border-glass)] text-slate-300">
+        <footer className="relative z-10 py-8 sm:py-10 px-4 sm:px-8 lg:px-[8%] border-t border-[var(--border-glass)] text-slate-300">
           {/* Coder Army Signature Top Gradient Border Strip */}
-          <div className="w-full h-1 bg-gradient-to-r from-[var(--brand-primary)] via-orange-600 to-[var(--brand-secondary)] mb-12 sm:mb-16 rounded-full shadow-[0_0_16px_rgba(255,123,0,0.35)]" />
+          <div className="w-full h-1 bg-gradient-to-r from-[var(--brand-primary)] via-orange-600 to-[var(--brand-secondary)] mb-8 sm:mb-9 rounded-full shadow-[0_0_12px_rgba(255,123,0,0.3)]" />
 
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12 pb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 pb-6 sm:pb-8">
             
             {/* Col 1: Brand & Purpose */}
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center p-2 shadow-lg shadow-cyan-500/25">
-                  <Shield className="w-5 h-5 text-white" />
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center p-1.5 shadow-md shadow-cyan-500/20">
+                  <Shield className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-xl font-black tracking-tight font-display text-white">
+                <span className="text-lg font-black tracking-tight font-display text-white">
                   TRAVEL<span className="coder-text-gradient">MATE</span>
                 </span>
               </div>
-              <p className="text-sm text-slate-300 leading-relaxed">
+              <p className="text-xs sm:text-[13px] text-slate-300 leading-relaxed max-w-sm">
                 India's premier digital tourist safety ecosystem. Built to protect domestic and international visitors from ticket counterfeiting, unauthorized transport overcharging, and unsafe travel routes across Delhi NCR.
               </p>
-              <div className="flex items-center space-x-2 text-xs font-semibold text-cyan-400 pt-1">
-                <CheckCircle2 className="w-4 h-4 text-cyan-400" />
+              <div className="flex items-center space-x-1.5 text-xs font-medium text-cyan-400 pt-0.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
                 <span>Smart India Hackathon 2026 Initiative</span>
               </div>
             </div>
 
             {/* Col 2: Verified Monuments */}
             <div>
-              <h5 className="font-bold text-white text-base uppercase tracking-wider mb-4 flex items-center space-x-2">
+              <h5 className="font-bold text-white text-xs sm:text-sm uppercase tracking-wider mb-3 flex items-center space-x-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400" />
                 <span>Verified Sites</span>
               </h5>
-              <ul className="space-y-2.5 text-sm">
+              <ul className="space-y-2 text-xs sm:text-[13px]">
                 <li>
                   <Link to="/place/pl-red-fort-01" className="text-slate-300 hover:text-white transition-colors flex items-center space-x-1.5">
                     <span className="text-slate-500">›</span>
@@ -1046,7 +1047,7 @@ export default function HomePage() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/home" className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors flex items-center space-x-1.5 pt-1">
+                  <Link to="/home" className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors flex items-center space-x-1.5 pt-0.5">
                     <span>View All 10 ASI Monuments →</span>
                   </Link>
                 </li>
@@ -1055,11 +1056,11 @@ export default function HomePage() {
 
             {/* Col 3: Tourist Safety Suite */}
             <div>
-              <h5 className="font-bold text-white text-base uppercase tracking-wider mb-4 flex items-center space-x-2">
+              <h5 className="font-bold text-white text-xs sm:text-sm uppercase tracking-wider mb-3 flex items-center space-x-1.5">
                 <span className="w-2 h-2 rounded-full bg-cyan-400" />
                 <span>Safety Suite</span>
               </h5>
-              <ul className="space-y-2.5 text-sm">
+              <ul className="space-y-2 text-xs sm:text-[13px]">
                 <li>
                   <Link to="/safe-pass" className="text-slate-300 hover:text-white transition-colors flex items-center space-x-1.5">
                     <span className="text-slate-500">›</span>
@@ -1101,37 +1102,37 @@ export default function HomePage() {
 
             {/* Col 4: Official Emergency Helplines */}
             <div>
-              <h5 className="font-bold text-white text-base uppercase tracking-wider mb-4 flex items-center space-x-2">
+              <h5 className="font-bold text-white text-xs sm:text-sm uppercase tracking-wider mb-3 flex items-center space-x-1.5">
                 <span className="w-2 h-2 rounded-full bg-rose-400" />
                 <span>24/7 Helplines</span>
               </h5>
-              <div className="space-y-2.5 text-sm">
+              <div className="space-y-2 text-xs sm:text-[13px]">
                 <a
                   href="tel:112"
-                  className="flex items-center justify-between text-white font-mono bg-white/[0.05] hover:bg-white/[0.1] p-3 rounded-xl border border-white/[0.08] transition-colors group"
+                  className="flex items-center justify-between text-white font-mono bg-white/[0.05] hover:bg-white/[0.1] p-2.5 rounded-lg border border-white/[0.08] transition-colors group"
                 >
                   <span className="text-slate-300 group-hover:text-white font-sans font-medium">Police Central</span>
-                  <span className="text-red-400 font-extrabold text-base bg-red-500/20 px-2.5 py-0.5 rounded-lg border border-red-500/30">112</span>
+                  <span className="text-red-400 font-extrabold text-xs sm:text-sm bg-red-500/20 px-2 py-0.5 rounded-md border border-red-500/30">112</span>
                 </a>
                 <a
                   href="tel:1363"
-                  className="flex items-center justify-between text-white font-mono bg-white/[0.05] hover:bg-white/[0.1] p-3 rounded-xl border border-white/[0.08] transition-colors group"
+                  className="flex items-center justify-between text-white font-mono bg-white/[0.05] hover:bg-white/[0.1] p-2.5 rounded-lg border border-white/[0.08] transition-colors group"
                 >
                   <span className="text-slate-300 group-hover:text-white font-sans font-medium">Tourist Helpline</span>
-                  <span className="text-amber-400 font-extrabold text-base bg-amber-500/20 px-2.5 py-0.5 rounded-lg border border-amber-500/30">1363</span>
+                  <span className="text-amber-400 font-extrabold text-xs sm:text-sm bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-500/30">1363</span>
                 </a>
                 <a
                   href="tel:1091"
-                  className="flex items-center justify-between text-white font-mono bg-white/[0.05] hover:bg-white/[0.1] p-3 rounded-xl border border-white/[0.08] transition-colors group"
+                  className="flex items-center justify-between text-white font-mono bg-white/[0.05] hover:bg-white/[0.1] p-2.5 rounded-lg border border-white/[0.08] transition-colors group"
                 >
                   <span className="text-slate-300 group-hover:text-white font-sans font-medium">Women Safety</span>
-                  <span className="text-purple-400 font-extrabold text-base bg-purple-500/20 px-2.5 py-0.5 rounded-lg border border-purple-500/30">1091</span>
+                  <span className="text-purple-400 font-extrabold text-xs sm:text-sm bg-purple-500/20 px-2 py-0.5 rounded-md border border-purple-500/30">1091</span>
                 </a>
                 <a
                   href="https://wa.me/918750871493"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between text-white font-mono bg-white/[0.05] hover:bg-white/[0.1] p-3 rounded-xl border border-white/[0.08] transition-colors group text-xs"
+                  className="flex items-center justify-between text-white font-mono bg-white/[0.05] hover:bg-white/[0.1] p-2.5 rounded-lg border border-white/[0.08] transition-colors group text-xs"
                 >
                   <span className="text-slate-300 group-hover:text-white font-sans font-medium">Traffic WhatsApp</span>
                   <span className="text-emerald-400 font-bold font-mono">8750871493</span>
@@ -1142,10 +1143,10 @@ export default function HomePage() {
           </div>
 
           {/* Coder Army Bottom Divider & Legal Bar */}
-          <hr className="border-0 border-t border-[var(--border-glass)] my-10 sm:my-12" />
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-400">
+          <hr className="border-0 border-t border-[var(--border-glass)] my-6 sm:my-7" />
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-[13px] text-slate-400">
             <p>© 2026 TravelMate Platform • Smart India Hackathon Prototype. All rights reserved.</p>
-            <div className="flex items-center space-x-2 text-xs text-emerald-400 font-medium">
+            <div className="flex items-center space-x-1.5 text-xs text-emerald-400 font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>Delhi Police 112 & ASI Telemetry Active</span>
             </div>
