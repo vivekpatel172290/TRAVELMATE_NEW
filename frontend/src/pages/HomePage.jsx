@@ -982,12 +982,18 @@ export default function HomePage() {
             ))}
           </div>
         </section>
+      </div>
 
-        {/* ==================================================================== */}
-        {/* 8. CODER ARMY STYLE FOOTER (CLEAN & LARGER READABLE TYPOGRAPHY) */}
-        {/* ==================================================================== */}
-        <footer className="mt-20 pt-16 border-t border-white/[0.1] text-slate-300">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12 pb-12">
+      {/* ==================================================================== */}
+      {/* 8. CODER ARMY STYLE FOOTER (EXACT BORDER & GRADIENT ACCENT STRIP) */}
+      {/* ==================================================================== */}
+      <div className="bg-[var(--surface-bg)] transition-colors duration-300 w-full" style={{ backgroundColor: 'var(--surface-bg)' }}>
+        <footer className="relative z-10 py-16 px-4 sm:px-8 lg:px-[9%] border-t border-[var(--border-glass)] text-slate-300">
+          {/* Coder Army Signature Top Gradient Border Strip */}
+          <div className="w-full h-1 bg-gradient-to-r from-[var(--brand-primary)] via-orange-600 to-[var(--brand-secondary)] mb-12 sm:mb-16 rounded-full shadow-[0_0_16px_rgba(255,123,0,0.35)]" />
+
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12 pb-12">
             
             {/* Col 1: Brand & Purpose */}
             <div className="space-y-4">
@@ -1135,17 +1141,18 @@ export default function HomePage() {
 
           </div>
 
-          {/* Bottom Legal & Operational Bar */}
-          <div className="pt-8 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-400">
+          {/* Coder Army Bottom Divider & Legal Bar */}
+          <hr className="border-0 border-t border-[var(--border-glass)] my-10 sm:my-12" />
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-400">
             <p>© 2026 TravelMate Platform • Smart India Hackathon Prototype. All rights reserved.</p>
             <div className="flex items-center space-x-2 text-xs text-emerald-400 font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>Delhi Police 112 & ASI Telemetry Active</span>
             </div>
           </div>
-        </footer>
-
-      </div>
+        </div>
+      </footer>
     </div>
+  </div>
   );
 }
