@@ -52,7 +52,7 @@ export default function Sidebar({
         {
           to: '/phrase-helper',
           label: 'Phrase Converter',
-          shortLabel: 'Translate',
+          shortLabel: 'Phrases',
           badge: 'Bhashini AI',
           badgeColor: 'indigo',
           icon: Globe,
@@ -206,18 +206,18 @@ export default function Sidebar({
                           className={`w-15 py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all duration-200 ${
                             isActive
                               ? 'bg-gradient-to-tr from-indigo-600/30 to-purple-600/30 text-white ring-1 ring-indigo-500/50 shadow-md shadow-indigo-600/20 font-bold'
-                              : 'text-slate-400 hover:text-white hover:bg-white/[0.08]'
+                              : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
                           }`}
                         >
                           <Icon className="w-5 h-5 shrink-0" />
-                          <span className="text-[10px] font-medium leading-none text-center truncate max-w-[56px]">
+                          <span className="text-[10px] font-semibold leading-tight text-center truncate max-w-[58px] text-slate-200">
                             {item.shortLabel || item.label}
                           </span>
                         </NavLink>
 
                         {/* Floating Tooltip for Minimized Rail */}
                         <div className="absolute left-full ml-3 px-3 py-1.5 bg-[#121622] text-white text-xs rounded-xl shadow-2xl border border-white/15 whitespace-nowrap z-50 pointer-events-none opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all duration-200 flex items-center space-x-2">
-                          <span className="font-bold">{item.label}</span>
+                          <span className="font-bold text-slate-100">{item.label}</span>
                           {item.badge && (
                             <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/30 text-indigo-300 font-extrabold uppercase">
                               {item.badge}
@@ -234,53 +234,58 @@ export default function Sidebar({
                       to={item.to}
                       onClick={handleLinkClick}
                       id={`sidebar-nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
-                      className={`relative flex items-center justify-between px-3 py-2 rounded-xl transition-all duration-200 group ${
+                      className={`relative flex items-center px-3 py-2.5 rounded-xl transition-all duration-200 group ${
                         isActive
                           ? 'bg-indigo-500/20 text-white font-bold border-l-3 border-indigo-400 shadow-sm shadow-indigo-500/10'
-                          : 'text-slate-400 hover:text-white hover:bg-white/[0.05] border-l-3 border-transparent hover:translate-x-0.5'
+                          : 'text-slate-300 hover:text-white hover:bg-white/[0.05] border-l-3 border-transparent hover:translate-x-0.5'
                       }`}
                     >
-                      <div className="flex items-center space-x-3 min-w-0">
+                      <div className="flex items-center space-x-3 min-w-0 flex-1">
                         <div
                           className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all ${
                             isActive
                               ? 'bg-indigo-500/30 text-indigo-300 ring-1 ring-indigo-500/50'
-                              : 'bg-white/[0.04] text-slate-400 group-hover:text-slate-200 group-hover:bg-white/[0.08]'
+                              : 'bg-white/[0.05] text-slate-300 group-hover:text-white group-hover:bg-white/[0.1]'
                           }`}
                         >
-                          <Icon className="w-5 h-5" />
+                          <Icon className="w-4.5 h-4.5" />
                         </div>
-                        <div className="min-w-0">
-                          <div className={`truncate tracking-tight text-sm ${isActive ? 'text-white font-bold' : 'text-slate-200 group-hover:text-white'}`}>
-                            {item.label}
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-1.5">
+                            <span
+                              className={`text-[13.5px] font-semibold tracking-tight whitespace-nowrap ${
+                                isActive ? 'text-white font-bold' : 'text-slate-100 group-hover:text-white'
+                              }`}
+                            >
+                              {item.label}
+                            </span>
+                            {item.badge && (
+                              <span
+                                className={`text-[9.5px] leading-none px-1.5 py-0.5 rounded-md font-extrabold uppercase tracking-wider shrink-0 ${
+                                  isActive
+                                    ? 'bg-indigo-500/30 text-indigo-300 border border-indigo-500/50 shadow-[0_0_8px_rgba(99,102,241,0.25)]'
+                                    : item.badgeColor === 'violet'
+                                    ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                                    : item.badgeColor === 'emerald'
+                                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                                    : item.badgeColor === 'indigo'
+                                    ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
+                                    : item.badgeColor === 'cyan'
+                                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                                    : item.badgeColor === 'amber'
+                                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                    : 'bg-white/5 text-slate-400 border border-white/10'
+                                }`}
+                              >
+                                {item.badge}
+                              </span>
+                            )}
                           </div>
-                          <div className="text-xs text-slate-400 group-hover:text-slate-300 truncate tracking-tight font-medium">
+                          <div className="text-[11.5px] text-slate-400 group-hover:text-slate-300 truncate tracking-tight font-normal pt-0.5">
                             {item.description}
                           </div>
                         </div>
                       </div>
-
-                      {item.badge && (
-                        <span
-                          className={`text-[10px] px-1.5 py-0.5 rounded font-extrabold uppercase tracking-wider shrink-0 ml-1.5 ${
-                            isActive
-                              ? 'bg-indigo-500/30 text-indigo-300 border border-indigo-500/50 shadow-[0_0_8px_rgba(99,102,241,0.25)]'
-                              : item.badgeColor === 'violet'
-                              ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                              : item.badgeColor === 'emerald'
-                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                              : item.badgeColor === 'indigo'
-                              ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
-                              : item.badgeColor === 'cyan'
-                              ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                              : item.badgeColor === 'amber'
-                              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                              : 'bg-white/5 text-slate-400 border border-white/10'
-                          }`}
-                        >
-                          {item.badge}
-                        </span>
-                      )}
                     </NavLink>
                   );
                 })}
@@ -305,10 +310,10 @@ export default function Sidebar({
 
   return (
     <>
-      {/* Desktop Persistent Left Sidebar (Collapsible: w-18 mini rail vs w-64 full) */}
+      {/* Desktop Persistent Left Sidebar (Collapsible: w-18 mini rail vs w-72 full) */}
       <aside
         className={`hidden md:flex flex-col sticky top-16 h-[calc(100vh-4rem)] shrink-0 z-30 shadow-xl shadow-black/50 transition-all duration-300 ease-in-out ${
-          isCollapsed ? 'w-18' : 'w-64'
+          isCollapsed ? 'w-18' : 'w-72'
         }`}
       >
         {renderSidebarContent(false)}
