@@ -56,7 +56,7 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'healthy',
     service: 'TravelMate Express API',
-    version: '1.0.0-SIH2026',
+    version: '1.0.0',
     database_connected: db.isPostgresConnected(),
     database_mode: db.isPostgresConnected() ? 'Supabase PostgreSQL (Persistent)' : 'Resilient In-Memory Local Cache',
     places_seeded: store.places.length,
@@ -106,7 +106,7 @@ async function startServer() {
     console.log(` Mode: ${config.NODE_ENV}`);
     console.log(` Database: ${db.isPostgresConnected() ? '✅ Supabase PostgreSQL (Live & Persistent)' : '🛡️ Resilient Local Store'}`);
     console.log(` Seeded Places: ${store.places.length} Delhi heritage sites`);
-    console.log(` Ready for SIH 2026 Demo: http://localhost:${config.PORT}/api/health`);
+    console.log(` Ready for Production Demo: http://localhost:${config.PORT}/api/health`);
     console.log(`=======================================================`);
   });
 }

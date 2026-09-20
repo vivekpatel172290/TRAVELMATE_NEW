@@ -136,13 +136,23 @@ export default function HomePage() {
 
   // 1. Scroll-driven tilt-to-flat 3D animation (Coder Army signature scroll effect)
   const [scrollY, setScrollY] = useState(0);
+  const [isMobileScreen, setIsMobileScreen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrollY(window.scrollY);
     };
+    const handleResize = () => {
+      setIsMobileScreen(window.innerWidth < 1024);
+    };
+
+    handleResize();
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   // Compute 3D perspective to flat transformation as user scrolls
@@ -314,85 +324,85 @@ export default function HomePage() {
       <div className="absolute top-[1500px] -right-48 w-[550px] h-[550px] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none z-0" />
 
       {/* Main Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-10 sm:pb-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-2 sm:pt-4 pb-10 sm:pb-12">
         
         {/* ==================================================================== */}
         {/* 1. SIGNATURE CODER ARMY 2-COLUMN HERO (TEXT ASIDE + ANIMATION ON RIGHT) */}
         {/* ==================================================================== */}
-        <section className="pt-4 sm:pt-8 pb-10 sm:pb-14">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <section className="pt-3 sm:pt-8 pb-8 sm:pb-14">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center">
             
             {/* Left Column: Text Aside (Coder Army Style) */}
-            <div className="lg:col-span-7 text-left space-y-6">
+            <div className="lg:col-span-7 text-left space-y-4 sm:space-y-6">
               {/* Trust Badge Pill */}
-              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md text-xs font-semibold text-slate-300 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-emerald-300 font-bold">Smart India Hackathon 2026</span>
+              <div className="inline-flex items-center space-x-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md text-xs font-semibold text-slate-300 shadow-sm max-w-full">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                <span className="text-emerald-300 font-bold truncate">Delhi Official Tourist Portal</span>
                 <span className="text-slate-500">•</span>
-                <span className="text-cyan-300">Delhi Tourism Safety Suite</span>
+                <span className="text-cyan-300 truncate">Safety & Verification Suite</span>
               </div>
 
               {/* Main Display Headline */}
-              <h1 className="text-3xl sm:text-5xl xl:text-6xl font-extrabold tracking-tight font-display leading-[1.12] text-white">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tight font-display leading-[1.16] text-white">
                 Explore Delhi With{' '}
                 <span className="coder-text-gradient block mt-1 sm:mt-2">
                   Unmatched Trust & Safety
                 </span>
               </h1>
 
-              {/* Typewriter Animated Tagline (Exact Coder Army Style - Single Line) */}
-              <div className="flex items-baseline gap-x-2 text-base sm:text-lg lg:text-xl xl:text-[22px] font-semibold text-slate-200 py-1 whitespace-nowrap overflow-hidden">
-                <span className="text-slate-100 font-bold tracking-tight shrink-0">
+              {/* Typewriter Animated Tagline (Responsive & Wrapped on Mobile - No Clipping) */}
+              <div className="flex flex-wrap items-baseline gap-x-1.5 sm:gap-x-2 gap-y-1 text-sm sm:text-lg lg:text-xl xl:text-[22px] font-semibold text-slate-200 py-1">
+                <span className="text-slate-100 font-bold tracking-tight">
                   Travel is meant to create memories — not
                 </span>
                 <AnimatedText />
               </div>
 
               {/* Subtitle Description */}
-              <p className="text-sm sm:text-base lg:text-lg text-slate-300 max-w-xl leading-relaxed font-normal">
+              <p className="text-xs sm:text-base lg:text-lg text-slate-300 max-w-xl leading-relaxed font-normal">
                 Eliminate counterfeit monument tickets, verify official Delhi Transport fares, track police-patrolled safe corridors, and communicate effortlessly in Hindi with Bhashini AI.
               </p>
 
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3 pt-1">
+              {/* Action Buttons (Stacked & Full-Width on Mobile, Inline on Desktop) */}
+              <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3 pt-1">
                 <Link
                   to="/safe-pass"
                   id="hero-btn-get-pass"
-                  className="coder-btn-primary text-white font-bold px-6 py-3.5 rounded-xl text-sm flex items-center space-x-2 shadow-xl shadow-indigo-600/30 transition-all group"
+                  className="coder-btn-primary text-white font-bold px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-xl shadow-indigo-600/30 transition-all group w-full sm:w-auto text-center"
                 >
-                  <QrCode className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                  <QrCode className="w-4 h-4 group-hover:rotate-12 transition-transform shrink-0" />
                   <span>Get Free SafeVisit Pass</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform shrink-0" />
                 </Link>
 
                 <Link
                   to="/home"
                   id="hero-btn-explore-places"
-                  className="coder-btn-secondary text-slate-200 font-semibold px-5 py-3.5 rounded-xl text-sm flex items-center space-x-2 transition-all hover:text-white"
+                  className="coder-btn-secondary text-slate-200 font-semibold px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 transition-all hover:text-white w-full sm:w-auto text-center"
                 >
-                  <MapPin className="w-4 h-4 text-cyan-400" />
+                  <MapPin className="w-4 h-4 text-cyan-400 shrink-0" />
                   <span>Explore Verified Places</span>
                 </Link>
 
                 <Link
                   to="/phrase-helper"
                   id="hero-btn-phrase-converter"
-                  className="coder-btn-secondary text-slate-200 font-semibold px-5 py-3.5 rounded-xl text-sm flex items-center space-x-2 transition-all hover:text-white"
+                  className="coder-btn-secondary text-slate-200 font-semibold px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 transition-all hover:text-white w-full sm:w-auto text-center"
                 >
-                  <Globe className="w-4 h-4 text-purple-400" />
+                  <Globe className="w-4 h-4 text-purple-400 shrink-0" />
                   <span>Hindi Translator</span>
                 </Link>
               </div>
 
               {/* Live Trust Badges Strip */}
-              <div className="pt-6 border-t border-white/[0.08] grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-300">
-                <div className="flex items-center space-x-2">
+              <div className="pt-4 sm:pt-6 border-t border-white/[0.08] grid grid-cols-2 gap-2 sm:gap-4 text-xs text-slate-300">
+                <div className="flex items-center space-x-1.5 sm:space-x-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span className="font-medium">ASI Ticketing Auth</span>
+                  <span className="font-medium text-[11px] sm:text-xs">ASI Ticketing Auth</span>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1.5 sm:space-x-2">
                   <CheckCircle2 className="w-4 h-4 text-indigo-400 shrink-0" />
-                  <span className="font-medium">Delhi Police 112 Ready</span>
+                  <span className="font-medium text-[11px] sm:text-xs">Delhi Police 112 Ready</span>
                 </div>
               </div>
             </div>
@@ -402,80 +412,84 @@ export default function HomePage() {
               {/* Ambient Multi-Color Glow Backdrop (signature Coder Army glow) */}
               <div className="absolute -inset-4 sm:-inset-6 rounded-[36px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 blur-3xl animate-pulse pointer-events-none" />
 
-              {/* Outer Hardware-Style Shell with Coder Army 3D Scroll-to-Flat Tilt Effect */}
+              {/* Outer Hardware-Style Shell with Coder Army 3D Scroll-to-Flat Tilt Effect (Disabled on Mobile for Perfect Responsiveness) */}
               <div
-                className="relative rounded-[24px] sm:rounded-[30px] p-2 border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl overflow-hidden will-change-transform"
-                style={{
-                  transform: `perspective(1000px) rotateX(${rotateX}deg) scale(${scale}) translateY(${translateY}px)`,
-                  transformOrigin: 'center top',
-                  transition: 'transform 0.12s cubic-bezier(0.16, 1, 0.3, 1)'
-                }}
+                className="relative rounded-[20px] sm:rounded-[30px] p-2 border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl overflow-hidden will-change-transform max-w-full"
+                style={
+                  isMobileScreen
+                    ? {}
+                    : {
+                        transform: `perspective(1000px) rotateX(${rotateX}deg) scale(${scale}) translateY(${translateY}px)`,
+                        transformOrigin: 'center top',
+                        transition: 'transform 0.12s cubic-bezier(0.16, 1, 0.3, 1)'
+                      }
+                }
               >
                 
                 {/* Window Chrome Header Bar: Mac Dots + Address + Live Badge (NO play/pause button) */}
-                <div className="flex items-center justify-between px-3.5 py-2.5 bg-[#0d0f14]/95 border-b border-white/[0.07] rounded-t-[18px] sm:rounded-t-[22px]">
-                  <div className="flex items-center space-x-2">
-                    <span className="w-3 h-3 rounded-full bg-[#ef4444] shadow-sm shadow-red-500/40" />
-                    <span className="w-3 h-3 rounded-full bg-[#f59e0b] shadow-sm shadow-amber-500/40" />
-                    <span className="w-3 h-3 rounded-full bg-[#10b981] shadow-sm shadow-emerald-500/40" />
+                <div className="flex items-center justify-between px-2.5 sm:px-3.5 py-2 sm:py-2.5 bg-[#0d0f14]/95 border-b border-white/[0.07] rounded-t-[16px] sm:rounded-t-[22px]">
+                  <div className="flex items-center space-x-1.5 sm:space-x-2">
+                    <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ef4444] shadow-sm shadow-red-500/40" />
+                    <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#f59e0b] shadow-sm shadow-amber-500/40" />
+                    <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#10b981] shadow-sm shadow-emerald-500/40" />
                     
                     {/* URL Pill */}
-                    <div className="flex items-center space-x-1.5 bg-black/60 border border-white/[0.08] px-2.5 py-0.5 rounded-full text-[10px] font-mono text-slate-300 ml-2">
+                    <div className="flex items-center space-x-1 sm:space-x-1.5 bg-black/60 border border-white/[0.08] px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono text-slate-300 ml-1 sm:ml-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
-                      <span className="text-slate-400">travelmate.gov.in/</span>
+                      <span className="text-slate-400 hidden xs:inline">travelmate.gov.in/</span>
                       <span className="text-cyan-300 font-semibold">verified-feed</span>
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-1.5 text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
+                  <div className="flex items-center space-x-1.5 text-[9px] sm:text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-1.5 sm:px-2 py-0.5 rounded-md border border-emerald-500/20">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                     <span>LIVE FEED</span>
                   </div>
                 </div>
 
                 {/* Inner Canvas: Upward Scrolling Stream with Top & Bottom Fade Masks */}
-                <div className="relative bg-[#0b0d12] p-3 sm:p-4 rounded-b-[18px] sm:rounded-b-[22px] h-[460px] sm:h-[500px] overflow-hidden">
+                <div className="relative bg-[#0b0d12] p-2.5 sm:p-4 rounded-b-[16px] sm:rounded-b-[22px] h-[360px] sm:h-[480px] overflow-hidden">
                   
                   {/* Top & Bottom Gradient Fade Masks */}
-                  <div className="absolute top-0 inset-x-0 h-14 bg-gradient-to-b from-[#0b0d12] via-[#0b0d12]/80 to-transparent z-10 pointer-events-none" />
-                  <div className="absolute bottom-0 inset-x-0 h-14 bg-gradient-to-t from-[#0b0d12] via-[#0b0d12]/80 to-transparent z-10 pointer-events-none" />
+                  <div className="absolute top-0 inset-x-0 h-12 sm:h-14 bg-gradient-to-b from-[#0b0d12] via-[#0b0d12]/80 to-transparent z-10 pointer-events-none" />
+                  <div className="absolute bottom-0 inset-x-0 h-12 sm:h-14 bg-gradient-to-t from-[#0b0d12] via-[#0b0d12]/80 to-transparent z-10 pointer-events-none" />
 
                   {/* Upward Scrolling Stream: Verified Places Only (Image & Few Essential Info) */}
-                  <div className="animate-scroll-up space-y-3.5">
+                  <div className="animate-scroll-up space-y-3 sm:space-y-3.5">
                     {[...scrollingPlaces, ...scrollingPlaces].map((item, idx) => (
                       <div
                         key={`${item.id}-${idx}`}
                         onClick={() => navigate(`/place/${item.id}`)}
-                        className="bg-[#121622]/90 border border-white/[0.08] hover:border-cyan-500/50 rounded-2xl overflow-hidden shadow-md cursor-pointer transition-all hover:scale-[1.01] hover:bg-[#161b2a] group flex items-center gap-3.5 p-3"
+                        className="bg-[#121622]/90 border border-white/[0.08] hover:border-cyan-500/50 rounded-2xl overflow-hidden shadow-md cursor-pointer transition-all hover:scale-[1.01] hover:bg-[#161b2a] group flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-3"
                       >
-                        <div className="relative w-24 sm:w-28 h-20 sm:h-22 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-white/10">
+                        <div className="relative w-20 sm:w-28 h-18 sm:h-22 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-white/10">
                           <img
                             src={item.image}
                             alt={item.name}
                             className={`w-full h-full object-cover ${item.imagePos || 'object-center'} group-hover:scale-105 transition-transform duration-500`}
                           />
-                          <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[9px] font-bold text-emerald-300 border border-emerald-500/30">
+                          <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[8px] sm:text-[9px] font-bold text-emerald-300 border border-emerald-500/30">
                             ASI
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-1 mb-0.5">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
+                            <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
                               {item.category}
                             </span>
-                            <span className="text-[10px] font-bold text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded shrink-0">
+                            <span className="text-[9px] sm:text-[10px] font-bold text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded shrink-0">
                               Verified
                             </span>
                           </div>
-                          <h4 className="text-sm font-bold text-white font-display truncate group-hover:text-cyan-300 transition-colors">
+                          <h4 className="text-xs sm:text-sm font-bold text-white font-display truncate group-hover:text-cyan-300 transition-colors">
                             {item.name}
                           </h4>
-                          <div className="flex items-center space-x-2 text-xs text-slate-300 mt-1 font-mono">
+                          <div className="flex items-center space-x-1.5 sm:space-x-2 text-[10px] sm:text-xs text-slate-300 mt-1 font-mono">
                             <span className="text-white font-bold">{item.indianPrice} / {item.foreignPrice}</span>
                             <span className="text-slate-500">•</span>
-                            <span className="text-[11px] text-slate-400 truncate">{item.timings.split('(')[0]}</span>
+                            <span className="text-[10px] sm:text-[11px] text-slate-400 truncate">{item.timings.split('(')[0]}</span>
                           </div>
-                          <div className="flex items-center space-x-2 text-[11px] text-slate-400 mt-1">
+                          <div className="flex items-center space-x-2 text-[10px] sm:text-[11px] text-slate-400 mt-1">
                             <span className="flex items-center gap-1">
                               <span className={`w-1.5 h-1.5 rounded-full ${item.crowd === 'High' ? 'bg-amber-400' : item.crowd === 'Medium' ? 'bg-cyan-400' : 'bg-emerald-400'}`} />
                               <span>Crowd: {item.crowd}</span>
@@ -497,52 +511,52 @@ export default function HomePage() {
         {/* ==================================================================== */}
         {/* 3. METRICS / STATS COUNTER STRIP */}
         {/* ==================================================================== */}
-        <section className="my-12">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            <div className="coder-card rounded-2xl p-5 text-center relative overflow-hidden">
-              <div className="text-3xl sm:text-4xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-300 mb-1">
+        <section className="my-8 sm:my-12">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
+            <div className="coder-card rounded-xl sm:rounded-2xl p-3 sm:p-5 text-center relative overflow-hidden">
+              <div className="text-2xl sm:text-4xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-300 mb-1">
                 10+
               </div>
-              <div className="text-xs sm:text-sm font-bold text-white mb-0.5">
+              <div className="text-[11px] sm:text-sm font-bold text-white mb-0.5">
                 Verified Heritage Sites
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[10px] sm:text-[11px] text-slate-400">
                 100% ASI authenticated ticketing URLs
               </p>
             </div>
 
-            <div className="coder-card rounded-2xl p-5 text-center relative overflow-hidden">
-              <div className="text-3xl sm:text-4xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-300 mb-1">
+            <div className="coder-card rounded-xl sm:rounded-2xl p-3 sm:p-5 text-center relative overflow-hidden">
+              <div className="text-2xl sm:text-4xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-300 mb-1">
                 ₹0
               </div>
-              <div className="text-xs sm:text-sm font-bold text-white mb-0.5">
+              <div className="text-[11px] sm:text-sm font-bold text-white mb-0.5">
                 Counterfeit Loss Guarantee
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[10px] sm:text-[11px] text-slate-400">
                 Official price breakdown protection
               </p>
             </div>
 
-            <div className="coder-card rounded-2xl p-5 text-center relative overflow-hidden">
-              <div className="text-3xl sm:text-4xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400 mb-1">
+            <div className="coder-card rounded-xl sm:rounded-2xl p-3 sm:p-5 text-center relative overflow-hidden">
+              <div className="text-2xl sm:text-4xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400 mb-1">
                 24/7
               </div>
-              <div className="text-xs sm:text-sm font-bold text-white mb-0.5">
+              <div className="text-[11px] sm:text-sm font-bold text-white mb-0.5">
                 Police Beat Corridors
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[10px] sm:text-[11px] text-slate-400">
                 Delhi Police PCR coverage overlay
               </p>
             </div>
 
-            <div className="coder-card rounded-2xl p-5 text-center relative overflow-hidden">
-              <div className="text-3xl sm:text-4xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-red-400 mb-1">
+            <div className="coder-card rounded-xl sm:rounded-2xl p-3 sm:p-5 text-center relative overflow-hidden">
+              <div className="text-2xl sm:text-4xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-red-400 mb-1">
                 112 & 1363
               </div>
-              <div className="text-xs sm:text-sm font-bold text-white mb-0.5">
+              <div className="text-[11px] sm:text-sm font-bold text-white mb-0.5">
                 Emergency Integration
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[10px] sm:text-[11px] text-slate-400">
                 1-tap & shake SOS gesture dispatch
               </p>
             </div>
@@ -552,12 +566,12 @@ export default function HomePage() {
         {/* ==================================================================== */}
         {/* 4. INTERACTIVE BENTO GRID FEATURES */}
         {/* ==================================================================== */}
-        <section className="my-16">
-          <div className="text-center max-w-2xl mx-auto mb-10">
+        <section className="my-10 sm:my-16">
+          <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10 px-2">
             <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-400 font-display">
               Comprehensive Protection Matrix
             </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold font-display text-white mt-1.5">
+            <h2 className="text-xl sm:text-3xl lg:text-4xl font-extrabold font-display text-white mt-1.5">
               Built Specifically for Delhi Travelers
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 mt-2">
@@ -565,7 +579,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
             {/* Feature 1: SafeVisit Pass */}
             <div className="relative group">
               {/* Ambient Multi-Color Glow Backdrop (signature glowing bg like hero animated section) */}
@@ -1070,7 +1084,7 @@ export default function HomePage() {
               </p>
               <div className="flex items-center space-x-2 text-xs sm:text-sm font-semibold text-cyan-400 pt-0.5">
                 <CheckCircle2 className="w-4 h-4 text-cyan-400 flex-shrink-0" />
-                <span>Smart India Hackathon 2026 Initiative</span>
+                <span>Ministry of Tourism & Police Safety Protocol</span>
               </div>
             </div>
 
@@ -1233,8 +1247,8 @@ export default function HomePage() {
 
           {/* Coder Army Bottom Divider & Legal Bar */}
           <hr className="border-0 border-t border-[var(--border-glass)] my-6 sm:my-7" />
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-300">
-            <p>© 2026 TravelMate Platform • Smart India Hackathon Prototype. All rights reserved.</p>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm text-slate-400 text-center sm:text-left">
+            <p>© 2026 TravelMate Platform • Official Delhi NCR Tourist Safety Ecosystem. All rights reserved.</p>
             <div className="flex items-center space-x-2 text-xs sm:text-sm font-medium text-emerald-400">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>Delhi Police 112 & ASI Telemetry Active</span>

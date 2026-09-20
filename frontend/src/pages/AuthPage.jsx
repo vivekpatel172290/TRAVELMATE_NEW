@@ -424,7 +424,7 @@ export default function AuthPage({ defaultMode = 'login' }) {
               </div>
             </form>
 
-            {/* Quick Demo Fill Buttons for Hackathon & Evaluation Convenience */}
+            {/* Quick Demo Fill Buttons for Testing & Evaluation Convenience */}
             <div className="mt-6 pt-5 border-t border-white/10">
               <div className="flex items-center justify-between mb-2.5">
                 <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center space-x-1">

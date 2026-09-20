@@ -1,5 +1,5 @@
 # TravelMate — Delhi Tourist Trust & Safety Layer
-### Smart India Hackathon (SIH) 2026 Prototype
+### Official Delhi NCR Tourist Safety Ecosystem
 
 > **Core Philosophy:** One tourist → One temporary Journey ID → connects Verified Destination → Official Ticket Source → SafeVisit Pass → Fair Fare Check → Language Support → Journey Safety → Evidence Vault → Incident Resolution.
 

@@ -1,7 +1,7 @@
 {
   "name": "travelmate-backend",
   "version": "1.0.0",
-  "description": "TravelMate Backend REST API - SIH 2026 Prototype",
+  "description": "TravelMate Backend REST API - Official Tourist Safety Platform",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

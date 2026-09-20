@@ -348,10 +348,10 @@ export default function PhraseHelperPage() {
 
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
               <div className="space-y-3">
-                {/* SIH / Bhashini Pill */}
+                {/* Trust / Bhashini Pill */}
                 <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md text-xs font-semibold text-slate-300 shadow-sm">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-emerald-300 font-bold">Smart India Hackathon 2026</span>
+                  <span className="text-emerald-300 font-bold">National Language AI</span>
                   <span className="text-slate-500">•</span>
                   <span className="text-cyan-300 font-bold">Digital India Bhashini Mission</span>
                 </div>
