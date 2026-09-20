@@ -45,27 +45,32 @@ router.get('/languages', (req, res) => {
  */
 const handleTranslationRequest = async (req, res, next) => {
   try {
-    const { text, sourceLang = 'en', targetLang = 'hi', apiKey, userId, inferenceApiKey } = req.body;
+    const { text, audioContent, sourceLang = 'en', targetLang = 'hi', apiKey, userId, inferenceApiKey, computeTTS = true } = req.body;
 
-    if (!text || typeof text !== 'string' || !text.trim()) {
+    if ((!text || typeof text !== 'string' || !text.trim()) && !audioContent) {
       return res.status(400).json({
         success: false,
-        error: 'The "text" field is required and must be a non-empty string.'
+        error: 'The "text" or "audioContent" field is required.'
       });
     }
 
     const result = await executeTranslation({
-      text: text.trim(),
+      text: (text || '').trim(),
+      audioContent,
       sourceLang,
       targetLang,
       apiKey,
       userId,
-      inferenceApiKey
+      inferenceApiKey,
+      computeTTS
     });
 
     res.json({
       success: true,
-      data: result
+      data: result,
+      sourceText: result.original,
+      translatedText: result.translated,
+      ttsAudio: result.ttsAudio
     });
   } catch (err) {
     next(err);
