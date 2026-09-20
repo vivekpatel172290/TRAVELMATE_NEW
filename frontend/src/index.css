@@ -24,6 +24,11 @@
   --orange-gradient: linear-gradient(135deg, #ff7b00 0%, #f97316 100%);
   --shadow-brand: 0 8px 32px rgba(99, 102, 241, 0.4);
   --shadow-orange: 0 8px 32px rgba(255, 123, 0, 0.4);
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #71717a;
+  --text-muted: #52525b;
+  --border-subtle: rgba(255, 255, 255, 0.04);
   --input-bg: #111318;
   --input-text: #F8FAFC;
   --input-border: rgba(255, 255, 255, 0.12);

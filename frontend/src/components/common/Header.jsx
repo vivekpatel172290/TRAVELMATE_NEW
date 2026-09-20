@@ -128,43 +128,38 @@ export default function Header({
             <span className="sm:hidden text-xs">SafePass</span>
           </button>
 
-          {/* Coder Army Signature Glowing Login Button or Authenticated Profile Menu */}
+          {/* Exact Coder Army Login Button or Authenticated Profile Menu */}
           {isAuthenticated && user ? (
-            <div className="relative" ref={dropdownRef}>
+            <div className="relative profile-dropdown-container" ref={dropdownRef}>
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 id="btn-user-profile-menu"
                 title={`Logged in as ${user.name}`}
-                className="flex items-center space-x-2 p-1 sm:px-2.5 sm:py-1.5 rounded-xl bg-[#131622] hover:bg-[#1a1f30] border border-white/15 text-white transition-all group"
+                className="group flex items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 bg-black/30 backdrop-blur-xl rounded-full border border-white/10 hover:border-[#6b30e3]/60 transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg cursor-pointer"
               >
                 <div className="relative">
                   <img
                     src={user.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.name)}`}
                     alt={user.name}
-                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg object-cover ring-1 ring-cyan-400/50"
+                    className="w-7 h-7 rounded-full object-cover ring-1 ring-[#6b30e3]/50"
                   />
-                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 border-2 border-[#0e1017] rounded-full animate-pulse" />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 border-2 border-[#0b0e14] rounded-full animate-pulse" />
                 </div>
-                <div className="hidden sm:flex flex-col text-left">
-                  <span className="text-xs font-bold text-slate-100 group-hover:text-cyan-300 transition-colors leading-tight truncate max-w-[90px]">
-                    {user.name.split(' ')[0]}
-                  </span>
-                  <span className="text-[10px] font-mono text-emerald-400 leading-tight">
-                    {user.nationality ? `${user.nationality.slice(0, 8)}` : 'Verified'}
-                  </span>
-                </div>
-                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-transform duration-200 ${userMenuOpen ? 'rotate-180 text-cyan-400' : ''}`} />
+                <span className="text-xs sm:text-sm font-semibold font-display text-[#f1f5f9] max-w-[85px] sm:max-w-[120px] truncate">
+                  {user.name}
+                </span>
+                <ChevronDown className={`h-4 w-4 text-[#94a3b8] transition-transform duration-300 ${userMenuOpen ? 'rotate-180 text-[#8b5cf6]' : ''}`} />
               </button>
 
               {/* User Dropdown Menu */}
               {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-60 rounded-2xl bg-[#0e111a] border border-white/15 shadow-2xl shadow-black/80 py-2 z-50 animate-in fade-in slide-in-from-top-2">
-                  <div className="px-3.5 py-2 border-b border-white/10">
+                <div className="absolute right-0 mt-3 w-64 bg-[#0e111a]/95 backdrop-blur-2xl rounded-2xl border border-white/15 shadow-2xl shadow-black/80 py-2 z-50 animate-in fade-in slide-in-from-top-2">
+                  <div className="px-4 py-2.5 border-b border-white/10">
                     <p className="text-xs font-bold text-white truncate">{user.name}</p>
-                    <p className="text-[11px] text-slate-400 truncate">{user.email}</p>
+                    <p className="text-[11px] text-[#94a3b8] truncate">{user.email}</p>
                     <div className="flex items-center space-x-1.5 mt-1.5">
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono border border-cyan-500/30">
-                        {user.journey_code || journey?.journey_code || 'TM-DEL-2026-X89K'}
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#6b30e3]/20 text-[#c4b5fd] font-mono border border-[#6b30e3]/40">
+                        {user.journey_code || journey?.journey_code || 'SafePass Active'}
                       </span>
                       <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
                         Online
@@ -175,17 +170,17 @@ export default function Header({
                     <Link
                       to="/safe-pass"
                       onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center space-x-2 px-3.5 py-2 text-xs text-slate-300 hover:text-white hover:bg-white/[0.06] transition-colors"
+                      className="flex items-center space-x-2.5 px-4 py-2 text-xs text-slate-300 hover:text-white hover:bg-white/[0.06] transition-colors"
                     >
-                      <Shield className="w-3.5 h-3.5 text-cyan-400" />
+                      <Shield className="w-4 h-4 text-[#8b5cf6]" />
                       <span>My SafePass QR Code</span>
                     </Link>
                     <Link
                       to="/safe-journey"
                       onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center space-x-2 px-3.5 py-2 text-xs text-slate-300 hover:text-white hover:bg-white/[0.06] transition-colors"
+                      className="flex items-center space-x-2.5 px-4 py-2 text-xs text-slate-300 hover:text-white hover:bg-white/[0.06] transition-colors"
                     >
-                      <User className="w-3.5 h-3.5 text-indigo-400" />
+                      <User className="w-4 h-4 text-cyan-400" />
                       <span>Active Journey Corridor</span>
                     </Link>
                   </div>
@@ -195,9 +190,9 @@ export default function Header({
                         setUserMenuOpen(false);
                         logout();
                       }}
-                      className="flex items-center space-x-2 w-full px-3.5 py-2 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
+                      className="flex items-center space-x-2.5 w-full px-4 py-2 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
                     >
-                      <LogOut className="w-3.5 h-3.5" />
+                      <LogOut className="w-4 h-4" />
                       <span>Sign Out</span>
                     </button>
                   </div>
@@ -205,19 +200,17 @@ export default function Header({
               )}
             </div>
           ) : (
-            <Link
-              to="/login"
-              id="btn-coder-army-login"
-              title="Tourist SafePass Login & Registration"
-              className="relative group/coderlogin inline-flex items-center"
-            >
-              {/* Coder Army Outer Ambient Halo */}
-              <span className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-400 opacity-70 group-hover/coderlogin:opacity-100 blur-sm transition-all duration-300 animate-pulse" />
-              {/* Coder Army Inner Cyber Core Button */}
-              <span className="relative px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-[#0e1017] group-hover/coderlogin:bg-[#141824] border border-white/20 text-xs sm:text-sm font-extrabold font-display text-white group-hover/coderlogin:text-cyan-300 flex items-center space-x-1.5 transition-all shadow-md active:scale-95">
-                <LogIn className="w-3.5 h-3.5 text-cyan-400 group-hover/coderlogin:translate-x-0.5 transition-transform" />
-                <span>Login</span>
-              </span>
+            <Link to="/login" className="no-underline shrink-0" id="btn-coder-login">
+              <button
+                type="button"
+                className="group relative px-5 sm:px-6 py-2 sm:py-2.5 bg-[#6b30e3] backdrop-blur-xl rounded-full border cursor-pointer border-white/10 text-white hover:text-white transition-all duration-300 overflow-hidden hover:scale-105 shadow-md hover:shadow-lg shadow-[#6b30e3]/40"
+              >
+                <div className="flex items-center gap-2 relative z-10">
+                  <LogIn className="h-4 w-4 text-white" />
+                  <span className="font-semibold text-xs sm:text-sm font-display tracking-wide">Login</span>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#6b30e3] to-[#8b5cf6] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" />
+              </button>
             </Link>
           )}
         </div>

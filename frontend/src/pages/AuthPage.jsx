@@ -397,28 +397,30 @@ export default function AuthPage({ defaultMode = 'login' }) {
                 </>
               )}
 
-              {/* Submit Button with Coder Army Glowing Theme */}
+              {/* Submit Button with Exact Coder Army Glowing Theme */}
               <div className="pt-2">
-                <div className="relative group/submit">
-                  <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-75 group-hover/submit:opacity-100 blur-sm transition-all duration-300" />
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="relative w-full py-3 px-6 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-400 text-white text-sm font-extrabold font-display tracking-wide flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/30 active:scale-[0.98] transition-all disabled:opacity-60"
-                  >
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="group relative w-full py-3 sm:py-3.5 px-6 bg-[#6b30e3] backdrop-blur-xl rounded-full border cursor-pointer border-white/10 text-white hover:text-white transition-all duration-300 overflow-hidden hover:scale-[1.02] shadow-md hover:shadow-lg shadow-[#6b30e3]/40 flex items-center justify-center space-x-2 disabled:opacity-60"
+                >
+                  <div className="flex items-center justify-center space-x-2 relative z-10">
                     {loading ? (
-                      <div className="flex items-center space-x-2">
+                      <>
                         <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                        <span>Verifying SafePass Credentials...</span>
-                      </div>
+                        <span className="font-semibold font-display text-sm tracking-wide">Verifying SafePass Credentials...</span>
+                      </>
                     ) : (
                       <>
-                        <span>{mode === 'signup' ? 'Generate SafePass Account' : 'Sign In to SafeVisit'}</span>
-                        <ArrowRight className="w-4 h-4" />
+                        <span className="font-semibold font-display text-sm tracking-wide">
+                          {mode === 'signup' ? 'Generate SafePass Account' : 'Sign In to SafeVisit'}
+                        </span>
+                        <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
                       </>
                     )}
-                  </button>
-                </div>
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#6b30e3] to-[#8b5cf6] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" />
+                </button>
               </div>
             </form>
 

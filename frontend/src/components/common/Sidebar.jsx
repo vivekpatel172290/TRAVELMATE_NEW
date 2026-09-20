@@ -339,12 +339,10 @@ export default function Sidebar({
                 <Link
                   to="/login"
                   onClick={handleLinkClick}
-                  className="w-9 h-9 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 p-[1px] flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-md shadow-indigo-600/30"
+                  className="w-9 h-9 rounded-full bg-[#6b30e3] hover:bg-[#8b5cf6] border border-white/10 flex items-center justify-center text-white transition-all hover:scale-110 shadow-md shadow-[#6b30e3]/40"
                   title="Tourist SafePass Login"
                 >
-                  <div className="w-full h-full bg-[#0e1017] rounded-[11px] flex items-center justify-center text-cyan-300 hover:text-white">
-                    <LogIn className="w-4 h-4" />
-                  </div>
+                  <LogIn className="w-4 h-4 text-white" />
                 </Link>
                 {/* Floating Tooltip */}
                 <div className="absolute left-full ml-3 px-3 py-1.5 bg-[#121622] text-white text-xs rounded-xl shadow-2xl border border-white/15 whitespace-nowrap z-50 pointer-events-none opacity-0 group-hover/minilogin:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all">
@@ -412,10 +410,18 @@ export default function Sidebar({
                   <Link
                     to="/login"
                     onClick={handleLinkClick}
-                    className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-400 text-white text-xs font-bold font-display flex items-center justify-center space-x-1.5 shadow-md shadow-indigo-600/30 transition-all active:scale-[0.98]"
+                    className="w-full block no-underline"
                   >
-                    <LogIn className="w-3.5 h-3.5" />
-                    <span>Sign In / Register</span>
+                    <button
+                      type="button"
+                      className="group relative w-full px-4 py-2.5 bg-[#6b30e3] backdrop-blur-xl rounded-full border cursor-pointer border-white/10 text-white hover:text-white transition-all duration-300 overflow-hidden hover:scale-[1.02] shadow-md hover:shadow-lg shadow-[#6b30e3]/40 flex items-center justify-center gap-2"
+                    >
+                      <div className="flex items-center gap-2 relative z-10">
+                        <LogIn className="w-4 h-4 text-white" />
+                        <span className="font-semibold text-xs font-display tracking-wide">Sign In / Register</span>
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#6b30e3] to-[#8b5cf6] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" />
+                    </button>
                   </Link>
                 </div>
               </div>
