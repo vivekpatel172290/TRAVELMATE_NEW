@@ -80,33 +80,75 @@ export function clearBhashiniConfig() {
 }
 
 /**
- * Supported Languages List (Bhashini Indian Languages + International Tourist Languages)
+ * Official Indian Languages supported by Bhashini (MeitY National Language Mission)
+ */
+export const INDIAN_LANGUAGES = [
+  { code: 'hi', name: 'Hindi', native: 'हिन्दी', isIndian: true, speechLang: 'hi-IN' },
+  { code: 'bho', name: 'Bhojpuri', native: 'भोजपुरी', isIndian: true, speechLang: 'hi-IN' },
+  { code: 'as', name: 'Assamese', native: 'অসমীয়া', isIndian: true, speechLang: 'as-IN' },
+  { code: 'bn', name: 'Bengali', native: 'বাংলা', isIndian: true, speechLang: 'bn-IN' },
+  { code: 'brx', name: 'Bodo', native: 'बर’', isIndian: true, speechLang: 'hi-IN' },
+  { code: 'doi', name: 'Dogri', native: 'डोगरी', isIndian: true, speechLang: 'hi-IN' },
+  { code: 'gu', name: 'Gujarati', native: 'ગુજરાતી', isIndian: true, speechLang: 'gu-IN' },
+  { code: 'kn', name: 'Kannada', native: 'ಕನ್ನಡ', isIndian: true, speechLang: 'kn-IN' },
+  { code: 'ks', name: 'Kashmiri', native: 'کٲشُر', isIndian: true, speechLang: 'ur-IN' },
+  { code: 'gom', name: 'Konkani', native: 'कोंकणी', isIndian: true, speechLang: 'mr-IN' },
+  { code: 'mai', name: 'Maithili', native: 'मैथिली', isIndian: true, speechLang: 'hi-IN' },
+  { code: 'ml', name: 'Malayalam', native: 'മലയാളം', isIndian: true, speechLang: 'ml-IN' },
+  { code: 'mni', name: 'Manipuri', native: 'ꯃꯤꯇꯩꯂꯣꯟ', isIndian: true, speechLang: 'bn-IN' },
+  { code: 'mr', name: 'Marathi', native: 'मराठी', isIndian: true, speechLang: 'mr-IN' },
+  { code: 'ne', name: 'Nepali', native: 'नेपाली', isIndian: true, speechLang: 'ne-NP' },
+  { code: 'or', name: 'Odia', native: 'ଓଡ଼ିଆ', isIndian: true, speechLang: 'or-IN' },
+  { code: 'pa', name: 'Punjabi', native: 'ਪੰਜਾਬੀ', isIndian: true, speechLang: 'pa-IN' },
+  { code: 'sa', name: 'Sanskrit', native: 'संस्कृतम्', isIndian: true, speechLang: 'hi-IN' },
+  { code: 'sat', name: 'Santali', native: 'ᱥᱟᱱᱛᱟᱲᱤ', isIndian: true, speechLang: 'hi-IN' },
+  { code: 'sd', name: 'Sindhi', native: 'سنڌي', isIndian: true, speechLang: 'ur-IN' },
+  { code: 'ta', name: 'Tamil', native: 'தமிழ்', isIndian: true, speechLang: 'ta-IN' },
+  { code: 'te', name: 'Telugu', native: 'తెలుగు', isIndian: true, speechLang: 'te-IN' },
+  { code: 'ur', name: 'Urdu', native: 'اردو', isIndian: true, speechLang: 'ur-IN' },
+];
+
+/**
+ * Major International Languages for Foreign Tourists
+ */
+export const INTERNATIONAL_LANGUAGES = [
+  { code: 'en', name: 'English', native: 'English', isIndian: false, speechLang: 'en-IN' },
+  { code: 'es', name: 'Spanish', native: 'Español', isIndian: false, speechLang: 'es-ES' },
+  { code: 'fr', name: 'French', native: 'Français', isIndian: false, speechLang: 'fr-FR' },
+  { code: 'de', name: 'German', native: 'Deutsch', isIndian: false, speechLang: 'de-DE' },
+  { code: 'it', name: 'Italian', native: 'Italiano', isIndian: false, speechLang: 'it-IT' },
+  { code: 'pt', name: 'Portuguese', native: 'Português', isIndian: false, speechLang: 'pt-PT' },
+  { code: 'ru', name: 'Russian', native: 'Русский', isIndian: false, speechLang: 'ru-RU' },
+  { code: 'zh', name: 'Chinese (Mandarin)', native: '中文', isIndian: false, speechLang: 'zh-CN' },
+  { code: 'ja', name: 'Japanese', native: '日本語', isIndian: false, speechLang: 'ja-JP' },
+  { code: 'ko', name: 'Korean', native: '한국어', isIndian: false, speechLang: 'ko-KR' },
+  { code: 'ar', name: 'Arabic', native: 'العربية', isIndian: false, speechLang: 'ar-SA' },
+  { code: 'nl', name: 'Dutch', native: 'Nederlands', isIndian: false, speechLang: 'nl-NL' },
+  { code: 'tr', name: 'Turkish', native: 'Türkçe', isIndian: false, speechLang: 'tr-TR' },
+  { code: 'vi', name: 'Vietnamese', native: 'Tiếng Việt', isIndian: false, speechLang: 'vi-VN' },
+  { code: 'th', name: 'Thai', native: 'ไทย', isIndian: false, speechLang: 'th-TH' },
+  { code: 'id', name: 'Indonesian', native: 'Bahasa Indonesia', isIndian: false, speechLang: 'id-ID' },
+  { code: 'ms', name: 'Malay', native: 'Bahasa Melayu', isIndian: false, speechLang: 'ms-MY' },
+  { code: 'tl', name: 'Filipino (Tagalog)', native: 'Tagalog', isIndian: false, speechLang: 'fil-PH' },
+  { code: 'he', name: 'Hebrew', native: 'עברית', isIndian: false, speechLang: 'he-IL' },
+  { code: 'pl', name: 'Polish', native: 'Polski', isIndian: false, speechLang: 'pl-PL' },
+  { code: 'sv', name: 'Swedish', native: 'Svenska', isIndian: false, speechLang: 'sv-SE' },
+  { code: 'el', name: 'Greek', native: 'Ελληνικά', isIndian: false, speechLang: 'el-GR' },
+  { code: 'uk', name: 'Ukrainian', native: 'Українська', isIndian: false, speechLang: 'uk-UA' },
+  { code: 'cs', name: 'Czech', native: 'Čeština', isIndian: false, speechLang: 'cs-CZ' },
+  { code: 'hu', name: 'Hungarian', native: 'Magyar', isIndian: false, speechLang: 'hu-HU' },
+  { code: 'ro', name: 'Romanian', native: 'Română', isIndian: false, speechLang: 'ro-RO' },
+  { code: 'da', name: 'Danish', native: 'Dansk', isIndian: false, speechLang: 'da-DK' },
+  { code: 'fi', name: 'Finnish', native: 'Suomi', isIndian: false, speechLang: 'fi-FI' },
+  { code: 'no', name: 'Norwegian', native: 'Norsk', isIndian: false, speechLang: 'nb-NO' },
+];
+
+/**
+ * Combined Supported Languages List
  */
 export const SUPPORTED_LANGUAGES = [
-  // Primary Indian National Languages
-  { code: 'hi', name: 'Hindi (हिन्दी)', flag: '🇮🇳', nativeName: 'हिन्दी', isIndian: true, speechLang: 'hi-IN' },
-  { code: 'en', name: 'English', flag: '🇬🇧', nativeName: 'English', isIndian: false, speechLang: 'en-IN' },
-  { code: 'bn', name: 'Bengali (বাংলা)', flag: '🇮🇳', nativeName: 'বাংলা', isIndian: true, speechLang: 'bn-IN' },
-  { code: 'ta', name: 'Tamil (தமிழ்)', flag: '🇮🇳', nativeName: 'தமிழ்', isIndian: true, speechLang: 'ta-IN' },
-  { code: 'te', name: 'Telugu (తెలుగు)', flag: '🇮🇳', nativeName: 'తెలుగు', isIndian: true, speechLang: 'te-IN' },
-  { code: 'mr', name: 'Marathi (मराठी)', flag: '🇮🇳', nativeName: 'मराठी', isIndian: true, speechLang: 'mr-IN' },
-  { code: 'gu', name: 'Gujarati (ગુજરાતી)', flag: '🇮🇳', nativeName: 'ગુજરાતી', isIndian: true, speechLang: 'gu-IN' },
-  { code: 'kn', name: 'Kannada (ಕನ್ನಡ)', flag: '🇮🇳', nativeName: 'ಕನ್ನಡ', isIndian: true, speechLang: 'kn-IN' },
-  { code: 'ml', name: 'Malayalam (മലയാളം)', flag: '🇮🇳', nativeName: 'മലയാളം', isIndian: true, speechLang: 'ml-IN' },
-  { code: 'pa', name: 'Punjabi (ਪੰਜਾਬੀ)', flag: '🇮🇳', nativeName: 'ਪੰਜਾਬੀ', isIndian: true, speechLang: 'pa-IN' },
-  { code: 'or', name: 'Odia (ଓଡ଼ିଆ)', flag: '🇮🇳', nativeName: 'ଓଡ଼ିଆ', isIndian: true, speechLang: 'or-IN' },
-  { code: 'ur', name: 'Urdu (اردو)', flag: '🇮🇳', nativeName: 'اردو', isIndian: true, speechLang: 'ur-IN' },
-  
-  // Major International Languages for Foreign Tourists
-  { code: 'es', name: 'Español (Spanish)', flag: '🇪🇸', nativeName: 'Español', isIndian: false, speechLang: 'es-ES' },
-  { code: 'fr', name: 'Français (French)', flag: '🇫🇷', nativeName: 'Français', isIndian: false, speechLang: 'fr-FR' },
-  { code: 'de', name: 'Deutsch (German)', flag: '🇩🇪', nativeName: 'Deutsch', isIndian: false, speechLang: 'de-DE' },
-  { code: 'ru', name: 'Русский (Russian)', flag: '🇷🇺', nativeName: 'Русский', isIndian: false, speechLang: 'ru-RU' },
-  { code: 'ja', name: '日本語 (Japanese)', flag: '🇯🇵', nativeName: '日本語', isIndian: false, speechLang: 'ja-JP' },
-  { code: 'ko', name: '한국어 (Korean)', flag: '🇰🇷', nativeName: '한국어', isIndian: false, speechLang: 'ko-KR' },
-  { code: 'ar', name: 'العربية (Arabic)', flag: '🇸🇦', nativeName: 'العربية', isIndian: false, speechLang: 'ar-SA' },
-  { code: 'it', name: 'Italiano (Italian)', flag: '🇮🇹', nativeName: 'Italiano', isIndian: false, speechLang: 'it-IT' },
-  { code: 'zh-CN', name: '中文 (Chinese)', flag: '🇨🇳', nativeName: '简体中文', isIndian: false, speechLang: 'zh-CN' },
+  ...INDIAN_LANGUAGES,
+  ...INTERNATIONAL_LANGUAGES,
 ];
 
 /**
