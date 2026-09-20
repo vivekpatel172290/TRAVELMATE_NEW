@@ -94,12 +94,12 @@ export default function Sidebar({
         },
         {
           to: '/safe-journey',
-          label: 'Safe Track',
-          shortLabel: 'Track',
+          label: 'Safe Route',
+          shortLabel: 'Route',
           badge: 'Live GPS',
           badgeColor: 'amber',
           icon: Navigation,
-          description: 'Police beat corridor safety & alerts'
+          description: 'Police beat corridor routing & alerts'
         },
         {
           to: '/vault',

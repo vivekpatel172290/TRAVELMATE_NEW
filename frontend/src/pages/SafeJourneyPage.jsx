@@ -359,7 +359,7 @@ export default function SafeJourneyPage() {
               <span>Real-Time Police Beat & Safety Telemetry</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black font-display text-white tracking-tight">
-              Safe Track & <span className="coder-text-gradient">Corridor Radar</span>
+              Safe Route & <span className="coder-text-gradient">Corridor Radar</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 mt-1">
               Live GPS deviation monitoring, police-patrolled corridor evaluation, and official fare benchmarks.

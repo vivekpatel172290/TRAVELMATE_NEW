@@ -707,7 +707,7 @@ export default function HomePage() {
                   </div>
                   <div className="flex items-center justify-between mb-2.5">
                     <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-cyan-300 transition-colors">
-                      Safe Track & Corridors
+                      Safe Route & Corridors
                     </h3>
                     <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
                       Live GPS
@@ -721,7 +721,7 @@ export default function HomePage() {
                   to="/safe-journey"
                   className="relative z-10 inline-flex items-center text-sm font-bold text-cyan-400 hover:text-cyan-300 group-hover:translate-x-1 transition-all pt-2 border-t border-white/[0.06]"
                 >
-                  <span>Track Journey</span>
+                  <span>Explore Safe Route</span>
                   <ArrowRight className="w-4 h-4 ml-1.5" />
                 </Link>
               </div>
@@ -1156,7 +1156,7 @@ export default function HomePage() {
                 <li>
                   <Link to="/safe-journey" className="text-slate-200 hover:text-cyan-300 font-medium transition-colors flex items-center space-x-2">
                     <span className="text-slate-400 font-bold">›</span>
-                    <span>Safe Track & Police Corridors</span>
+                    <span>Safe Route & Police Corridors</span>
                   </Link>
                 </li>
                 <li>
