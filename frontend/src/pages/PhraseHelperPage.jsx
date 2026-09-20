@@ -357,7 +357,7 @@ export default function PhraseHelperPage() {
                 </div>
 
                 <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display tracking-tight leading-tight">
-                  Tourist Phrase Translator &{' '}
+                  Bhashini Translator &{' '}
                   <span className="coder-text-gradient">Voice AI Assistant</span>
                 </h1>
 

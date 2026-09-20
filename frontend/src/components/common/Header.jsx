@@ -35,7 +35,7 @@ export default function Header({
     { to: '/planner', label: 'Trip Planner' },
     { to: '/fare-meter', label: 'Fair Fare' },
     { to: '/vault', label: 'Vault' },
-    { to: '/phrase-helper', label: 'Phrase Translator' }
+    { to: '/phrase-helper', label: 'Bhashini Translator' }
   ];
 
   return (

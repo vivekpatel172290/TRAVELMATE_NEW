@@ -56,9 +56,9 @@ export default function Sidebar({
         },
         {
           to: '/phrase-helper',
-          label: 'Phrase Translator',
-          shortLabel: 'Phrases',
-          badge: 'Bhashini AI',
+          label: 'Bhashini Translator',
+          shortLabel: 'Bhashini',
+          badge: 'Official AI',
           badgeColor: 'indigo',
           icon: Globe,
           description: 'Real-time audio & Hindi speech'

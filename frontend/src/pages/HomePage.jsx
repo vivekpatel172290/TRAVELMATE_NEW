@@ -390,7 +390,7 @@ export default function HomePage() {
                   className="coder-btn-secondary text-slate-200 font-semibold px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl text-xs sm:text-sm flex items-center justify-center space-x-2 transition-all hover:text-white w-full sm:w-auto text-center"
                 >
                   <Globe className="w-4 h-4 text-purple-400 shrink-0" />
-                  <span>Phrase Translator</span>
+                  <span>Bhashini Translator</span>
                 </Link>
               </div>
 
@@ -632,7 +632,7 @@ export default function HomePage() {
                   </div>
                   <div className="flex items-center justify-between mb-2.5">
                     <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-purple-300 transition-colors">
-                      Phrase Translator
+                      Bhashini Translator
                     </h3>
                     <button
                       type="button"
@@ -642,7 +642,7 @@ export default function HomePage() {
                       }}
                       className="text-xs font-bold px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase tracking-wider hover:bg-purple-500/30 transition-colors"
                     >
-                      Bhashini AI
+                      Official AI
                     </button>
                   </div>
                   <p className="text-sm sm:text-[15px] text-slate-300 leading-relaxed mb-5">
@@ -653,7 +653,7 @@ export default function HomePage() {
                   to="/phrase-helper"
                   className="relative z-10 inline-flex items-center text-sm font-bold text-purple-400 hover:text-purple-300 group-hover:translate-x-1 transition-all pt-2 border-t border-white/[0.06]"
                 >
-                  <span>Open Phrase Translator</span>
+                  <span>Open Bhashini Translator</span>
                   <ArrowRight className="w-4 h-4 ml-1.5" />
                 </Link>
               </div>
@@ -1144,7 +1144,7 @@ export default function HomePage() {
                 <li>
                   <Link to="/phrase-helper" className="text-slate-200 hover:text-cyan-300 font-medium transition-colors flex items-center space-x-2">
                     <span className="text-slate-400 font-bold">›</span>
-                    <span>Bhashini Phrase Translator</span>
+                    <span>Bhashini Translator</span>
                   </Link>
                 </li>
                 <li>
