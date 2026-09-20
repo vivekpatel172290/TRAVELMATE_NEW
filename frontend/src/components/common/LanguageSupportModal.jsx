@@ -27,8 +27,7 @@ import {
   translateText,
   playAudioSpeech,
   stopAudioSpeech,
-  PRELOADED_TOURIST_PHRASES,
-  BHASHINI_CONFIG
+  PRELOADED_TOURIST_PHRASES
 } from '../../services/bhashiniService';
 
 export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActive = false }) {
