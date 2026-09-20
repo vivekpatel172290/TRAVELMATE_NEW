@@ -18,36 +18,72 @@ export default function AdminDashboardPage() {
   const [flaggedFares, setFlaggedFares] = useState([]);
   const [activeTab, setActiveTab] = useState('incidents'); // 'incidents', 'places', 'fares'
   const [officerNotes, setOfficerNotes] = useState({});
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastRefreshedAt, setLastRefreshedAt] = useState(null);
+  const [feedbackToast, setFeedbackToast] = useState(null);
 
   useEffect(() => {
-    loadAdminData();
+    loadAdminData(false);
   }, []);
 
-  const loadAdminData = async () => {
-    const statsRes = await api.getAdminStats();
-    if (statsRes.success) setStats(statsRes.data);
-
-    const incidentsRes = await api.getAdminIncidents();
-    if (incidentsRes.success) setIncidents(incidentsRes.data);
-
-    const faresRes = await api.getFlaggedFares();
-    if (faresRes.success && faresRes.data) {
-      setFlaggedFares(faresRes.data);
-    }
-
+  const loadAdminData = async (manual = false) => {
+    setIsRefreshing(true);
     try {
-      const pRes = await fetch(`${API_BASE}/admin/places/freshness`);
-      const pData = await pRes.json();
-      if (pData.success) setPlacesFreshness(pData.data);
-      else throw new Error('fetch error');
-    } catch {
-      // Fallback place audit records
-      setPlacesFreshness([
-        { id: 'pl-red-fort-01', name: 'Red Fort (Lal Qila)', last_verified: '2026-08-20', status: 'Official', needs_reverification: false },
-        { id: 'pl-qutub-minar-02', name: 'Qutub Minar', last_verified: '2026-08-20', status: 'Official', needs_reverification: false },
-        { id: 'pl-purana-qila-05', name: 'Purana Qila', last_verified: '2026-08-10', status: 'Official', needs_reverification: false },
-        { id: 'pl-jama-masjid-09', name: 'Jama Masjid', last_verified: '2026-07-01', status: 'Stale', needs_reverification: true }
+      const [statsRes, incidentsRes, faresRes, placesRes] = await Promise.allSettled([
+        api.getAdminStats(),
+        api.getAdminIncidents(),
+        api.getFlaggedFares(),
+        fetch(`${API_BASE}/admin/places/freshness`).then(r => r.json())
       ]);
+
+      if (statsRes.status === 'fulfilled' && statsRes.value?.success) {
+        setStats(statsRes.value.data);
+      }
+
+      if (incidentsRes.status === 'fulfilled' && incidentsRes.value?.success) {
+        setIncidents(incidentsRes.value.data || []);
+      }
+
+      if (faresRes.status === 'fulfilled' && faresRes.value?.success) {
+        setFlaggedFares(faresRes.value.data || []);
+      }
+
+      if (placesRes.status === 'fulfilled' && placesRes.value?.success) {
+        setPlacesFreshness(placesRes.value.data || []);
+      } else {
+        // Fallback place audit records
+        setPlacesFreshness([
+          { id: 'pl-red-fort-01', name: 'Red Fort (Lal Qila)', last_verified: '2026-08-20', status: 'Official', needs_reverification: false },
+          { id: 'pl-qutub-minar-02', name: 'Qutub Minar', last_verified: '2026-08-20', status: 'Official', needs_reverification: false },
+          { id: 'pl-purana-qila-05', name: 'Purana Qila', last_verified: '2026-08-10', status: 'Official', needs_reverification: false },
+          { id: 'pl-jama-masjid-09', name: 'Jama Masjid', last_verified: '2026-07-01', status: 'Stale', needs_reverification: true }
+        ]);
+      }
+
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      setLastRefreshedAt(timeStr);
+
+      if (manual) {
+        const incCount = incidentsRes.status === 'fulfilled' && incidentsRes.value?.data ? incidentsRes.value.data.length : 0;
+        const fareCount = faresRes.status === 'fulfilled' && faresRes.value?.data ? faresRes.value.data.length : 0;
+        setFeedbackToast({
+          type: 'success',
+          message: `Live Queue Synced at ${timeStr} • ${incCount} incidents & ${fareCount} fare audits active`
+        });
+        setTimeout(() => setFeedbackToast(null), 4000);
+      }
+    } catch (err) {
+      console.error('Error refreshing admin live queue:', err);
+      if (manual) {
+        setFeedbackToast({
+          type: 'error',
+          message: 'Synced with cached live control room state'
+        });
+        setTimeout(() => setFeedbackToast(null), 4000);
+      }
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 450);
     }
   };
 
@@ -61,6 +97,8 @@ export default function AdminDashboardPage() {
         }
         return p;
       }));
+      const statsRes = await api.getAdminStats();
+      if (statsRes.success) setStats(statsRes.data);
     }
   };
 
@@ -68,11 +106,13 @@ export default function AdminDashboardPage() {
     try {
       const res = await api.updateIncidentStatus(id, status, officerNotes[id] || 'Verified by Delhi Tourist Police Officer');
       if (res.success) {
-        setIncidents(incidents.map(i => i.id === id ? { ...i, status } : i));
+        setIncidents(prev => prev.map(i => i.id === id ? { ...i, status } : i));
+        const statsRes = await api.getAdminStats();
+        if (statsRes.success) setStats(statsRes.data);
       }
     } catch (e) {
       console.error(e);
-      setIncidents(incidents.map(i => i.id === id ? { ...i, status } : i));
+      setIncidents(prev => prev.map(i => i.id === id ? { ...i, status } : i));
     }
   };
 
@@ -86,7 +126,7 @@ export default function AdminDashboardPage() {
 
       <div className="relative z-10 max-w-6xl mx-auto">
         {/* Dashboard Top Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div className="flex items-start sm:items-center gap-3.5">
             <img
               src="/logo.jpg"
@@ -107,14 +147,51 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          <button
-            onClick={loadAdminData}
-            className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 rounded-xl text-xs font-bold flex items-center space-x-2 transition-all shrink-0 self-start sm:self-center"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span>Refresh Live Queue</span>
-          </button>
+          <div className="flex items-center space-x-3 shrink-0 self-start sm:self-center">
+            {lastRefreshedAt && (
+              <span className="hidden md:inline-flex items-center space-x-1.5 text-[11px] font-mono text-slate-400 bg-white/5 border border-white/5 px-2.5 py-1 rounded-lg">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span>Synced: {lastRefreshedAt}</span>
+              </span>
+            )}
+
+            <button
+              type="button"
+              id="btn-refresh-live-queue"
+              disabled={isRefreshing}
+              onClick={() => loadAdminData(true)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 transition-all border shadow-sm ${
+                isRefreshing
+                  ? 'bg-indigo-600/40 border-indigo-500/50 text-indigo-200 cursor-wait'
+                  : 'bg-white/5 hover:bg-indigo-600 hover:text-white border-white/10 text-slate-200 hover:border-indigo-500 active:scale-95'
+              }`}
+            >
+              <RefreshCw className={`w-3.5 h-3.5 transition-transform ${isRefreshing ? 'animate-spin text-white' : 'text-indigo-400'}`} />
+              <span>{isRefreshing ? 'Syncing Live Queue...' : 'Refresh Live Queue'}</span>
+            </button>
+          </div>
         </div>
+
+        {/* Live Sync Status Toast Notification */}
+        {feedbackToast && (
+          <div className={`mb-6 p-3 rounded-2xl border text-xs font-semibold flex items-center justify-between transition-all animate-in fade-in slide-in-from-top-2 duration-200 ${
+            feedbackToast.type === 'success'
+              ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+              : 'bg-amber-500/15 border-amber-500/30 text-amber-300'
+          }`}>
+            <div className="flex items-center space-x-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>{feedbackToast.message}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setFeedbackToast(null)}
+              className="text-slate-400 hover:text-white p-0.5"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
 
       {/* Overview Stat Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">

@@ -100,13 +100,13 @@ exports.getPlacesFreshness = async (req, res, next) => {
 };
 
 // 5. Get Flagged Fare Disputes Logged by Tourists
-exports.getFlaggedFares = (req, res, next) => {
+exports.getFlaggedFares = async (req, res, next) => {
   try {
-    const flagged = store.fare_estimates.filter(f => f.is_overcharge);
+    const flagged = await db.fares.getFlagged();
     res.json({
       success: true,
-      count: flagged.length,
-      data: flagged
+      count: flagged ? flagged.length : 0,
+      data: flagged || []
     });
   } catch (error) {
     next(error);

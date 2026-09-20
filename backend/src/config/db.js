@@ -1043,6 +1043,24 @@ const db = {
       }
       store.fare_estimates.push(estimate);
       return estimate;
+    },
+
+    async getFlagged() {
+      if (isPostgresConnected && pool) {
+        try {
+          const res = await pool.query(`
+            SELECT f.*, j.journey_code 
+            FROM fare_estimates f
+            LEFT JOIN journeys j ON f.journey_id = j.id
+            WHERE f.is_overcharge = true
+            ORDER BY f.created_at DESC;
+          `);
+          return res.rows;
+        } catch (e) {
+          console.error('[DB DAL] fares.getFlagged error:', e.message);
+        }
+      }
+      return store.fare_estimates.filter(f => f.is_overcharge);
     }
   },
 
