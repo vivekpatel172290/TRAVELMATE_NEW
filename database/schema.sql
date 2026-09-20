@@ -149,8 +149,14 @@ CREATE TABLE IF NOT EXISTS safety_zones (
     last_updated DATE DEFAULT CURRENT_DATE
 );
 
--- Indexes for performance
+-- Indexes for performance & high-concurrency scalability
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id);
 CREATE INDEX IF NOT EXISTS idx_journeys_code ON journeys(journey_code);
+CREATE INDEX IF NOT EXISTS idx_journeys_traveler_id ON journeys(traveler_id);
 CREATE INDEX IF NOT EXISTS idx_places_key ON places(place_key);
 CREATE INDEX IF NOT EXISTS idx_incidents_status ON incidents(status);
+CREATE INDEX IF NOT EXISTS idx_incidents_journey ON incidents(journey_id);
 CREATE INDEX IF NOT EXISTS idx_evidence_journey ON evidence_vault(journey_id);
+CREATE INDEX IF NOT EXISTS idx_fare_estimates_journey ON fare_estimates(journey_id);
+CREATE INDEX IF NOT EXISTS idx_place_reviews_place ON place_reviews(place_id);

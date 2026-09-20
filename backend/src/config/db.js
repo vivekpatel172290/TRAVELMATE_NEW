@@ -424,7 +424,10 @@ async function initDatabase() {
     pool = new Pool({
       connectionString: dbUrl,
       ssl: { rejectUnauthorized: false },
-      connectionTimeoutMillis: 8000
+      connectionTimeoutMillis: 10000,
+      max: parseInt(process.env.PG_MAX_CONNECTIONS || '20', 10), // Burst protection: prevents exhausting PostgreSQL pooler
+      idleTimeoutMillis: 30000, // Reclaims idle connections after 30s
+      allowExitOnIdle: false
     });
 
     const client = await pool.connect();
