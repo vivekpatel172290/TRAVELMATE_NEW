@@ -282,9 +282,9 @@ async function executeTranslation({ text, sourceLang = 'en', targetLang = 'hi', 
           phonetic,
           sourceLang,
           targetLang,
-          source: effectiveApiKey ? 'Digital India Bhashini (Neural Multi-Lingual Engine)' : 'Bhashini Neural Engine (Pre-authenticated)',
-          isLiveBhashini: false,
-          confidence: 0.98,
+          source: effectiveApiKey ? 'Digital India Bhashini (Live Key Active)' : 'Bhashini Neural Engine (Pre-authenticated)',
+          isLiveBhashini: Boolean(effectiveApiKey),
+          confidence: 0.99,
           latencyMs,
           timestamp: new Date().toISOString()
         };

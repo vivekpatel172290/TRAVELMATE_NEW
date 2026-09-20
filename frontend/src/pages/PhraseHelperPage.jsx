@@ -99,7 +99,9 @@ export default function PhraseHelperPage() {
   const [isListeningTourist, setIsListeningTourist] = useState(false);
   const [isListeningLocal, setIsListeningLocal] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(true);
+  const [micErrorMessage, setMicErrorMessage] = useState(null);
   const recognitionRef = useRef(null);
+  const activeSpeakerRef = useRef(null); // 'tourist' | 'local' | null
 
   // Audio Playback States
   const [playingAudioId, setPlayingAudioId] = useState(null);
@@ -141,42 +143,59 @@ export default function PhraseHelperPage() {
     setModalInferenceKey(cfg.INFERENCE_API_KEY || '');
   };
 
-  // Initialize Speech Recognition
+  // Initialize Speech Recognition once with persistent instance
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
+      try {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
 
-      recognition.onresult = async (event) => {
-        const transcript = event.results[0][0].transcript;
-        if (isListeningLocal) {
-          setIsListeningLocal(false);
-          await handleLocalMessage(transcript);
-        } else {
+        recognition.onresult = async (event) => {
+          const transcript = event.results?.[0]?.[0]?.transcript;
+          const speaker = activeSpeakerRef.current;
+          activeSpeakerRef.current = null;
           setIsListeningTourist(false);
-          setInputText(transcript);
-          if (activeMode === 'convo') {
-            await handleTouristMessage(transcript);
+          setIsListeningLocal(false);
+
+          if (!transcript || !transcript.trim()) return;
+
+          if (speaker === 'local') {
+            await handleLocalMessage(transcript);
           } else {
-            await handleTranslate(transcript);
+            setInputText(transcript);
+            await handleTouristMessage(transcript);
           }
-        }
-      };
+        };
 
-      recognition.onerror = (event) => {
-        console.warn('[Bhashini Voice] Speech recognition error:', event.error);
-        setIsListeningTourist(false);
-        setIsListeningLocal(false);
-      };
+        recognition.onerror = (event) => {
+          console.warn('[Bhashini Voice] Speech recognition event error:', event.error);
+          setIsListeningTourist(false);
+          setIsListeningLocal(false);
+          activeSpeakerRef.current = null;
 
-      recognition.onend = () => {
-        setIsListeningTourist(false);
-        setIsListeningLocal(false);
-      };
+          if (event.error === 'not-allowed') {
+            setMicErrorMessage('Microphone access was denied. Please allow microphone in your browser lock icon, or click any 1-tap test phrase below.');
+          } else if (event.error === 'no-speech') {
+            setMicErrorMessage('No speech was detected. Please speak closer to your microphone or click any 1-tap test phrase.');
+          } else {
+            setMicErrorMessage(`Speech recognition notice: ${event.error}. You can also type or click any 1-tap test phrase.`);
+          }
+        };
 
-      recognitionRef.current = recognition;
+        recognition.onend = () => {
+          setIsListeningTourist(false);
+          setIsListeningLocal(false);
+          activeSpeakerRef.current = null;
+        };
+
+        recognitionRef.current = recognition;
+        setSpeechSupported(true);
+      } catch (err) {
+        console.warn('SpeechRecognition init error:', err);
+        setSpeechSupported(false);
+      }
     } else {
       setSpeechSupported(false);
     }
@@ -189,7 +208,7 @@ export default function PhraseHelperPage() {
         } catch (_) {}
       }
     };
-  }, [sourceLang, targetLang, isListeningLocal, activeMode]);
+  }, []); // Stable: runs ONCE on mount
 
   // Handle URL parameter ?voice=1 auto-trigger
   useEffect(() => {
@@ -203,30 +222,44 @@ export default function PhraseHelperPage() {
 
   // Start Voice Input for Tourist
   const startListeningTourist = () => {
-    if (!recognitionRef.current) return;
     stopAudioSpeech();
+    setMicErrorMessage(null);
+    activeSpeakerRef.current = 'tourist';
     setIsListeningLocal(false);
     setIsListeningTourist(true);
 
-    const langObj = SUPPORTED_LANGUAGES.find((l) => l.code === sourceLang);
-    recognitionRef.current.lang = langObj?.speechLang || 'en-IN';
-    try {
-      recognitionRef.current.start();
-    } catch (_) {}
+    if (recognitionRef.current) {
+      const langObj = SUPPORTED_LANGUAGES.find((l) => l.code === sourceLang);
+      recognitionRef.current.lang = langObj?.speechLang || 'en-IN';
+      try {
+        recognitionRef.current.start();
+      } catch (err) {
+        console.warn('Recognition start exception:', err);
+      }
+    } else {
+      setMicErrorMessage('Browser speech recognition is not supported in this browser. Please use the 1-tap test phrases or text input below.');
+    }
   };
 
   // Start Voice Input for Local Driver (Hindi / Local)
   const startListeningLocal = () => {
-    if (!recognitionRef.current) return;
     stopAudioSpeech();
+    setMicErrorMessage(null);
+    activeSpeakerRef.current = 'local';
     setIsListeningTourist(false);
     setIsListeningLocal(true);
 
-    const langObj = SUPPORTED_LANGUAGES.find((l) => l.code === targetLang);
-    recognitionRef.current.lang = langObj?.speechLang || 'hi-IN';
-    try {
-      recognitionRef.current.start();
-    } catch (_) {}
+    if (recognitionRef.current) {
+      const langObj = SUPPORTED_LANGUAGES.find((l) => l.code === targetLang);
+      recognitionRef.current.lang = langObj?.speechLang || 'hi-IN';
+      try {
+        recognitionRef.current.start();
+      } catch (err) {
+        console.warn('Recognition start exception:', err);
+      }
+    } else {
+      setMicErrorMessage('Browser speech recognition is not supported in this browser. Please use the 1-tap test phrases or text input below.');
+    }
   };
 
   // Stop listening
@@ -236,6 +269,7 @@ export default function PhraseHelperPage() {
         recognitionRef.current.stop();
       } catch (_) {}
     }
+    activeSpeakerRef.current = null;
     setIsListeningTourist(false);
     setIsListeningLocal(false);
   };
@@ -562,13 +596,13 @@ export default function PhraseHelperPage() {
               <div className="space-y-3 text-xs text-slate-300">
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">
-                    Bhashini User ID <span className="text-cyan-400">*</span>
+                    Bhashini User ID <span className="text-slate-400 font-normal lowercase">(optional if not provided with key)</span>
                   </label>
                   <input
                     type="text"
                     value={modalUserId}
                     onChange={(e) => setModalUserId(e.target.value)}
-                    placeholder="e.g. 7c34b1a2-90ab-4433-88bb-..."
+                    placeholder="e.g. 7c34b1a2-90ab-4433-88bb-... (optional)"
                     className="w-full px-3.5 py-2.5 bg-black/50 border border-white/15 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors font-mono"
                   />
                 </div>
@@ -643,7 +677,7 @@ export default function PhraseHelperPage() {
                   <button
                     type="button"
                     onClick={handleSaveModalKey}
-                    disabled={isVerifyingKey || !modalApiKey || !modalUserId}
+                    disabled={isVerifyingKey || !modalApiKey.trim()}
                     className="px-5 py-2.5 rounded-xl text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-black shadow-lg shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center space-x-1.5 cursor-pointer"
                   >
                     {isVerifyingKey ? (
@@ -899,634 +933,804 @@ export default function PhraseHelperPage() {
         </div>
 
         {/* ===================================================================== */}
-        {/* 6. MAIN WORKSPACE: LIVE CONVERSATION OR DIRECT TRANSLATE              */}
+        {/* 6. LIVE CONVERSATION STAGE (TOURIST ⇄ LOCAL DRIVER SPLIT CARD)        */}
         {/* ===================================================================== */}
-        {activeMode === 'convo' ? (
-          /* =================================================================== */
-          /* MODE A: LIVE TWO-WAY CONVERSATION WORKSPACE (COMPACT SPLIT DESIGN)  */
-          /* =================================================================== */
-          <div className="relative group">
-            {/* Ambient Glow Backdrop */}
-            <div className="absolute -inset-2 rounded-[32px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 group-hover:opacity-50 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
+        <div id="live-conversation" className="relative group scroll-mt-24">
+          {/* Ambient Glow Backdrop */}
+          <div className="absolute -inset-2 rounded-[32px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 group-hover:opacity-50 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
 
-            <div className="relative rounded-3xl p-5 sm:p-7 border-2 border-cyan-500/30 bg-[#121520]/95 backdrop-blur-xl shadow-2xl space-y-5">
-              
-              {/* Top Conversation Header with Controls */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-white/10">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-300 shadow-sm">
-                    <Radio className="w-4 h-4 text-cyan-400 animate-pulse" />
-                  </div>
-                  <div>
-                    <h2 className="text-base sm:text-lg font-extrabold text-white font-display flex items-center space-x-2">
-                      <span>Live Conversation Mode</span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
-                        Face-to-Face
-                      </span>
-                    </h2>
-                    <p className="text-xs text-slate-400">
-                      Hold to speak. The other person hears your translated voice in real-time.
-                    </p>
-                  </div>
+          <div className="relative rounded-3xl p-5 sm:p-7 border-2 border-cyan-500/30 bg-[#121520]/95 backdrop-blur-xl shadow-2xl space-y-5">
+            
+            {/* Top Conversation Header with Controls */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-white/10">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-300 shadow-sm">
+                  <Radio className="w-4 h-4 text-cyan-400 animate-pulse" />
                 </div>
-
-                {/* Header Controls: Clear & Auto-voice toggle */}
-                <div className="flex items-center space-x-2 self-start sm:self-auto">
-                  <button
-                    type="button"
-                    onClick={() => setAutoSpeak(!autoSpeak)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer border ${
-                      autoSpeak
-                        ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-300'
-                        : 'bg-white/[0.03] border-white/10 text-slate-400 hover:text-white'
-                    }`}
-                    title="Toggle automatic loud voice reading on translation"
-                  >
-                    {autoSpeak ? <Volume2 className="w-3.5 h-3.5 text-cyan-400" /> : <VolumeX className="w-3.5 h-3.5 text-slate-500" />}
-                    <span>{autoSpeak ? 'Auto-Voice: ON' : 'Auto-Voice: OFF'}</span>
-                  </button>
-
-                  {convoMessages.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={handleClearConversation}
-                      className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors flex items-center space-x-1 cursor-pointer"
-                      title="Clear chat transcript"
-                    >
-                      <RotateCcw className="w-3.5 h-3.5" />
-                      <span className="text-[11px]">Clear</span>
-                    </button>
-                  )}
+                <div>
+                  <h2 className="text-base sm:text-lg font-extrabold text-white font-display flex items-center space-x-2">
+                    <span>Live Conversation Mode</span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
+                      Face-to-Face Dual Mic
+                    </span>
+                  </h2>
+                  <p className="text-xs text-slate-400">
+                    Hold to speak. The other person hears your translated voice in real-time. Or click any 1-tap test phrase below.
+                  </p>
                 </div>
               </div>
 
-              {/* 2-COLUMN SPLIT FACE-TO-FACE CARDS */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                
-                {/* LEFT COLUMN: TOURIST SIDE */}
-                <div className="bg-[#151928] p-4 sm:p-5 rounded-2xl border border-indigo-500/30 text-center space-y-3.5 shadow-xl flex flex-col justify-between relative overflow-hidden">
-                  <div className="absolute -top-12 -left-12 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
+              {/* Header Controls: Clear & Auto-voice toggle */}
+              <div className="flex items-center space-x-2 self-start sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => setAutoSpeak(!autoSpeak)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer border ${
+                    autoSpeak
+                      ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-300'
+                      : 'bg-white/[0.03] border-white/10 text-slate-400 hover:text-white'
+                  }`}
+                  title="Toggle automatic loud voice reading on translation"
+                >
+                  {autoSpeak ? <Volume2 className="w-3.5 h-3.5 text-cyan-400" /> : <VolumeX className="w-3.5 h-3.5 text-slate-500" />}
+                  <span>{autoSpeak ? 'Auto-Voice: ON' : 'Auto-Voice: OFF'}</span>
+                </button>
 
-                  <div className="space-y-2 relative z-10">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-1.5">
-                        <User className="w-4 h-4 text-indigo-400" />
-                        <h3 className="text-sm font-extrabold text-indigo-100">Tourist Side</h3>
-                      </div>
-                      <span className="text-[10px] uppercase font-bold text-indigo-300/80 bg-indigo-500/20 px-2 py-0.5 rounded-md border border-indigo-500/30">
-                        You Speak
-                      </span>
-                    </div>
+                {convoMessages.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleClearConversation}
+                    className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors flex items-center space-x-1 cursor-pointer"
+                    title="Clear chat transcript"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span className="text-[11px]">Clear</span>
+                  </button>
+                )}
+              </div>
+            </div>
 
-                    {/* Tourist Language Selector */}
-                    <div className="flex items-center justify-center space-x-2 text-xs text-slate-400">
-                      <span className="shrink-0 text-slate-400 font-medium">Speaks:</span>
-                      <select
-                        id="live-tourist-lang-select"
-                        value={sourceLang}
-                        onChange={(e) => setSourceLang(e.target.value)}
-                        className="bg-indigo-950/60 border border-indigo-500/40 text-indigo-200 rounded-xl px-2.5 py-1 text-xs font-semibold focus:outline-none focus:border-indigo-400 cursor-pointer max-w-[200px] truncate shadow-inner"
-                      >
-                        <optgroup label="International Languages">
-                          {SUPPORTED_LANGUAGES.filter(l => !l.isIndian).map(l => (
-                            <option key={l.code} value={l.code} className="bg-[#121520] text-white">
-                              {l.flag} {l.name}
-                            </option>
-                          ))}
-                        </optgroup>
-                        <optgroup label="Indian Languages">
-                          {SUPPORTED_LANGUAGES.filter(l => l.isIndian).map(l => (
-                            <option key={l.code} value={l.code} className="bg-[#121520] text-white">
-                              {l.flag} {l.name}
-                            </option>
-                          ))}
-                        </optgroup>
-                      </select>
+            {/* Error banner if microphone access is denied or blocked */}
+            {micErrorMessage && (
+              <div className="bg-rose-500/15 border border-rose-500/30 rounded-2xl p-3.5 text-rose-200 text-xs flex items-center justify-between">
+                <div className="flex items-center space-x-2.5">
+                  <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0" />
+                  <span>{micErrorMessage}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMicErrorMessage(null)}
+                  className="text-xs font-bold text-rose-300 hover:text-white underline ml-3 shrink-0 cursor-pointer"
+                >
+                  Dismiss
+                </button>
+              </div>
+            )}
+
+            {/* 2-COLUMN SPLIT FACE-TO-FACE CARDS */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+              
+              {/* LEFT COLUMN: TOURIST SIDE */}
+              <div className="bg-[#151928] p-4 sm:p-5 rounded-2xl border border-indigo-500/30 text-center space-y-3.5 shadow-xl flex flex-col justify-between relative overflow-hidden">
+                <div className="absolute -top-12 -left-12 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
+
+                <div className="space-y-2 relative z-10">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-1.5">
+                      <User className="w-4 h-4 text-indigo-400" />
+                      <h3 className="text-sm font-extrabold text-indigo-100">Tourist Side</h3>
                     </div>
+                    <span className="text-[10px] uppercase font-bold text-indigo-300/80 bg-indigo-500/20 px-2 py-0.5 rounded-md border border-indigo-500/30">
+                      You Speak
+                    </span>
                   </div>
 
-                  {/* Circular Talk Button */}
-                  <div className="py-2 relative z-10">
+                  {/* Tourist Language Selector */}
+                  <div className="flex items-center justify-center space-x-2 text-xs text-slate-400">
+                    <span className="shrink-0 text-slate-400 font-medium">Speaks:</span>
+                    <select
+                      id="live-tourist-lang-select"
+                      value={sourceLang}
+                      onChange={(e) => setSourceLang(e.target.value)}
+                      className="bg-indigo-950/60 border border-indigo-500/40 text-indigo-200 rounded-xl px-2.5 py-1 text-xs font-semibold focus:outline-none focus:border-indigo-400 cursor-pointer max-w-[200px] truncate shadow-inner"
+                    >
+                      <optgroup label="International Languages">
+                        {SUPPORTED_LANGUAGES.filter(l => !l.isIndian).map(l => (
+                          <option key={l.code} value={l.code} className="bg-[#121520] text-white">
+                            {l.flag} {l.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="Indian Languages">
+                        {SUPPORTED_LANGUAGES.filter(l => l.isIndian).map(l => (
+                          <option key={l.code} value={l.code} className="bg-[#121520] text-white">
+                            {l.flag} {l.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Circular Talk Button */}
+                <div className="py-2 relative z-10">
+                  <button
+                    type="button"
+                    onClick={isListeningTourist ? stopListening : startListeningTourist}
+                    disabled={isTranslating && isListeningLocal}
+                    className={`mx-auto w-24 h-24 rounded-full flex flex-col items-center justify-center space-y-1.5 transition-all shadow-xl cursor-pointer ${
+                      isListeningTourist
+                        ? 'bg-rose-600 text-white shadow-rose-600/50 ring-4 ring-rose-400/50 animate-pulse scale-105'
+                        : isTranslating && isListeningTourist
+                        ? 'bg-indigo-500/20 text-indigo-300 border-2 border-indigo-500/40'
+                        : 'bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border-2 border-indigo-500/40 hover:border-indigo-400 hover:scale-105 active:scale-95 shadow-indigo-600/20'
+                    }`}
+                  >
+                    {isListeningTourist ? (
+                      <>
+                        <MicOff className="w-7 h-7 text-white animate-bounce" />
+                        <span className="text-[10px] font-black uppercase tracking-wider">Stop & Send</span>
+                      </>
+                    ) : isTranslating && isListeningTourist ? (
+                      <>
+                        <RefreshCw className="w-7 h-7 animate-spin text-indigo-300" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider">Translating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="w-7 h-7 text-indigo-300" />
+                        <span className="text-[10px] font-black uppercase tracking-wider">Tap to Talk</span>
+                      </>
+                    )}
+                  </button>
+                  <span className="text-[10px] text-slate-400 mt-2 block font-medium">
+                    {isListeningTourist ? '🔴 Speaking now... tap to send' : `Tap to speak ${SUPPORTED_LANGUAGES.find(l => l.code === sourceLang)?.name || 'English'}`}
+                  </span>
+                </div>
+
+                {/* Converting status indicator */}
+                {isTranslating && isListeningTourist && (
+                  <div className="bg-indigo-500/10 border border-indigo-500/30 p-2.5 rounded-xl text-center text-xs text-indigo-300 animate-pulse">
+                    Converting speech to {SUPPORTED_LANGUAGES.find(l => l.code === targetLang)?.name || 'Hindi'}...
+                  </div>
+                )}
+
+                {/* 1-Tap Quick Tourist Phrases Test Chips */}
+                <div className="pt-2 border-t border-white/10 space-y-1.5 text-left relative z-10">
+                  <span className="text-[10px] text-indigo-300 font-bold uppercase tracking-wider block">
+                    Quick Tourist Test Phrases (1-Tap):
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      'Please turn on the meter.',
+                      'Where is the nearest metro?',
+                      'Take me to Red Fort by meter.'
+                    ].map((p, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => handleTouristMessage(p)}
+                        className="px-2.5 py-1 rounded-lg bg-indigo-500/15 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-200 hover:text-white text-[11px] font-semibold transition-all cursor-pointer"
+                      >
+                        "{p}"
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Inline Quick Text Bar for Tourist */}
+                <div className="flex items-center space-x-1.5 pt-1 relative z-10">
+                  <input
+                    type="text"
+                    placeholder="Or type a question to driver..."
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && e.target.value.trim()) {
+                        handleTouristMessage(e.target.value);
+                        e.target.value = '';
+                      }
+                    }}
+                    className="flex-1 px-3 py-1.5 bg-black/40 border border-indigo-500/30 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-400"
+                  />
+                </div>
+
+                {/* Latest Tourist Output Card (Compact & Readable) */}
+                {lastTouristMsg && (
+                  <div className="bg-indigo-950/40 border border-indigo-500/30 p-3 rounded-xl text-left space-y-2 relative z-10">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-indigo-300 font-bold uppercase tracking-wider">
+                        Your Speech & {SUPPORTED_LANGUAGES.find(l => l.code === targetLang)?.name || 'Hindi'}
+                      </span>
+                      <span className="text-[10px] text-indigo-300/80 font-mono">Ready to play</span>
+                    </div>
+
+                    <div className="text-xs text-slate-300 italic">
+                      "{lastTouristMsg.text}"
+                    </div>
+
+                    <div className="text-sm sm:text-base font-extrabold text-amber-300 font-display bg-black/40 p-2 rounded-lg border border-amber-400/20 leading-snug">
+                      {lastTouristMsg.translatedText}
+                    </div>
+
+                    {lastTouristMsg.transliteration && (
+                      <div className="text-[11px] font-mono text-cyan-300">
+                        "{lastTouristMsg.transliteration}"
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => handlePlayAudio(lastTouristMsg.translatedText, lastTouristMsg.targetLang || targetLang, lastTouristMsg.id)}
+                        className={`flex-1 flex items-center justify-center space-x-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all shadow-md text-white cursor-pointer ${
+                          playingAudioId === lastTouristMsg.id
+                            ? 'bg-amber-600 animate-pulse shadow-amber-600/40'
+                            : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/30 active:scale-98'
+                        }`}
+                      >
+                        <Volume2 className={`w-3.5 h-3.5 ${playingAudioId === lastTouristMsg.id ? 'animate-bounce' : ''}`} />
+                        <span>{playingAudioId === lastTouristMsg.id ? 'Speaking...' : `Play (${SUPPORTED_LANGUAGES.find(l => l.code === targetLang)?.name || 'Hindi'})`}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setFullscreenPhrase(lastTouristMsg)}
+                        className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-amber-300 border border-white/10 transition-colors cursor-pointer"
+                        title="Show Fullscreen to Driver"
+                      >
+                        <Maximize2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* RIGHT COLUMN: LOCAL DRIVER SIDE */}
+              <div className="bg-[#111f26] p-4 sm:p-5 rounded-2xl border border-cyan-500/30 text-center space-y-3.5 shadow-xl flex flex-col justify-between relative overflow-hidden">
+                <div className="absolute -top-12 -right-12 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
+
+                <div className="space-y-2 relative z-10">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-1.5">
+                      <Car className="w-4 h-4 text-cyan-400" />
+                      <h3 className="text-sm font-extrabold text-cyan-100">Local Driver / Vendor</h3>
+                    </div>
+                    <span className="text-[10px] uppercase font-bold text-cyan-300/80 bg-cyan-500/20 px-2 py-0.5 rounded-md border border-cyan-500/30">
+                      Local Speaks
+                    </span>
+                  </div>
+
+                  {/* Local Language Selector */}
+                  <div className="flex items-center justify-center space-x-2 text-xs text-slate-400">
+                    <span className="shrink-0 text-slate-400 font-medium">Speaks:</span>
+                    <select
+                      id="live-local-lang-select"
+                      value={targetLang}
+                      onChange={(e) => setTargetLang(e.target.value)}
+                      className="bg-cyan-950/60 border border-cyan-500/40 text-cyan-200 rounded-xl px-2.5 py-1 text-xs font-semibold focus:outline-none focus:border-cyan-400 cursor-pointer max-w-[200px] truncate shadow-inner"
+                    >
+                      <optgroup label="Indian Languages (Bhashini)">
+                        {SUPPORTED_LANGUAGES.filter(l => l.isIndian).map(l => (
+                          <option key={l.code} value={l.code} className="bg-[#121520] text-white">
+                            {l.flag} {l.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="International Languages">
+                        {SUPPORTED_LANGUAGES.filter(l => !l.isIndian).map(l => (
+                          <option key={l.code} value={l.code} className="bg-[#121520] text-white">
+                            {l.flag} {l.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Circular Talk Button */}
+                <div className="py-2 relative z-10">
+                  <button
+                    type="button"
+                    onClick={isListeningLocal ? stopListening : startListeningLocal}
+                    disabled={isTranslating && isListeningTourist}
+                    className={`mx-auto w-24 h-24 rounded-full flex flex-col items-center justify-center space-y-1.5 transition-all shadow-xl cursor-pointer ${
+                      isListeningLocal
+                        ? 'bg-rose-600 text-white shadow-rose-600/50 ring-4 ring-rose-400/50 animate-pulse scale-105'
+                        : isTranslating && isListeningLocal
+                        ? 'bg-cyan-500/20 text-cyan-300 border-2 border-cyan-500/40'
+                        : 'bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border-2 border-cyan-500/40 hover:border-cyan-400 hover:scale-105 active:scale-95 shadow-cyan-600/20'
+                    }`}
+                  >
+                    {isListeningLocal ? (
+                      <>
+                        <MicOff className="w-7 h-7 text-white animate-bounce" />
+                        <span className="text-[10px] font-black uppercase tracking-wider">Stop & Send</span>
+                      </>
+                    ) : isTranslating && isListeningLocal ? (
+                      <>
+                        <RefreshCw className="w-7 h-7 animate-spin text-cyan-300" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider">Translating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="w-7 h-7 text-cyan-300" />
+                        <span className="text-[10px] font-black uppercase tracking-wider">Tap to Talk</span>
+                      </>
+                    )}
+                  </button>
+                  <span className="text-[10px] text-slate-400 mt-2 block font-medium">
+                    {isListeningLocal ? '🔴 चालक बोल रहे हैं...' : 'ड्राइवर के बोलने के लिए टैप करें'}
+                  </span>
+                </div>
+
+                {/* Converting status indicator */}
+                {isTranslating && isListeningLocal && (
+                  <div className="bg-cyan-500/10 border border-cyan-500/30 p-2.5 rounded-xl text-center text-xs text-cyan-300 animate-pulse">
+                    Converting local speech to {SUPPORTED_LANGUAGES.find(l => l.code === sourceLang)?.name || 'English'}...
+                  </div>
+                )}
+
+                {/* 1-Tap Quick Local Driver Test Chips */}
+                <div className="pt-2 border-t border-white/10 space-y-1.5 text-left relative z-10">
+                  <span className="text-[10px] text-cyan-300 font-bold uppercase tracking-wider block">
+                    स्थानीय त्वरित उत्तर (1-Tap Test):
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      'हाँ बैठिए, मीटर चालू है।',
+                      'यहाँ से 50 रुपये लगेंगे।',
+                      'लाल किला सीधे रास्ते पर है।'
+                    ].map((p, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => handleLocalMessage(p)}
+                        className="px-2.5 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/30 border border-cyan-500/30 text-cyan-200 hover:text-white text-[11px] font-semibold transition-all cursor-pointer"
+                      >
+                        "{p}"
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Inline Quick Text Bar for Local Driver */}
+                <div className="flex items-center space-x-1.5 pt-1 relative z-10">
+                  <input
+                    type="text"
+                    placeholder="चालक का उत्तर लिखें (Type Hindi)..."
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && e.target.value.trim()) {
+                        handleLocalMessage(e.target.value);
+                        e.target.value = '';
+                      }
+                    }}
+                    className="flex-1 px-3 py-1.5 bg-black/40 border border-cyan-500/30 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                  />
+                </div>
+
+                {/* Latest Local Output Card (Compact & Readable) */}
+                {lastLocalMsg && (
+                  <div className="bg-cyan-950/40 border border-cyan-500/30 p-3 rounded-xl text-left space-y-2 relative z-10">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-cyan-300 font-bold uppercase tracking-wider">
+                        Local Speech & {SUPPORTED_LANGUAGES.find(l => l.code === sourceLang)?.name || 'English'}
+                      </span>
+                      <span className="text-[10px] text-cyan-300/80 font-mono">Ready to play</span>
+                    </div>
+
+                    <div className="text-xs text-slate-300 italic">
+                      "{lastLocalMsg.text}"
+                    </div>
+
+                    <div className="text-sm sm:text-base font-extrabold text-cyan-300 font-display bg-black/40 p-2 rounded-lg border border-cyan-400/20 leading-snug">
+                      {lastLocalMsg.translatedText}
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => handlePlayAudio(lastLocalMsg.translatedText, lastLocalMsg.targetLang || sourceLang, lastLocalMsg.id)}
+                        className={`flex-1 flex items-center justify-center space-x-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all shadow-md text-white cursor-pointer ${
+                          playingAudioId === lastLocalMsg.id
+                            ? 'bg-amber-600 animate-pulse shadow-amber-600/40'
+                            : 'bg-cyan-600 hover:bg-cyan-500 shadow-cyan-600/30 active:scale-98'
+                        }`}
+                      >
+                        <Volume2 className={`w-3.5 h-3.5 ${playingAudioId === lastLocalMsg.id ? 'animate-bounce' : ''}`} />
+                        <span>{playingAudioId === lastLocalMsg.id ? 'Speaking...' : `Play (${SUPPORTED_LANGUAGES.find(l => l.code === sourceLang)?.name || 'English'})`}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(lastLocalMsg.translatedText)}
+                        className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 transition-colors cursor-pointer"
+                        title="Copy text"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            {/* CONVERSATION HISTORY LOG / CHAT STREAM (Underneath cards, max-h-56) */}
+            {convoMessages.length > 0 && (
+              <div className="space-y-2 pt-2 border-t border-white/10">
+                <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 font-semibold">
+                  <span>Conversation Stream ({convoMessages.length} exchanges)</span>
+                  <button
+                    type="button"
+                    onClick={handleClearConversation}
+                    className="text-rose-400 hover:text-rose-300 hover:underline cursor-pointer"
+                  >
+                    Clear All
+                  </button>
+                </div>
+
+                <div className="bg-[#0b0e14] p-3 sm:p-4 rounded-2xl border border-white/10 space-y-2.5 max-h-56 overflow-y-auto no-scrollbar">
+                  {convoMessages.map((msg) => {
+                    const isTourist = msg.sender === 'tourist';
+                    return (
+                      <div
+                        key={msg.id}
+                        className={`flex flex-col max-w-[85%] space-y-1 ${
+                          isTourist ? 'self-start items-start' : 'self-end items-end ml-auto'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-1.5 text-[10px] text-slate-400 font-bold uppercase tracking-wider px-1">
+                          <span>{isTourist ? 'Tourist' : 'Local Driver'}</span>
+                          <span className="text-slate-600 font-normal">• {msg.timestamp}</span>
+                        </div>
+
+                        <div
+                          className={`p-3 rounded-2xl text-xs sm:text-sm shadow-md border ${
+                            isTourist
+                              ? 'bg-indigo-600/20 border-indigo-500/30 text-indigo-50 rounded-tl-sm'
+                              : 'bg-cyan-600/20 border-cyan-500/30 text-cyan-50 rounded-tr-sm'
+                          }`}
+                        >
+                          <div className="font-bold text-white leading-snug">
+                            {msg.translatedText}
+                          </div>
+                          <div className="text-[11px] opacity-75 italic mt-1 text-slate-300">
+                            "{msg.text}"
+                          </div>
+
+                          <div className="mt-2 flex items-center space-x-2 pt-1 border-t border-white/10">
+                            <button
+                              type="button"
+                              onClick={() => handlePlayAudio(msg.translatedText, msg.targetLang, msg.id)}
+                              className={`flex items-center space-x-1 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all shadow-sm active:scale-95 cursor-pointer ${
+                                playingAudioId === msg.id
+                                  ? 'bg-amber-500 text-white animate-pulse'
+                                  : isTourist
+                                  ? 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/40 border border-indigo-500/30'
+                                  : 'bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/40 border border-cyan-500/30'
+                              }`}
+                            >
+                              <Volume2 className="w-3 h-3" />
+                              <span>{playingAudioId === msg.id ? 'Speaking...' : 'Listen'}</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => setFullscreenPhrase(msg)}
+                              className="p-1 text-slate-400 hover:text-amber-300 rounded hover:bg-white/10 transition-colors cursor-pointer"
+                              title="Show large to driver"
+                            >
+                              <Maximize2 className="w-3 h-3" />
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleCopy(msg.translatedText)}
+                              className="p-1 text-slate-400 hover:text-white rounded hover:bg-white/10 transition-colors cursor-pointer"
+                              title="Copy translation"
+                            >
+                              <Copy className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Quick Text Input Fallback Bar */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleTouristMessage();
+              }}
+              className="flex items-center space-x-2 pt-2 border-t border-white/10"
+            >
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="Type message to driver... (Press Enter to translate & speak)"
+                className="flex-1 px-3.5 py-2.5 bg-[#0b0e14] border border-white/15 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-colors shadow-inner"
+              />
+              <button
+                type="submit"
+                disabled={!inputText.trim() || isTranslating}
+                className="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md cursor-pointer flex items-center space-x-1.5 shrink-0"
+              >
+                <Send className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Send</span>
+              </button>
+            </form>
+
+          </div>
+        </div>
+
+        {/* ===================================================================== */}
+        {/* 7. LIVE TRANSLATOR COCKPIT (INTERACTIVE TEXT & SPEECH-TO-SPEECH)      */}
+        {/* Positioned just down the Live Conversation card                       */}
+        {/* ===================================================================== */}
+        <div id="live-translator" className="relative group scroll-mt-24">
+          <div className="absolute -inset-2 rounded-[32px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-25 group-hover:opacity-50 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
+
+          <div className="relative rounded-3xl p-6 sm:p-8 border-2 border-cyan-500/30 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl space-y-6">
+            
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
+              <div className="flex items-center space-x-3">
+                <div className="w-9 h-9 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-sm">
+                  <Sparkles className="w-5 h-5 text-cyan-300" />
+                </div>
+                <div>
+                  <h2 className="text-base sm:text-lg font-bold text-white font-display flex items-center space-x-2">
+                    <span>Interactive Text & Speech-to-Speech Translator</span>
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
+                      Live Cockpit
+                    </span>
+                  </h2>
+                  <p className="text-xs text-slate-400">
+                    Type or speak aloud. Voice inputs are automatically transcribed, translated, and spoken back.
+                  </p>
+                </div>
+              </div>
+
+              {/* Language Selector in Cockpit */}
+              <div className="flex items-center space-x-2 bg-white/[0.04] p-1.5 rounded-2xl border border-white/10 self-start sm:self-auto">
+                <select
+                  value={sourceLang}
+                  onChange={(e) => {
+                    setSourceLang(e.target.value);
+                    if (inputText.trim()) handleTranslate(inputText);
+                  }}
+                  className="px-3 py-1.5 text-xs font-bold text-cyan-300 bg-cyan-500/10 rounded-xl border border-cyan-500/20 focus:outline-none focus:border-cyan-400 cursor-pointer"
+                >
+                  <optgroup label="International Languages">
+                    {SUPPORTED_LANGUAGES.filter(l => !l.isIndian).map(l => (
+                      <option key={l.code} value={l.code} className="bg-[#121520] text-white">
+                        {l.flag} {l.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Indian Languages">
+                    {SUPPORTED_LANGUAGES.filter(l => l.isIndian).map(l => (
+                      <option key={l.code} value={l.code} className="bg-[#121520] text-white">
+                        {l.flag} {l.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                </select>
+
+                <button
+                  type="button"
+                  onClick={handleSwapLanguages}
+                  title="Swap Languages"
+                  className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-all cursor-pointer"
+                >
+                  <ArrowRightLeft className="w-3.5 h-3.5 text-cyan-400" />
+                </button>
+
+                <select
+                  value={targetLang}
+                  onChange={(e) => {
+                    setTargetLang(e.target.value);
+                    if (inputText.trim()) handleTranslate(inputText);
+                  }}
+                  className="px-3 py-1.5 text-xs font-bold text-amber-300 bg-amber-500/10 rounded-xl border border-amber-500/20 focus:outline-none focus:border-amber-400 cursor-pointer"
+                >
+                  <optgroup label="Indian Languages (Bhashini)">
+                    {SUPPORTED_LANGUAGES.filter(l => l.isIndian).map(l => (
+                      <option key={l.code} value={l.code} className="bg-[#121520] text-white">
+                        {l.flag} {l.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="International Languages">
+                    {SUPPORTED_LANGUAGES.filter(l => !l.isIndian).map(l => (
+                      <option key={l.code} value={l.code} className="bg-[#121520] text-white">
+                        {l.flag} {l.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Column 1: Source Input */}
+              <div className="space-y-3 flex flex-col justify-between">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    <span className="flex items-center space-x-1.5">
+                      <Globe className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>{SUPPORTED_LANGUAGES.find((l) => l.code === sourceLang)?.name || 'Source'} Input</span>
+                    </span>
+                    <span className="text-[10px] text-slate-500 normal-case">
+                      {speechSupported ? '🎙️ Speech ready' : 'Text mode'}
+                    </span>
+                  </div>
+
+                  <div className="relative">
+                    <textarea
+                      rows={5}
+                      value={inputText}
+                      onChange={(e) => setInputText(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleTranslate();
+                        }
+                      }}
+                      placeholder="Type any tourist phrase e.g. 'Can you take me to Connaught Place by meter?' or tap the microphone..."
+                      className="w-full p-4 bg-[#0d0f15] border border-white/10 rounded-2xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-colors resize-none shadow-inner"
+                    />
+
+                    {inputText && (
+                      <button
+                        onClick={() => {
+                          setInputText('');
+                          setTranslationResult(null);
+                        }}
+                        className="absolute top-3 right-3 text-[11px] font-semibold text-slate-400 hover:text-white bg-white/10 px-2 py-0.5 rounded-lg border border-white/10 transition-colors cursor-pointer"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+                  {speechSupported && (
                     <button
                       type="button"
                       onClick={isListeningTourist ? stopListening : startListeningTourist}
-                      disabled={isTranslating && isListeningLocal}
-                      className={`mx-auto w-24 h-24 rounded-full flex flex-col items-center justify-center space-y-1.5 transition-all shadow-xl cursor-pointer ${
+                      className={`flex-1 inline-flex items-center justify-center space-x-2 px-5 py-3 rounded-2xl font-bold text-xs transition-all shadow-lg cursor-pointer ${
                         isListeningTourist
-                          ? 'bg-rose-600 text-white shadow-rose-600/50 ring-4 ring-rose-400/50 animate-pulse scale-105'
-                          : isTranslating && isListeningTourist
-                          ? 'bg-indigo-500/20 text-indigo-300 border-2 border-indigo-500/40'
-                          : 'bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border-2 border-indigo-500/40 hover:border-indigo-400 hover:scale-105 active:scale-95 shadow-indigo-600/20'
+                          ? 'bg-rose-600 text-white animate-pulse shadow-rose-600/40 ring-2 ring-rose-400'
+                          : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-cyan-600/30'
                       }`}
                     >
                       {isListeningTourist ? (
                         <>
-                          <MicOff className="w-7 h-7 text-white animate-bounce" />
-                          <span className="text-[10px] font-black uppercase tracking-wider">Stop & Send</span>
-                        </>
-                      ) : isTranslating && isListeningTourist ? (
-                        <>
-                          <RefreshCw className="w-7 h-7 animate-spin text-indigo-300" />
-                          <span className="text-[10px] font-bold uppercase tracking-wider">Translating...</span>
+                          <MicOff className="w-4 h-4 animate-bounce text-white" />
+                          <span>Listening... (Tap to Stop)</span>
                         </>
                       ) : (
                         <>
-                          <Mic className="w-7 h-7 text-indigo-300" />
-                          <span className="text-[10px] font-black uppercase tracking-wider">Tap to Talk</span>
+                          <Mic className="w-4 h-4 text-cyan-200" />
+                          <span>Speech-to-Speech (Speak Aloud)</span>
                         </>
                       )}
                     </button>
-                    <span className="text-[10px] text-slate-400 mt-2 block font-medium">
-                      {isListeningTourist ? '🔴 Speaking now... tap to send' : `Tap to speak ${SUPPORTED_LANGUAGES.find(l => l.code === sourceLang)?.name || 'English'}`}
-                    </span>
-                  </div>
-
-                  {/* Converting status indicator */}
-                  {isTranslating && isListeningTourist && (
-                    <div className="bg-indigo-500/10 border border-indigo-500/30 p-2.5 rounded-xl text-center text-xs text-indigo-300 animate-pulse">
-                      Converting speech to {SUPPORTED_LANGUAGES.find(l => l.code === targetLang)?.name || 'Hindi'}...
-                    </div>
                   )}
 
-                  {/* Latest Tourist Output Card (Compact & Readable) */}
-                  {lastTouristMsg && (
-                    <div className="bg-indigo-950/40 border border-indigo-500/30 p-3 rounded-xl text-left space-y-2 relative z-10">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] text-indigo-300 font-bold uppercase tracking-wider">
-                          Your Speech & {SUPPORTED_LANGUAGES.find(l => l.code === targetLang)?.name || 'Hindi'}
-                        </span>
-                        <span className="text-[10px] text-indigo-300/80 font-mono">Ready to play</span>
-                      </div>
-
-                      <div className="text-xs text-slate-300 italic">
-                        "{lastTouristMsg.text}"
-                      </div>
-
-                      <div className="text-sm sm:text-base font-extrabold text-amber-300 font-display bg-black/40 p-2 rounded-lg border border-amber-400/20 leading-snug">
-                        {lastTouristMsg.translatedText}
-                      </div>
-
-                      {lastTouristMsg.transliteration && (
-                        <div className="text-[11px] font-mono text-cyan-300">
-                          "{lastTouristMsg.transliteration}"
-                        </div>
-                      )}
-
-                      <div className="flex items-center gap-2 pt-1">
-                        <button
-                          type="button"
-                          onClick={() => handlePlayAudio(lastTouristMsg.translatedText, lastTouristMsg.targetLang || targetLang, lastTouristMsg.id)}
-                          className={`flex-1 flex items-center justify-center space-x-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all shadow-md text-white cursor-pointer ${
-                            playingAudioId === lastTouristMsg.id
-                              ? 'bg-amber-600 animate-pulse shadow-amber-600/40'
-                              : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/30 active:scale-98'
-                          }`}
-                        >
-                          <Volume2 className={`w-3.5 h-3.5 ${playingAudioId === lastTouristMsg.id ? 'animate-bounce' : ''}`} />
-                          <span>{playingAudioId === lastTouristMsg.id ? 'Speaking...' : `Play (${SUPPORTED_LANGUAGES.find(l => l.code === targetLang)?.name || 'Hindi'})`}</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => setFullscreenPhrase(lastTouristMsg)}
-                          className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-amber-300 border border-white/10 transition-colors cursor-pointer"
-                          title="Show Fullscreen to Driver"
-                        >
-                          <Maximize2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* RIGHT COLUMN: LOCAL DRIVER SIDE */}
-                <div className="bg-[#111f26] p-4 sm:p-5 rounded-2xl border border-cyan-500/30 text-center space-y-3.5 shadow-xl flex flex-col justify-between relative overflow-hidden">
-                  <div className="absolute -top-12 -right-12 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
-
-                  <div className="space-y-2 relative z-10">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-1.5">
-                        <Car className="w-4 h-4 text-cyan-400" />
-                        <h3 className="text-sm font-extrabold text-cyan-100">Local Driver / Vendor</h3>
-                      </div>
-                      <span className="text-[10px] uppercase font-bold text-cyan-300/80 bg-cyan-500/20 px-2 py-0.5 rounded-md border border-cyan-500/30">
-                        Local Speaks
-                      </span>
-                    </div>
-
-                    {/* Local Language Selector */}
-                    <div className="flex items-center justify-center space-x-2 text-xs text-slate-400">
-                      <span className="shrink-0 text-slate-400 font-medium">Speaks:</span>
-                      <select
-                        id="live-local-lang-select"
-                        value={targetLang}
-                        onChange={(e) => setTargetLang(e.target.value)}
-                        className="bg-cyan-950/60 border border-cyan-500/40 text-cyan-200 rounded-xl px-2.5 py-1 text-xs font-semibold focus:outline-none focus:border-cyan-400 cursor-pointer max-w-[200px] truncate shadow-inner"
-                      >
-                        <optgroup label="Indian Languages (Bhashini)">
-                          {SUPPORTED_LANGUAGES.filter(l => l.isIndian).map(l => (
-                            <option key={l.code} value={l.code} className="bg-[#121520] text-white">
-                              {l.flag} {l.name}
-                            </option>
-                          ))}
-                        </optgroup>
-                        <optgroup label="International Languages">
-                          {SUPPORTED_LANGUAGES.filter(l => !l.isIndian).map(l => (
-                            <option key={l.code} value={l.code} className="bg-[#121520] text-white">
-                              {l.flag} {l.name}
-                            </option>
-                          ))}
-                        </optgroup>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Circular Talk Button */}
-                  <div className="py-2 relative z-10">
-                    <button
-                      type="button"
-                      onClick={isListeningLocal ? stopListening : startListeningLocal}
-                      disabled={isTranslating && isListeningTourist}
-                      className={`mx-auto w-24 h-24 rounded-full flex flex-col items-center justify-center space-y-1.5 transition-all shadow-xl cursor-pointer ${
-                        isListeningLocal
-                          ? 'bg-rose-600 text-white shadow-rose-600/50 ring-4 ring-rose-400/50 animate-pulse scale-105'
-                          : isTranslating && isListeningLocal
-                          ? 'bg-cyan-500/20 text-cyan-300 border-2 border-cyan-500/40'
-                          : 'bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border-2 border-cyan-500/40 hover:border-cyan-400 hover:scale-105 active:scale-95 shadow-cyan-600/20'
-                      }`}
-                    >
-                      {isListeningLocal ? (
-                        <>
-                          <MicOff className="w-7 h-7 text-white animate-bounce" />
-                          <span className="text-[10px] font-black uppercase tracking-wider">Stop & Send</span>
-                        </>
-                      ) : isTranslating && isListeningLocal ? (
-                        <>
-                          <RefreshCw className="w-7 h-7 animate-spin text-cyan-300" />
-                          <span className="text-[10px] font-bold uppercase tracking-wider">Translating...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Mic className="w-7 h-7 text-cyan-300" />
-                          <span className="text-[10px] font-black uppercase tracking-wider">Tap to Talk</span>
-                        </>
-                      )}
-                    </button>
-                    <span className="text-[10px] text-slate-400 mt-2 block font-medium">
-                      {isListeningLocal ? '🔴 चालक बोल रहे हैं...' : 'ड्राइवर के बोलने के लिए टैप करें'}
-                    </span>
-                  </div>
-
-                  {/* Converting status indicator */}
-                  {isTranslating && isListeningLocal && (
-                    <div className="bg-cyan-500/10 border border-cyan-500/30 p-2.5 rounded-xl text-center text-xs text-cyan-300 animate-pulse">
-                      Converting local speech to {SUPPORTED_LANGUAGES.find(l => l.code === sourceLang)?.name || 'English'}...
-                    </div>
-                  )}
-
-                  {/* Latest Local Output Card (Compact & Readable) */}
-                  {lastLocalMsg && (
-                    <div className="bg-cyan-950/40 border border-cyan-500/30 p-3 rounded-xl text-left space-y-2 relative z-10">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] text-cyan-300 font-bold uppercase tracking-wider">
-                          Local Speech & {SUPPORTED_LANGUAGES.find(l => l.code === sourceLang)?.name || 'English'}
-                        </span>
-                        <span className="text-[10px] text-cyan-300/80 font-mono">Ready to play</span>
-                      </div>
-
-                      <div className="text-xs text-slate-300 italic">
-                        "{lastLocalMsg.text}"
-                      </div>
-
-                      <div className="text-sm sm:text-base font-extrabold text-cyan-300 font-display bg-black/40 p-2 rounded-lg border border-cyan-400/20 leading-snug">
-                        {lastLocalMsg.translatedText}
-                      </div>
-
-                      <div className="flex items-center gap-2 pt-1">
-                        <button
-                          type="button"
-                          onClick={() => handlePlayAudio(lastLocalMsg.translatedText, lastLocalMsg.targetLang || sourceLang, lastLocalMsg.id)}
-                          className={`flex-1 flex items-center justify-center space-x-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all shadow-md text-white cursor-pointer ${
-                            playingAudioId === lastLocalMsg.id
-                              ? 'bg-amber-600 animate-pulse shadow-amber-600/40'
-                              : 'bg-cyan-600 hover:bg-cyan-500 shadow-cyan-600/30 active:scale-98'
-                          }`}
-                        >
-                          <Volume2 className={`w-3.5 h-3.5 ${playingAudioId === lastLocalMsg.id ? 'animate-bounce' : ''}`} />
-                          <span>{playingAudioId === lastLocalMsg.id ? 'Speaking...' : `Play (${SUPPORTED_LANGUAGES.find(l => l.code === sourceLang)?.name || 'English'})`}</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => handleCopy(lastLocalMsg.translatedText)}
-                          className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 transition-colors cursor-pointer"
-                          title="Copy text"
-                        >
-                          <Copy className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-              </div>
-
-              {/* CONVERSATION HISTORY LOG / CHAT STREAM (Underneath cards, max-h-56) */}
-              {convoMessages.length > 0 && (
-                <div className="space-y-2 pt-2 border-t border-white/10">
-                  <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 font-semibold">
-                    <span>Conversation Stream ({convoMessages.length} exchanges)</span>
-                    <button
-                      type="button"
-                      onClick={handleClearConversation}
-                      className="text-rose-400 hover:text-rose-300 hover:underline cursor-pointer"
-                    >
-                      Clear All
-                    </button>
-                  </div>
-
-                  <div className="bg-[#0b0e14] p-3 sm:p-4 rounded-2xl border border-white/10 space-y-2.5 max-h-56 overflow-y-auto no-scrollbar">
-                    {convoMessages.map((msg) => {
-                      const isTourist = msg.sender === 'tourist';
-                      return (
-                        <div
-                          key={msg.id}
-                          className={`flex flex-col max-w-[85%] space-y-1 ${
-                            isTourist ? 'self-start items-start' : 'self-end items-end ml-auto'
-                          }`}
-                        >
-                          <div className="flex items-center space-x-1.5 text-[10px] text-slate-400 font-bold uppercase tracking-wider px-1">
-                            <span>{isTourist ? 'Tourist' : 'Local Driver'}</span>
-                            <span className="text-slate-600 font-normal">• {msg.timestamp}</span>
-                          </div>
-
-                          <div
-                            className={`p-3 rounded-2xl text-xs sm:text-sm shadow-md border ${
-                              isTourist
-                                ? 'bg-indigo-600/20 border-indigo-500/30 text-indigo-50 rounded-tl-sm'
-                                : 'bg-cyan-600/20 border-cyan-500/30 text-cyan-50 rounded-tr-sm'
-                            }`}
-                          >
-                            <div className="font-bold text-white leading-snug">
-                              {msg.translatedText}
-                            </div>
-                            <div className="text-[11px] opacity-75 italic mt-1 text-slate-300">
-                              "{msg.text}"
-                            </div>
-
-                            <div className="mt-2 flex items-center space-x-2 pt-1 border-t border-white/10">
-                              <button
-                                type="button"
-                                onClick={() => handlePlayAudio(msg.translatedText, msg.targetLang, msg.id)}
-                                className={`flex items-center space-x-1 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all shadow-sm active:scale-95 cursor-pointer ${
-                                  playingAudioId === msg.id
-                                    ? 'bg-amber-500 text-white animate-pulse'
-                                    : isTourist
-                                    ? 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/40 border border-indigo-500/30'
-                                    : 'bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/40 border border-cyan-500/30'
-                                }`}
-                              >
-                                <Volume2 className="w-3 h-3" />
-                                <span>{playingAudioId === msg.id ? 'Speaking...' : 'Listen'}</span>
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={() => setFullscreenPhrase(msg)}
-                                className="p-1 text-slate-400 hover:text-amber-300 rounded hover:bg-white/10 transition-colors cursor-pointer"
-                                title="Show large to driver"
-                              >
-                                <Maximize2 className="w-3 h-3" />
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={() => handleCopy(msg.translatedText)}
-                                className="p-1 text-slate-400 hover:text-white rounded hover:bg-white/10 transition-colors cursor-pointer"
-                                title="Copy translation"
-                              >
-                                <Copy className="w-3 h-3" />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Quick Text Input Fallback Bar */}
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleTouristMessage();
-                }}
-                className="flex items-center space-x-2 pt-2 border-t border-white/10"
-              >
-                <input
-                  type="text"
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  placeholder="Type message to driver... (Press Enter to translate & speak)"
-                  className="flex-1 px-3.5 py-2.5 bg-[#0b0e14] border border-white/15 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-colors shadow-inner"
-                />
-                <button
-                  type="submit"
-                  disabled={!inputText.trim() || isTranslating}
-                  className="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md cursor-pointer flex items-center space-x-1.5 shrink-0"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Send</span>
-                </button>
-              </form>
-
-            </div>
-          </div>
-        ) : (
-          /* =================================================================== */
-          /* MODE B: QUICK TRANSLATION COCKPIT (SINGLE WORKSPACE)                */
-          /* =================================================================== */
-          <div id="translation-workspace" className="relative group scroll-mt-24">
-            <div className="absolute -inset-2 rounded-[32px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 group-hover:opacity-60 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
-
-            <div className="relative rounded-3xl p-6 sm:p-8 border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl space-y-6">
-              
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Column 1: Source Input */}
-                <div className="space-y-3 flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs font-bold text-slate-300 uppercase tracking-wider">
-                      <span className="flex items-center space-x-1.5">
-                        <Globe className="w-3.5 h-3.5 text-cyan-400" />
-                        <span>{SUPPORTED_LANGUAGES.find((l) => l.code === sourceLang)?.name || 'Source'} Input</span>
-                      </span>
-                      <span className="text-[10px] text-slate-500 normal-case">
-                        {speechSupported ? '🎙️ Speech ready' : 'Text mode'}
-                      </span>
-                    </div>
-
-                    <div className="relative">
-                      <textarea
-                        rows={5}
-                        value={inputText}
-                        onChange={(e) => setInputText(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            handleTranslate();
-                          }
-                        }}
-                        placeholder="Type any tourist phrase e.g. 'Can you take me to Connaught Place by meter?' or tap the microphone..."
-                        className="w-full p-4 bg-[#0d0f15] border border-white/10 rounded-2xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-colors resize-none shadow-inner"
-                      />
-
-                      {inputText && (
-                        <button
-                          onClick={() => {
-                            setInputText('');
-                            setTranslationResult(null);
-                          }}
-                          className="absolute top-3 right-3 text-[11px] font-semibold text-slate-400 hover:text-white bg-white/10 px-2 py-0.5 rounded-lg border border-white/10 transition-colors cursor-pointer"
-                        >
-                          Clear
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
-                    {speechSupported && (
-                      <button
-                        type="button"
-                        onClick={isListeningTourist ? stopListening : startListeningTourist}
-                        className={`flex-1 inline-flex items-center justify-center space-x-2 px-5 py-3 rounded-2xl font-bold text-xs transition-all shadow-lg cursor-pointer ${
-                          isListeningTourist
-                            ? 'bg-rose-600 text-white animate-pulse shadow-rose-600/40 ring-2 ring-rose-400'
-                            : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-cyan-600/30'
-                        }`}
-                      >
-                        {isListeningTourist ? (
-                          <>
-                            <MicOff className="w-4 h-4 animate-bounce text-white" />
-                            <span>Listening... (Tap to Stop)</span>
-                          </>
-                        ) : (
-                          <>
-                            <Mic className="w-4 h-4 text-cyan-200" />
-                            <span>Speech-to-Speech (Speak Aloud)</span>
-                          </>
-                        )}
-                      </button>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={() => handleTranslate()}
-                      disabled={isTranslating || !inputText.trim()}
-                      className="flex-1 inline-flex items-center justify-center space-x-2 px-6 py-3 coder-btn-primary text-white font-bold text-xs rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                    >
-                      {isTranslating ? (
-                        <>
-                          <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                          <span>Translating...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-4 h-4 text-cyan-200" />
-                          <span>Translate via Bhashini</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Column 2: Hindi Tourist Output Card */}
-                <div className="space-y-3 flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs font-bold text-slate-300 uppercase tracking-wider">
-                      <span className="flex items-center space-x-1.5">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                        <span>Colloquial Hindi Output (For Drivers & Locals)</span>
-                      </span>
-                      {translationResult && (
-                        <span className="text-[10px] text-cyan-400 font-mono">
-                          {Math.round(translationResult.confidence * 100)}% Match
-                        </span>
-                      )}
-                    </div>
-
-                    {translationResult ? (
-                      <div className="p-5 sm:p-6 bg-[#0d0f15] border-2 border-cyan-500/50 rounded-2xl space-y-4 animate-in fade-in duration-200 shadow-2xl relative">
-                        <div className="flex items-start justify-between gap-2">
-                          <span className="text-[10px] font-bold text-cyan-300 uppercase tracking-wide bg-cyan-500/10 px-2.5 py-1 rounded-md border border-cyan-500/20">
-                            {translationResult.source}
-                          </span>
-
-                          <div className="flex items-center space-x-1">
-                            <button
-                              onClick={() => handleCopy(translationResult.hindi || translationResult.translated)}
-                              className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/10 transition-colors cursor-pointer"
-                              title="Copy Hindi text"
-                            >
-                              {copied ? <Check className="w-4 h-4 text-cyan-400" /> : <Copy className="w-4 h-4" />}
-                            </button>
-
-                            <button
-                              onClick={() => handlePlayAudio(translationResult.hindi || translationResult.translated, targetLang)}
-                              className={`p-2 rounded-xl transition-colors cursor-pointer ${
-                                playingAudioId === (translationResult.hindi || translationResult.translated)
-                                  ? 'text-cyan-300 bg-cyan-500/20 animate-pulse'
-                                  : 'text-slate-400 hover:text-cyan-400 hover:bg-white/10'
-                              }`}
-                              title="Play Hindi Pronunciation Audio"
-                            >
-                              <Volume2 className="w-4 h-4" />
-                            </button>
-
-                            <button
-                              onClick={() => setFullscreenPhrase(translationResult)}
-                              className="p-2 text-slate-400 hover:text-amber-300 rounded-xl hover:bg-white/10 transition-colors cursor-pointer"
-                              title="Show Fullscreen to Driver"
-                            >
-                              <Maximize2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Main Devanagari Hindi Text */}
-                        <div className="text-2xl sm:text-3xl font-black text-amber-300 font-display leading-relaxed">
-                          {translationResult.hindi || translationResult.translated}
-                        </div>
-
-                        {/* Hinglish Romanized Transliteration */}
-                        {translationResult.transliteration && (
-                          <div className="text-xs sm:text-sm font-mono text-cyan-300 bg-cyan-950/25 p-3 rounded-xl border border-cyan-500/30">
-                            "{translationResult.transliteration}"
-                          </div>
-                        )}
-
-                        {/* Phonetic Pronunciation Guide */}
-                        {translationResult.phonetic && (
-                          <div className="text-xs text-slate-300 italic flex items-center space-x-1.5">
-                            <span className="text-amber-300 font-bold not-italic">Say Aloud:</span>
-                            <span className="text-slate-200">{translationResult.phonetic}</span>
-                          </div>
-                        )}
-                      </div>
+                  <button
+                    type="button"
+                    onClick={() => handleTranslate()}
+                    disabled={isTranslating || !inputText.trim()}
+                    className="flex-1 inline-flex items-center justify-center space-x-2 px-6 py-3 coder-btn-primary text-white font-bold text-xs rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  >
+                    {isTranslating ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                        <span>Translating...</span>
+                      </>
                     ) : (
-                      <div className="h-52 bg-[#0d0f15] border border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center p-6 text-center text-slate-500 space-y-2">
-                        <Sparkles className="w-8 h-8 text-slate-600" />
-                        <p className="text-xs">Your translated Hindi phrase, Romanized Hinglish, and loud audio will appear here.</p>
-                      </div>
+                      <>
+                        <Sparkles className="w-4 h-4 text-cyan-200" />
+                        <span>Translate via Bhashini</span>
+                      </>
                     )}
-                  </div>
+                  </button>
                 </div>
               </div>
 
+              {/* Column 2: Hindi Tourist Output Card */}
+              <div className="space-y-3 flex flex-col justify-between">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    <span className="flex items-center space-x-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      <span>{SUPPORTED_LANGUAGES.find((l) => l.code === targetLang)?.name || 'Colloquial Hindi'} Output</span>
+                    </span>
+                    {translationResult && (
+                      <span className="text-[10px] text-cyan-400 font-mono">
+                        {Math.round(translationResult.confidence * 100)}% Match
+                      </span>
+                    )}
+                  </div>
+
+                  {translationResult ? (
+                    <div className="p-5 sm:p-6 bg-[#0d0f15] border-2 border-cyan-500/50 rounded-2xl space-y-4 animate-in fade-in duration-200 shadow-2xl relative">
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-[10px] font-bold text-cyan-300 uppercase tracking-wide bg-cyan-500/10 px-2.5 py-1 rounded-md border border-cyan-500/20">
+                          {translationResult.source}
+                        </span>
+
+                        <div className="flex items-center space-x-1">
+                          <button
+                            onClick={() => handleCopy(translationResult.hindi || translationResult.translated)}
+                            className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/10 transition-colors cursor-pointer"
+                            title="Copy text"
+                          >
+                            {copied ? <Check className="w-4 h-4 text-cyan-400" /> : <Copy className="w-4 h-4" />}
+                          </button>
+
+                          <button
+                            onClick={() => handlePlayAudio(translationResult.hindi || translationResult.translated, targetLang)}
+                            className={`p-2 rounded-xl transition-colors cursor-pointer ${
+                              playingAudioId === (translationResult.hindi || translationResult.translated)
+                                ? 'text-cyan-300 bg-cyan-500/20 animate-pulse'
+                                : 'text-slate-400 hover:text-cyan-400 hover:bg-white/10'
+                            }`}
+                            title="Play Pronunciation Audio"
+                          >
+                            <Volume2 className="w-4 h-4" />
+                          </button>
+
+                          <button
+                            onClick={() => setFullscreenPhrase(translationResult)}
+                            className="p-2 text-slate-400 hover:text-amber-300 rounded-xl hover:bg-white/10 transition-colors cursor-pointer"
+                            title="Show Fullscreen to Driver"
+                          >
+                            <Maximize2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Main Devanagari Hindi Text */}
+                      <div className="text-2xl sm:text-3xl font-black text-amber-300 font-display leading-relaxed">
+                        {translationResult.hindi || translationResult.translated}
+                      </div>
+
+                      {/* Hinglish Romanized Transliteration */}
+                      {translationResult.transliteration && (
+                        <div className="text-xs sm:text-sm font-mono text-cyan-300 bg-cyan-950/25 p-3 rounded-xl border border-cyan-500/30">
+                          "{translationResult.transliteration}"
+                        </div>
+                      )}
+
+                      {/* Phonetic Pronunciation Guide */}
+                      {translationResult.phonetic && (
+                        <div className="text-xs text-slate-300 italic flex items-center space-x-1.5">
+                          <span className="text-amber-300 font-bold not-italic">Say Aloud:</span>
+                          <span className="text-slate-200">{translationResult.phonetic}</span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="h-52 bg-[#0d0f15] border border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center p-6 text-center text-slate-500 space-y-2">
+                      <Sparkles className="w-8 h-8 text-slate-600" />
+                      <p className="text-xs">Your translated phrase, Romanized Hinglish, and loud voice will appear here.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
+
           </div>
-        )}
+        </div>
+
 
         {/* ===================================================================== */}
         {/* 7. CURATED TOURIST PHRASE DICTIONARY ACCORDING TO SIH DEPLOYMENT      */}
