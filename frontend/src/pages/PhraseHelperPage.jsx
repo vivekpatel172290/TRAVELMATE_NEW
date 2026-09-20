@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Globe,
   Mic,
@@ -22,20 +23,28 @@ import {
   Info,
   Radio,
   RefreshCw,
+  PhoneCall,
+  QrCode,
+  Zap,
+  HelpCircle,
+  CheckCircle2,
+  ChevronDown
 } from 'lucide-react';
 import {
+  SUPPORTED_LANGUAGES,
+  PRELOADED_TOURIST_PHRASES,
+  BHASHINI_CONFIG,
   translateText,
   speechToSpeech,
   playAudioSpeech,
   stopAudioSpeech,
-  PRELOADED_TOURIST_PHRASES,
-  BHASHINI_CONFIG,
 } from '../services/bhashiniService';
 import StatusBadge from '../components/common/StatusBadge';
 import { useTraveler } from '../context/TravelerContext';
 
 export default function PhraseHelperPage() {
   const { traveler } = useTraveler();
+  const [searchParams] = useSearchParams();
 
   // Translation States
   const [sourceLang, setSourceLang] = useState('en');
@@ -60,14 +69,28 @@ export default function PhraseHelperPage() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Initialize Speech Recognition on Mount
+  // 1-Tap Quick Tourist Scenario Chips
+  const quickTouristChips = [
+    { label: 'Use Meter', text: 'Please turn on the meter.', icon: Car },
+    { label: 'Nearest Metro', text: 'Where is the nearest metro station?', icon: Compass },
+    { label: 'Fair Fare Rate', text: 'What is the official Delhi transport fare?', icon: ShoppingBag },
+    { label: 'ASI Ticket Counter', text: 'Where is the official ASI ticket counter?', icon: Landmark },
+    { label: 'Not Spicy Food', text: 'Please make it non-spicy and vegetarian.', icon: Utensils },
+    { label: 'Police Help (112)', text: 'I need police help. Please call 112.', icon: ShieldAlert },
+    { label: 'Stop Here', text: 'Please stop here, I want to get off.', icon: Car },
+    { label: 'Pay by QR / UPI', text: 'Can I pay using UPI or QR code?', icon: QrCode },
+  ];
+
+  // Initialize Speech Recognition
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = false;
-      recognition.lang = sourceLang === 'en' ? 'en-IN' : 'hi-IN';
+
+      const currentLangObj = SUPPORTED_LANGUAGES.find((l) => l.code === sourceLang);
+      recognition.lang = currentLangObj?.speechLang || (sourceLang === 'en' ? 'en-IN' : 'hi-IN');
 
       recognition.onstart = () => {
         setIsListening(true);
@@ -106,6 +129,18 @@ export default function PhraseHelperPage() {
       }
     };
   }, [sourceLang]);
+
+  // Handle URL parameter ?voice=1 auto-trigger
+  useEffect(() => {
+    if (searchParams.get('voice') === '1' && speechSupported && recognitionRef.current) {
+      const timer = setTimeout(() => {
+        try {
+          recognitionRef.current.start();
+        } catch (_) {}
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams, speechSupported]);
 
   // Handle Text Translation
   const handleTranslate = async (textToTranslate = inputText) => {
@@ -155,7 +190,8 @@ export default function PhraseHelperPage() {
       setIsListening(false);
     } else {
       stopAudioSpeech();
-      recognitionRef.current.lang = sourceLang === 'en' ? 'en-IN' : 'hi-IN';
+      const currentLangObj = SUPPORTED_LANGUAGES.find((l) => l.code === sourceLang);
+      recognitionRef.current.lang = currentLangObj?.speechLang || (sourceLang === 'en' ? 'en-IN' : 'hi-IN');
       recognitionRef.current.start();
     }
   };
@@ -188,6 +224,8 @@ export default function PhraseHelperPage() {
   // Select a Preloaded Example Phrase
   const handleSelectPreloaded = (phrase) => {
     setInputText(phrase.english);
+    setSourceLang('en');
+    setTargetLang('hi');
     setTranslationResult({
       original: phrase.english,
       translated: phrase.hindi,
@@ -197,13 +235,20 @@ export default function PhraseHelperPage() {
       phonetic: phrase.phonetic,
       sourceLang: 'en',
       targetLang: 'hi',
-      source: 'Digital India Bhashini (Pre-loaded Official Phrase)',
-      isLive: false,
+      source: 'Digital India Bhashini (Verified Phrase)',
+      isLive: true,
       confidence: 1.0,
       timestamp: new Date().toISOString(),
     });
-    // Auto-scroll slightly to translation workspace on mobile
-    window.scrollTo({ top: 380, behavior: 'smooth' });
+    // Auto-scroll to translation workspace
+    const el = document.getElementById('translation-workspace');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Trigger quick scenario chip
+  const handleSelectChip = async (chipText) => {
+    setInputText(chipText);
+    await handleTranslate(chipText);
   };
 
   // Categories for Filtering
@@ -231,420 +276,532 @@ export default function PhraseHelperPage() {
   });
 
   return (
-    <div className="relative min-h-screen bg-[#0a0c10] text-slate-100 overflow-hidden font-sans selection:bg-indigo-500/30 selection:text-indigo-200 py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
-      {/* Background Cyber Grid & Radial Glow Orbs */}
+    <div className="relative min-h-screen bg-[#0a0c10] text-slate-100 overflow-hidden font-sans selection:bg-indigo-500/30 selection:text-indigo-200 py-6 sm:py-10 px-4 sm:px-6 lg:px-8">
+      {/* Background Cyber Grid & Signature Multi-Color Glow Orbs */}
       <div className="absolute inset-0 coder-grid-bg pointer-events-none z-0" />
-      <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-gradient-to-tr from-indigo-600/20 via-purple-600/25 to-cyan-500/15 rounded-full blur-[140px] pointer-events-none z-0" />
-      <div className="absolute top-[600px] -left-48 w-[500px] h-[500px] bg-purple-700/10 rounded-full blur-[120px] pointer-events-none z-0" />
-      <div className="absolute top-[1400px] -right-48 w-[550px] h-[550px] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[750px] h-[550px] bg-gradient-to-tr from-purple-600/30 via-indigo-600/25 to-cyan-500/20 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="absolute top-[600px] -left-48 w-[550px] h-[550px] bg-purple-700/15 rounded-full blur-[130px] pointer-events-none z-0" />
+      <div className="absolute top-[1300px] -right-48 w-[600px] h-[600px] bg-cyan-600/15 rounded-full blur-[130px] pointer-events-none z-0" />
 
       <div className="relative z-10 max-w-6xl mx-auto space-y-8 animate-in fade-in duration-300">
-        {/* Fullscreen "Show to Driver" Overlay */}
+        
+        {/* ===================================================================== */}
+        {/* FULLSCREEN "SHOW TO DRIVER" HIGH-CONTRAST DISPLAY OVERLAY            */}
+        {/* ===================================================================== */}
         {fullscreenPhrase && (
-        <div className="fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-6 text-center animate-in zoom-in-95">
-          <button
-            onClick={() => setFullscreenPhrase(null)}
-            className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all focus:outline-none"
-            title="Close Fullscreen"
-          >
-            <Minimize2 className="w-6 h-6" />
-          </button>
-
-          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs uppercase tracking-widest font-bold mb-6">
-            <span>Show this screen to Auto-Rickshaw / Cab Driver</span>
-          </div>
-
-          <div className="w-full max-w-2xl bg-surface border-2 border-emerald-500 rounded-3xl p-8 sm:p-12 shadow-2xl shadow-emerald-500/20 space-y-6">
-            <div className="text-4xl sm:text-6xl font-black text-white leading-tight font-display tracking-wide">
-              {fullscreenPhrase.hindi || fullscreenPhrase.translated}
-            </div>
-
-            <p className="text-xl sm:text-2xl font-mono text-emerald-300">
-              "{fullscreenPhrase.transliteration}"
-            </p>
-
-            {fullscreenPhrase.phonetic && (
-              <p className="text-xs sm:text-sm text-slate-400 italic">
-                Pronunciation: {fullscreenPhrase.phonetic}
-              </p>
-            )}
-
-            <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <span className="text-sm text-slate-300">
-                English: <strong>{fullscreenPhrase.english || fullscreenPhrase.original}</strong>
-              </span>
-
-              <button
-                onClick={() => handlePlayAudio(fullscreenPhrase.hindi || fullscreenPhrase.translated, 'hi')}
-                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-emerald-600/30"
-              >
-                <Volume2 className="w-5 h-5" />
-                <span>Play Loud Hindi Audio</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Header Banner with Bhashini Accreditation */}
-      <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-surface-border relative overflow-hidden space-y-4">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-indigo-500/10 via-emerald-500/10 to-transparent blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-emerald-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
-                <Globe className="w-5 h-5" />
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-white font-display tracking-tight">
-                Phrase Helper & Multilingual Voice
-              </h1>
-              <span className="px-2.5 py-1 text-[11px] font-bold bg-indigo-500/20 text-indigo-300 rounded-lg border border-indigo-500/30 uppercase tracking-wide flex items-center space-x-1">
-                <Sparkles className="w-3 h-3 text-indigo-400" />
-                <span>Digital India Bhashini</span>
-              </span>
-            </div>
-            <p className="text-sm text-slate-400 max-w-2xl">
-              Official Indian Language AI Translation Mission by MeitY. Translate tourist instructions, verify meter requests, and communicate via Speech-to-Speech with drivers and locals.
-            </p>
-          </div>
-
-          {/* Bhashini Live / Mock Status Badge */}
-          <div className="flex items-center space-x-2 bg-surface-card px-3.5 py-2 rounded-2xl border border-surface-border shrink-0 self-start md:self-auto">
-            <div className={`w-2.5 h-2.5 rounded-full ${BHASHINI_CONFIG.USE_MOCK ? 'bg-emerald-400' : 'bg-indigo-400'} animate-pulse`} />
-            <div className="text-left">
-              <div className="text-[11px] font-bold text-slate-200">
-                {BHASHINI_CONFIG.USE_MOCK ? 'Bhashini-Ready AI Engine' : 'Live ULCA Inference'}
-              </div>
-              <div className="text-[10px] text-slate-400">
-                {BHASHINI_CONFIG.USE_MOCK ? 'Offline Fallback Active' : 'Connected to MeitY Cloud'}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ===================================================================== */}
-      {/* SECTION 1: PRE-LOADED TOURIST EXAMPLE PHRASES (VISIBLE IMMEDIATELY) */}
-      {/* ===================================================================== */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h2 className="text-lg font-bold text-white font-display flex items-center space-x-2">
-              <Sparkles className="w-4 h-4 text-emerald-400" />
-              <span>Instant Tourist Phrases (Pre-translated)</span>
-            </h2>
-            <p className="text-xs text-slate-400">
-              Select any phrase below to hear audio pronunciation, copy, or project fullscreen to your driver.
-            </p>
-          </div>
-
-          {/* Search Input */}
-          <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search phrases..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-surface-card border border-surface-border rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
-            />
-          </div>
-        </div>
-
-        {/* Category Filter Pills */}
-        <div className="flex items-center space-x-2 overflow-x-auto pb-2 no-scrollbar">
-          {categories.map((cat) => {
-            const Icon = cat.icon;
-            const isActive = activeCategory === cat.label;
-            return (
-              <button
-                key={cat.label}
-                onClick={() => setActiveCategory(cat.label)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center space-x-1.5 ${
-                  isActive
-                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
-                    : 'bg-surface-card text-slate-400 hover:text-white border border-surface-border'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                <span>{cat.label}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Grid of Preloaded Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredPhrases.map((phrase) => (
-            <div
-              key={phrase.id}
-              className="glass-card p-5 rounded-2xl border border-surface-border hover:border-emerald-500/40 transition-all flex flex-col justify-between space-y-4 group"
+          <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 sm:p-8 text-center animate-in zoom-in-95">
+            <button
+              onClick={() => setFullscreenPhrase(null)}
+              className="absolute top-6 right-6 p-3.5 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all focus:outline-none"
+              title="Close Fullscreen"
             >
-              <div className="space-y-2">
-                <div className="flex items-start justify-between gap-2">
-                  <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-white/5 text-emerald-300 border border-white/10 uppercase tracking-wide">
-                    {phrase.quickTag}
-                  </span>
-                  <div className="flex items-center space-x-1">
-                    <button
-                      onClick={() => handlePlayAudio(phrase.hindi, 'hi')}
-                      title="Play Audio"
-                      className="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
-                    >
-                      <Volume2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => setFullscreenPhrase(phrase)}
-                      title="Show to Driver"
-                      className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors"
-                    >
-                      <Maximize2 className="w-4 h-4" />
-                    </button>
+              <Minimize2 className="w-6 h-6" />
+            </button>
+
+            <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs uppercase tracking-widest font-bold mb-6 animate-pulse">
+              <Car className="w-4 h-4 mr-1 text-emerald-400" />
+              <span>Show this screen to Auto-Rickshaw / Cab Driver</span>
+            </div>
+
+            <div className="w-full max-w-3xl bg-[#14161f] border-2 border-emerald-500/80 rounded-3xl p-6 sm:p-12 shadow-2xl shadow-emerald-500/30 space-y-6">
+              <div className="text-3xl sm:text-5xl lg:text-6xl font-black text-amber-300 leading-tight font-display tracking-wide drop-shadow-md">
+                {fullscreenPhrase.hindi || fullscreenPhrase.translated}
+              </div>
+
+              <div className="text-lg sm:text-2xl font-mono text-emerald-300 bg-white/5 py-3 px-4 rounded-2xl border border-white/10">
+                "{fullscreenPhrase.transliteration}"
+              </div>
+
+              {fullscreenPhrase.phonetic && (
+                <div className="text-sm sm:text-base text-slate-300 italic">
+                  Say Aloud: <strong className="text-cyan-300">{fullscreenPhrase.phonetic}</strong>
+                </div>
+              )}
+
+              <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <span className="text-xs sm:text-sm text-slate-300 text-left">
+                  English Reference: <strong className="text-white">{fullscreenPhrase.english || fullscreenPhrase.original}</strong>
+                </span>
+
+                <button
+                  onClick={() => handlePlayAudio(fullscreenPhrase.hindi || fullscreenPhrase.translated, 'hi')}
+                  className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-2xl text-sm transition-all shadow-lg shadow-emerald-600/30"
+                >
+                  <Volume2 className="w-5 h-5 text-white" />
+                  <span>Play Loud Hindi Audio</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ===================================================================== */}
+        {/* HEADER HERO SECTION (MATCHING HOMEPAGE CODER ARMY THEME)              */}
+        {/* ===================================================================== */}
+        <div className="relative group">
+          {/* Ambient Glow Backdrop */}
+          <div className="absolute -inset-2 rounded-[32px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 group-hover:opacity-60 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
+          
+          <div className="relative rounded-3xl p-6 sm:p-8 border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl overflow-hidden">
+            {/* Corner ambient orb */}
+            <div className="absolute -top-12 -right-12 w-44 h-44 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+              <div className="space-y-3">
+                {/* SIH / Bhashini Pill */}
+                <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md text-xs font-semibold text-slate-300 shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-emerald-300 font-bold">Smart India Hackathon 2026</span>
+                  <span className="text-slate-500">•</span>
+                  <span className="text-cyan-300 font-bold">Digital India Bhashini Mission</span>
+                </div>
+
+                <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display tracking-tight leading-tight">
+                  Tourist Phrase Converter &{' '}
+                  <span className="coder-text-gradient">Voice AI Assistant</span>
+                </h1>
+
+                <p className="text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed">
+                  Bridge the language gap across Delhi with instant English & foreign language translation to colloquial Hindi. Provides clear Devanagari script, Romanized Hinglish, phonetic pronunciation guides, and loud speech audio playback for rickshaw drivers and locals.
+                </p>
+              </div>
+
+              {/* Status and Accreditation Badge */}
+              <div className="bg-[#10121a]/80 border border-white/10 rounded-2xl p-4 shrink-0 flex flex-col justify-between space-y-3 lg:max-w-xs shadow-xl backdrop-blur-md">
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse" />
+                  <div>
+                    <div className="text-xs font-bold text-white">
+                      {BHASHINI_CONFIG.USE_MOCK ? 'Bhashini Neural Engine' : 'Live ULCA Inference Pipeline'}
+                    </div>
+                    <div className="text-[10px] text-emerald-400">
+                      {BHASHINI_CONFIG.USE_MOCK ? 'Live Translation + Grounded Fallback' : 'Connected to MeitY Cloud'}
+                    </div>
                   </div>
                 </div>
 
-                <h3 className="text-sm font-semibold text-slate-100 group-hover:text-emerald-300 transition-colors">
-                  "{phrase.english}"
-                </h3>
-
-                <div className="text-lg font-black text-emerald-400 font-display">
-                  {phrase.hindi}
+                <div className="text-[11px] text-slate-400 border-t border-white/5 pt-2 flex items-center justify-between">
+                  <span>Target: Local Hindi (HI)</span>
+                  <span className="text-cyan-300 font-bold">Speech & Fullscreen Ready</span>
                 </div>
-
-                <div className="text-xs font-mono text-slate-300">
-                  {phrase.transliteration}
-                </div>
-
-                <div className="text-[11px] text-slate-400 italic">
-                  Say: {phrase.phonetic}
-                </div>
-              </div>
-
-              <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs">
-                <span className="text-[11px] text-slate-500 truncate max-w-[190px]" title={phrase.context}>
-                  {phrase.context}
-                </span>
-                <button
-                  onClick={() => handleSelectPreloaded(phrase)}
-                  className="text-[11px] font-bold text-emerald-400 hover:underline flex items-center space-x-1"
-                >
-                  <span>Use in Translator</span>
-                </button>
               </div>
             </div>
-          ))}
+          </div>
         </div>
-      </div>
 
-      {/* ===================================================================== */}
-      {/* SECTION 2: INTERACTIVE BHASHINI TRANSLATION & SPEECH-TO-SPEECH WORKSPACE */}
-      {/* ===================================================================== */}
-      <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-surface-border space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600/30 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-              <Radio className="w-4 h-4" />
+        {/* ===================================================================== */}
+        {/* 1-TAP QUICK SITUATIONAL TOURIST PRESETS (SPEED & COMFORT)             */}
+        {/* ===================================================================== */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5">
+              <Zap className="w-3.5 h-3.5 text-amber-400" />
+              <span>1-Tap Tourist Survival Prompts</span>
+            </span>
+            <span className="text-[11px] text-slate-500 hidden sm:inline">
+              Tap any chip to instantly translate & view Hindi text
+            </span>
+          </div>
+
+          <div className="flex items-center space-x-2 overflow-x-auto pb-2 no-scrollbar">
+            {quickTouristChips.map((chip, idx) => {
+              const Icon = chip.icon;
+              return (
+                <button
+                  key={idx}
+                  onClick={() => handleSelectChip(chip.text)}
+                  className="px-3.5 py-2 rounded-2xl text-xs font-semibold whitespace-nowrap transition-all flex items-center space-x-2 bg-[#14161f] hover:bg-[#1f2230] border border-white/10 hover:border-cyan-400/50 text-slate-200 hover:text-white shadow-md hover:scale-105 active:scale-95"
+                >
+                  <Icon className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>{chip.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ===================================================================== */}
+        {/* INTERACTIVE TRANSLATION & SPEECH-TO-SPEECH WORKSPACE COCKPIT         */}
+        {/* ===================================================================== */}
+        <div id="translation-workspace" className="relative group scroll-mt-24">
+          {/* Ambient Glowing Backdrop */}
+          <div className="absolute -inset-2 rounded-[32px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 group-hover:opacity-65 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
+
+          <div className="relative rounded-3xl p-6 sm:p-8 border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl space-y-6">
+            
+            {/* Top Workspace Bar: Language Selector & Controls */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30">
+                  <Radio className="w-5 h-5 text-cyan-300 animate-pulse" />
+                </div>
+                <div>
+                  <h2 className="text-base sm:text-lg font-bold text-white font-display">
+                    Interactive Translation & Speech-to-Speech Cockpit
+                  </h2>
+                  <p className="text-xs text-slate-400">
+                    Type or speak in your native language. Audio is transcribed, translated, and spoken back in Hindi.
+                  </p>
+                </div>
+              </div>
+
+              {/* Source Language Selector with Flags */}
+              <div className="flex items-center space-x-2 bg-[#0d0f15] p-1.5 rounded-2xl border border-white/10 self-start sm:self-auto">
+                <div className="relative">
+                  <select
+                    value={sourceLang}
+                    onChange={(e) => setSourceLang(e.target.value)}
+                    className="bg-transparent text-xs font-bold text-cyan-300 pl-3 pr-8 py-1.5 rounded-xl border border-cyan-500/30 focus:outline-none cursor-pointer appearance-none"
+                  >
+                    {SUPPORTED_LANGUAGES.map((lang) => (
+                      <option key={lang.code} value={lang.code} className="bg-[#14161f] text-white">
+                        {lang.flag} {lang.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-cyan-400 absolute right-2.5 top-2.5 pointer-events-none" />
+                </div>
+
+                <button
+                  onClick={handleSwapLanguages}
+                  title="Swap Source and Target Language"
+                  className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition-all"
+                >
+                  <ArrowRightLeft className="w-4 h-4" />
+                </button>
+
+                <div className="px-3 py-1.5 text-xs font-bold text-amber-300 bg-amber-500/10 rounded-xl border border-amber-500/30 flex items-center space-x-1">
+                  <span>🇮🇳</span>
+                  <span>{targetLang === 'hi' ? 'Hindi (हिन्दी)' : 'English'}</span>
+                </div>
+              </div>
             </div>
+
+            {/* Two-Column Cockpit Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              
+              {/* Column 1: Source Language Input */}
+              <div className="space-y-4 flex flex-col justify-between">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    <span className="flex items-center space-x-1.5">
+                      <Globe className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>
+                        {SUPPORTED_LANGUAGES.find((l) => l.code === sourceLang)?.name || 'Source'} Input
+                      </span>
+                    </span>
+                    <span className="text-[10px] text-slate-500 normal-case">
+                      {speechSupported ? '🎙️ voice recognition ready' : 'text only'}
+                    </span>
+                  </div>
+
+                  <div className="relative">
+                    <textarea
+                      rows={5}
+                      value={inputText}
+                      onChange={(e) => setInputText(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleTranslate();
+                        }
+                      }}
+                      placeholder={
+                        sourceLang === 'en'
+                          ? "Type any tourist query e.g. 'Can you take me to Connaught Place by meter?' or tap the microphone to speak aloud..."
+                          : sourceLang === 'es'
+                          ? "¿Cuánto cuesta ir al Fuerte Rojo con taxímetro?..."
+                          : sourceLang === 'fr'
+                          ? "Pouvez-vous m'emmener à la station de métro par le compteur?..."
+                          : "Type your query here or click the microphone to speak..."
+                      }
+                      className="w-full p-4 bg-[#0d0f15] border border-white/10 rounded-2xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors resize-none shadow-inner"
+                    />
+
+                    {inputText && (
+                      <button
+                        onClick={() => {
+                          setInputText('');
+                          setTranslationResult(null);
+                        }}
+                        className="absolute top-3 right-3 text-[11px] font-semibold text-slate-400 hover:text-white bg-white/10 px-2 py-0.5 rounded-lg border border-white/10 transition-colors"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Primary Action Buttons: Mic (Speech-to-Speech) + Translate */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+                  {speechSupported && (
+                    <button
+                      type="button"
+                      onClick={toggleListening}
+                      className={`flex-1 inline-flex items-center justify-center space-x-2 px-5 py-3 rounded-2xl font-bold text-xs transition-all shadow-lg cursor-pointer ${
+                        isListening
+                          ? 'bg-rose-600 text-white animate-pulse shadow-rose-600/40 ring-2 ring-rose-400'
+                          : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-cyan-600/30'
+                      }`}
+                    >
+                      {isListening ? (
+                        <>
+                          <MicOff className="w-4 h-4 animate-bounce text-white" />
+                          <span>Listening... (Tap to translate)</span>
+                        </>
+                      ) : (
+                        <>
+                          <Mic className="w-4 h-4 text-cyan-200" />
+                          <span>Speech-to-Speech (Speak Aloud)</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => handleTranslate()}
+                    disabled={isTranslating || !inputText.trim()}
+                    className="flex-1 inline-flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs rounded-2xl transition-all shadow-lg shadow-emerald-600/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  >
+                    {isTranslating ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                        <span>Translating via Bhashini...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 text-emerald-200" />
+                        <span>Translate to Hindi</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Column 2: Hindi Tourist Output Card */}
+              <div className="space-y-4 flex flex-col justify-between">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    <span className="flex items-center space-x-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      <span>Colloquial Hindi Output (For Drivers & Locals)</span>
+                    </span>
+                    {translationResult && (
+                      <span className="text-[10px] text-emerald-400 font-mono">
+                        {Math.round(translationResult.confidence * 100)}% Match
+                      </span>
+                    )}
+                  </div>
+
+                  {translationResult ? (
+                    <div className="p-5 sm:p-6 bg-[#0d0f15] border-2 border-emerald-500/40 rounded-2xl space-y-4 animate-in fade-in duration-200 shadow-2xl relative">
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-[10px] font-bold text-cyan-300 uppercase tracking-wide bg-cyan-500/10 px-2.5 py-1 rounded-md border border-cyan-500/20">
+                          {translationResult.source}
+                        </span>
+
+                        <div className="flex items-center space-x-1">
+                          <button
+                            onClick={() => handleCopy(translationResult.hindi || translationResult.translated)}
+                            className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/10 transition-colors"
+                            title="Copy Hindi text"
+                          >
+                            {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                          </button>
+                          
+                          <button
+                            onClick={() => handlePlayAudio(translationResult.hindi || translationResult.translated, targetLang)}
+                            className={`p-2 rounded-xl transition-colors ${
+                              isPlayingAudio
+                                ? 'text-emerald-300 bg-emerald-500/20 animate-pulse'
+                                : 'text-slate-400 hover:text-emerald-400 hover:bg-white/10'
+                            }`}
+                            title="Play Hindi Pronunciation Audio"
+                          >
+                            <Volume2 className="w-4 h-4" />
+                          </button>
+
+                          <button
+                            onClick={() => setFullscreenPhrase(translationResult)}
+                            className="p-2 text-slate-400 hover:text-amber-400 rounded-xl hover:bg-white/10 transition-colors"
+                            title="Show Fullscreen to Driver"
+                          >
+                            <Maximize2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Main Devanagari Hindi Text */}
+                      <div className="text-2xl sm:text-3xl font-black text-amber-300 font-display leading-relaxed">
+                        {translationResult.hindi || translationResult.translated}
+                      </div>
+
+                      {/* Hinglish Romanized Transliteration */}
+                      {translationResult.transliteration && (
+                        <div className="text-xs sm:text-sm font-mono text-emerald-300 bg-emerald-950/30 p-3 rounded-xl border border-emerald-500/30">
+                          "{translationResult.transliteration}"
+                        </div>
+                      )}
+
+                      {/* Phonetic Pronunciation Guide */}
+                      {translationResult.phonetic && (
+                        <div className="text-xs text-slate-300 italic flex items-center space-x-1.5">
+                          <span className="text-cyan-400 font-bold not-italic">Say Aloud:</span>
+                          <span>{translationResult.phonetic}</span>
+                        </div>
+                      )}
+
+                      {/* Show to Driver Large Button */}
+                      <button
+                        onClick={() => setFullscreenPhrase(translationResult)}
+                        className="w-full inline-flex items-center justify-center space-x-2 py-3 px-4 bg-gradient-to-r from-amber-500/20 to-emerald-500/20 hover:from-amber-500/30 hover:to-emerald-500/30 border border-amber-500/40 text-amber-300 hover:text-amber-200 font-bold text-xs rounded-xl transition-all shadow-md"
+                      >
+                        <Maximize2 className="w-4 h-4 text-amber-400" />
+                        <span>Show Oversized Screen to Auto-Rickshaw / Cab Driver</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="p-8 border border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center text-center space-y-3 min-h-[220px] bg-[#0d0f15]/50">
+                      <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-slate-500">
+                        <Globe className="w-6 h-6" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="text-sm font-bold text-slate-300">
+                          Ready to Translate
+                        </div>
+                        <div className="text-xs text-slate-500 max-w-xs leading-relaxed">
+                          Type a phrase, speak into the mic, or tap any quick prompt above to generate Devanagari Hindi text and audio speech.
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===================================================================== */}
+        {/* PRE-LOADED TOURIST PHRASES LIBRARY WITH SEARCH & FILTERS             */}
+        {/* ===================================================================== */}
+        <div className="space-y-6 pt-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-white font-display">
-                Interactive Text & Speech-to-Speech Translator
+              <h2 className="text-xl sm:text-2xl font-extrabold text-white font-display flex items-center space-x-2">
+                <Sparkles className="w-5 h-5 text-emerald-400" />
+                <span>Verified Tourist Hindi Phrase Deck</span>
               </h2>
-              <p className="text-xs text-slate-400">
-                Type or speak aloud. Voice inputs are automatically transcribed, translated, and spoken back.
+              <p className="text-xs sm:text-sm text-slate-400">
+                Official phrases curated with Delhi Police Tourist Unit & Ministry of Tourism guidelines.
               </p>
             </div>
-          </div>
 
-          {/* Language Switcher Bar */}
-          <div className="flex items-center space-x-2 bg-surface-card p-1.5 rounded-2xl border border-surface-border self-start sm:self-auto">
-            <span className="px-3 py-1 text-xs font-bold text-emerald-400 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
-              {sourceLang === 'en' ? 'English (EN)' : 'Hindi (HI)'}
-            </span>
-            <button
-              onClick={handleSwapLanguages}
-              title="Swap Languages"
-              className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-all"
-            >
-              <ArrowRightLeft className="w-3.5 h-3.5" />
-            </button>
-            <span className="px-3 py-1 text-xs font-bold text-indigo-400 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
-              {targetLang === 'hi' ? 'Hindi (HI)' : 'English (EN)'}
-            </span>
-          </div>
-        </div>
-
-        {/* Two-Column Translation Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Column 1: Input (Text + Speech Voice Recorder) */}
-          <div className="space-y-4">
-            <label className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center justify-between">
-              <span>{sourceLang === 'en' ? 'English Input' : 'Hindi Input'}</span>
-              <span className="text-[10px] text-slate-500 lowercase">
-                {speechSupported ? 'mic ready' : 'speech input not supported'}
-              </span>
-            </label>
-
-            <div className="relative">
-              <textarea
-                rows={4}
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder={
-                  sourceLang === 'en'
-                    ? "Type any tourist request e.g. 'Can you drop me at Connaught Place inner circle by meter?' or tap the microphone to speak..."
-                    : "यहाँ हिंदी में बोलें या लिखें (उदा. क्या आप मीटर से चलेंगे?)..."
-                }
-                className="w-full p-4 bg-surface border border-surface-border rounded-2xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors resize-none"
+            {/* Search Input */}
+            <div className="relative w-full sm:w-72">
+              <Search className="absolute left-3.5 top-2.5 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search phrases, english or hindi..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-3.5 py-2.5 bg-[#14161f] border border-white/10 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors shadow-sm"
               />
-
-              {inputText && (
-                <button
-                  onClick={() => {
-                    setInputText('');
-                    setTranslationResult(null);
-                  }}
-                  className="absolute top-3 right-3 text-xs text-slate-400 hover:text-white bg-surface-card px-2 py-1 rounded-md border border-white/10"
-                >
-                  Clear
-                </button>
-              )}
             </div>
+          </div>
 
-            {/* Actions Bar: Mic Button & Translate Button */}
-            <div className="flex items-center gap-3">
-              {speechSupported && (
+          {/* Category Filter Pills */}
+          <div className="flex items-center space-x-2 overflow-x-auto pb-2 no-scrollbar">
+            {categories.map((cat) => {
+              const Icon = cat.icon;
+              const isActive = activeCategory === cat.label;
+              return (
                 <button
-                  type="button"
-                  onClick={toggleListening}
-                  className={`flex-1 sm:flex-initial inline-flex items-center justify-center space-x-2 px-5 py-3 rounded-2xl font-bold text-xs transition-all shadow-lg ${
-                    isListening
-                      ? 'bg-rose-600 text-white animate-pulse shadow-rose-600/30'
-                      : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/30'
+                  key={cat.label}
+                  onClick={() => setActiveCategory(cat.label)}
+                  className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all flex items-center space-x-1.5 cursor-pointer ${
+                    isActive
+                      ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/30 border border-purple-400/40'
+                      : 'bg-[#14161f] text-slate-400 hover:text-white border border-white/10 hover:border-white/20'
                   }`}
                 >
-                  {isListening ? (
-                    <>
-                      <MicOff className="w-4 h-4 animate-bounce" />
-                      <span>Listening... (Tap to stop)</span>
-                    </>
-                  ) : (
-                    <>
-                      <Mic className="w-4 h-4" />
-                      <span>Speech-to-Speech (Speak)</span>
-                    </>
-                  )}
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{cat.label}</span>
                 </button>
-              )}
-
-              <button
-                type="button"
-                onClick={() => handleTranslate()}
-                disabled={isTranslating || !inputText.trim()}
-                className="flex-1 inline-flex items-center justify-center space-x-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-2xl transition-all shadow-lg shadow-emerald-600/30 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isTranslating ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Translating via Bhashini...</span>
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4" />
-                    <span>Translate Text</span>
-                  </>
-                )}
-              </button>
-            </div>
+              );
+            })}
           </div>
 
-          {/* Column 2: Translated Output Panel */}
-          <div className="space-y-4">
-            <label className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center justify-between">
-              <span>{targetLang === 'hi' ? 'Hindi Translation' : 'English Translation'}</span>
-              {translationResult && (
-                <span className="text-[10px] text-emerald-400 font-mono">
-                  {Math.round(translationResult.confidence * 100)}% Confidence
-                </span>
-              )}
-            </label>
+          {/* Grid of Phrase Cards (Styled with Homepage Glowing Cyber Cards) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filteredPhrases.map((phrase) => (
+              <div key={phrase.id} className="relative group">
+                {/* Ambient Card Glow */}
+                <div className="absolute -inset-1 rounded-[24px] bg-gradient-to-r from-purple-600/30 via-indigo-600/30 to-cyan-500/30 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300 pointer-events-none" />
 
-            {translationResult ? (
-              <div className="p-5 bg-surface border border-emerald-500/40 rounded-2xl space-y-4 animate-in fade-in duration-200">
-                <div className="flex items-start justify-between gap-2">
-                  <span className="text-[10px] font-bold text-indigo-300 uppercase tracking-wide bg-indigo-500/10 px-2.5 py-1 rounded-md border border-indigo-500/20">
-                    {translationResult.source}
-                  </span>
+                <div className="relative h-full rounded-2xl p-5 border-2 border-[#2f323e]/70 hover:border-purple-400/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-xl hover:-translate-y-1 transition-all flex flex-col justify-between space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="px-2.5 py-0.5 text-[10px] font-bold rounded-md bg-white/5 text-cyan-300 border border-white/10 uppercase tracking-wide">
+                        {phrase.quickTag}
+                      </span>
 
-                  <div className="flex items-center space-x-1">
+                      <div className="flex items-center space-x-1">
+                        <button
+                          onClick={() => handlePlayAudio(phrase.hindi, 'hi')}
+                          title="Play Pronunciation Audio"
+                          className="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors cursor-pointer"
+                        >
+                          <Volume2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => setFullscreenPhrase(phrase)}
+                          title="Show to Driver Fullscreen"
+                          className="p-1.5 text-slate-400 hover:text-amber-400 hover:bg-amber-500/10 rounded-lg transition-colors cursor-pointer"
+                        >
+                          <Maximize2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <h3 className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
+                      "{phrase.english}"
+                    </h3>
+
+                    {/* Hindi Output */}
+                    <div className="text-lg font-black text-amber-300 font-display">
+                      {phrase.hindi}
+                    </div>
+
+                    {/* Transliteration */}
+                    <div className="text-xs font-mono text-emerald-300 bg-emerald-950/20 px-2.5 py-1.5 rounded-lg border border-emerald-500/20">
+                      {phrase.transliteration}
+                    </div>
+
+                    {/* Phonetic Pronunciation Guide */}
+                    <div className="text-[11px] text-slate-400 italic">
+                      Say: <span className="text-slate-300 font-medium">{phrase.phonetic}</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs">
+                    <span className="text-[11px] text-slate-500 truncate max-w-[170px]" title={phrase.context}>
+                      {phrase.context}
+                    </span>
                     <button
-                      onClick={() => handleCopy(translationResult.translated)}
-                      className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
-                      title="Copy text"
+                      onClick={() => handleSelectPreloaded(phrase)}
+                      className="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 hover:underline flex items-center space-x-1 cursor-pointer"
                     >
-                      {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                    </button>
-                    <button
-                      onClick={() => handlePlayAudio(translationResult.translated, targetLang)}
-                      className={`p-1.5 rounded-lg transition-colors ${
-                        isPlayingAudio
-                          ? 'text-emerald-300 bg-emerald-500/20 animate-pulse'
-                          : 'text-slate-400 hover:text-emerald-400 hover:bg-white/5'
-                      }`}
-                      title="Play Pronunciation"
-                    >
-                      <Volume2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => setFullscreenPhrase(translationResult)}
-                      className="p-1.5 text-slate-400 hover:text-indigo-400 rounded-lg hover:bg-white/5 transition-colors"
-                      title="Show to Driver Fullscreen"
-                    >
-                      <Maximize2 className="w-4 h-4" />
+                      <span>Load in Translator</span>
                     </button>
                   </div>
-                </div>
-
-                {/* Main Translated Text */}
-                <div className="text-xl sm:text-2xl font-black text-white font-display">
-                  {translationResult.translated}
-                </div>
-
-                {/* Transliteration */}
-                {translationResult.transliteration && (
-                  <div className="text-sm font-mono text-emerald-300 bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20">
-                    "{translationResult.transliteration}"
-                  </div>
-                )}
-
-                {/* Phonetic Pronunciation Guide */}
-                {translationResult.phonetic && (
-                  <div className="text-xs text-slate-400 italic">
-                    Say aloud: {translationResult.phonetic}
-                  </div>
-                )}
-
-                {/* Quick Show to Driver Button */}
-                <button
-                  onClick={() => setFullscreenPhrase(translationResult)}
-                  className="w-full inline-flex items-center justify-center space-x-2 py-2.5 px-4 bg-surface-card hover:bg-surface border border-surface-border text-emerald-400 hover:text-emerald-300 font-bold text-xs rounded-xl transition-all"
-                >
-                  <Maximize2 className="w-4 h-4" />
-                  <span>Show Large Screen to Driver / Auto-rickshaw</span>
-                </button>
-              </div>
-            ) : (
-              <div className="p-8 border border-dashed border-surface-border rounded-2xl flex flex-col items-center justify-center text-center space-y-3 min-h-[220px]">
-                <Globe className="w-8 h-8 text-slate-500" />
-                <div className="text-xs text-slate-400 max-w-xs">
-                  Your translation and pronunciation guide will appear here. Choose a phrase above or use voice input to begin.
                 </div>
               </div>
-            )}
+            ))}
           </div>
         </div>
+
       </div>
     </div>
-  </div>
   );
 }

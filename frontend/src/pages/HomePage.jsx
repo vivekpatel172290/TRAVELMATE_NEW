@@ -605,7 +605,10 @@ export default function HomePage() {
               {/* Ambient Multi-Color Glow Backdrop (signature glowing bg like hero animated section) */}
               <div className="absolute -inset-2 rounded-[30px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 group-hover:opacity-65 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
               
-              <div className="relative h-full rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 border-2 border-[#2f323e]/70 hover:border-purple-400/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl hover:-translate-y-1 overflow-hidden">
+              <div 
+                onClick={() => navigate('/phrase-helper')}
+                className="relative h-full rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 border-2 border-[#2f323e]/70 hover:border-purple-400/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl hover:-translate-y-1 overflow-hidden cursor-pointer"
+              >
                 {/* Internal ambient corner glow */}
                 <div className="absolute -top-12 -right-12 w-36 h-36 bg-purple-500/20 rounded-full blur-2xl pointer-events-none" />
                 <div className="relative z-10">
@@ -616,9 +619,16 @@ export default function HomePage() {
                     <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-purple-300 transition-colors">
                       Phrase Converter
                     </h3>
-                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase tracking-wider">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate('/phrase-helper');
+                      }}
+                      className="text-xs font-bold px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase tracking-wider hover:bg-purple-500/30 transition-colors"
+                    >
                       Bhashini AI
-                    </span>
+                    </button>
                   </div>
                   <p className="text-sm sm:text-[15px] text-slate-300 leading-relaxed mb-5">
                     Translates crucial travel phrases, bargaining queries, and safety inquiries into Hindi text with clear phonetic pronunciation audio.

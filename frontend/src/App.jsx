@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { TravelerProvider } from './context/TravelerContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Header from './components/common/Header';
@@ -25,6 +25,7 @@ import { Bot, Languages, Mic } from 'lucide-react';
 
 function AppLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isPlaceDetailPage = location.pathname.startsWith('/place');
 
   const [isQROpen, setIsQROpen] = useState(false);
@@ -156,10 +157,10 @@ function AppLayout() {
             <button
               id="btn-floating-bhashini-translate"
               onClick={() => {
-                setIsVoiceActive(false);
-                setIsLangOpen(true);
+                navigate('/phrase-helper');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="group flex items-center space-x-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-3 py-2 rounded-full shadow-lg shadow-emerald-600/25 border border-emerald-400/40 transition-all duration-200 hover:scale-105 active:scale-95"
+              className="group flex items-center space-x-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-3.5 py-2 rounded-full shadow-lg shadow-emerald-600/30 border border-emerald-400/40 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
               aria-label="Open Bhashini AI Multilingual Translator"
               title="Digital India Bhashini Multilingual AI Translator"
             >
@@ -173,10 +174,10 @@ function AppLayout() {
             <button
               id="btn-floating-voice-translate"
               onClick={() => {
-                setIsVoiceActive(true);
-                setIsLangOpen(true);
+                navigate('/phrase-helper?voice=1');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="group flex items-center space-x-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-3 py-2 rounded-full shadow-lg shadow-cyan-600/25 border border-cyan-400/40 transition-all duration-200 hover:scale-105 active:scale-95"
+              className="group flex items-center space-x-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-3 py-2 rounded-full shadow-lg shadow-cyan-600/30 border border-cyan-400/40 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
               aria-label="Open Voice AI Speech Translation"
               title="1-Tap Speech-to-Speech Voice Translation"
             >
