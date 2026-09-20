@@ -585,21 +585,56 @@ export default function SafeJourneyPage() {
 
           {/* Quick Hub Chips Strip */}
           <div className="mt-4 pt-3 border-t border-white/[0.06] flex flex-wrap items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 mr-1">
-              Quick Hubs:
-            </span>
+            <div className="flex items-center space-x-1.5 shrink-0 mr-1 text-[11px] font-bold uppercase text-slate-400">
+              <span>Quick Hubs</span>
+              <span className="text-slate-500">(set as:</span>
+              <button
+                type="button"
+                id="btn-quick-target-dest"
+                onClick={() => setQuickHubTarget('destination')}
+                className={`px-2 py-0.5 rounded text-[10px] font-bold transition-colors ${
+                  quickHubTarget === 'destination'
+                    ? 'bg-red-500/25 text-red-300 border border-red-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                🚩 Destination
+              </button>
+              <span className="text-slate-600">/</span>
+              <button
+                type="button"
+                id="btn-quick-target-pickup"
+                onClick={() => {
+                  setQuickHubTarget('pickup');
+                  setPickupMode('manual');
+                }}
+                className={`px-2 py-0.5 rounded text-[10px] font-bold transition-colors ${
+                  quickHubTarget === 'pickup'
+                    ? 'bg-blue-500/25 text-blue-300 border border-blue-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                📍 Pickup
+              </button>
+              <span className="text-slate-500">):</span>
+            </div>
+
             {QUICK_DESTINATIONS.map((dest) => {
-              const isSelected = destinationCoords.name.includes(dest.name.split(',')[0]);
+              const isDest = destinationCoords.name.includes(dest.name.split(',')[0]);
+              const isPickup = currentOrigin.name.includes(dest.name.split(',')[0]);
               return (
                 <button
                   key={dest.name}
                   type="button"
                   onClick={() => handleQuickHubClick(dest)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
-                    isSelected
-                      ? 'bg-gradient-to-r from-cyan-600 to-indigo-600 text-white border-cyan-400/50 shadow-md font-bold'
-                      : 'bg-white/[0.04] text-slate-300 hover:text-white border-white/[0.08] hover:bg-white/[0.08]'
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
+                    isPickup
+                      ? 'bg-blue-500/25 text-blue-300 border-blue-500/50 shadow-sm font-bold ring-1 ring-blue-400/30'
+                      : isDest
+                        ? 'bg-red-500/25 text-red-300 border-red-500/50 shadow-sm font-bold ring-1 ring-red-400/30'
+                        : 'bg-white/[0.04] text-slate-300 hover:text-white border-white/[0.08] hover:bg-white/[0.08]'
                   }`}
+                  title={`Click to set as ${quickHubTarget === 'pickup' ? 'Pickup Location' : 'Destination'}`}
                 >
                   {dest.name.split(',')[0]}
                 </button>
@@ -610,35 +645,42 @@ export default function SafeJourneyPage() {
 
         {/* 2. CORRIDOR EVALUATION CARDS SECTION (POSITIONED ABOVE MAP) */}
         {activeTab === 'tracking' && (
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
-              <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
-                  <Navigation className="w-4 h-4" />
+          <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-5 sm:p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden space-y-5">
+            {/* Ambient subtle glow */}
+            <div className="absolute top-0 right-0 w-96 h-32 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+
+            {/* Section Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/[0.08] relative z-10">
+              <div className="flex items-center space-x-3">
+                <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 shadow-md shadow-emerald-500/10">
+                  <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white font-display tracking-wide flex items-center space-x-2">
-                    <span>Corridor Safety Ranking</span>
+                  <h2 className="text-base sm:text-lg font-bold font-display text-white flex items-center space-x-2">
+                    <span>Multi-Route Safety Comparison</span>
                     <span className="text-xs font-mono font-bold text-cyan-400 bg-cyan-500/15 px-2.5 py-0.5 rounded-full border border-cyan-500/30">
-                      {availableRoutes.length} Evaluated
+                      {availableRoutes.length} Corridors Evaluated
                     </span>
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    Click any corridor to activate real-time radar tracking, lighting benchmarks, and fare estimation.
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    All routes are rendered on the live map canvas. Click any corridor card to select and highlight it.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2 self-start sm:self-auto">
-                <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/15 px-3 py-1 rounded-xl border border-emerald-500/30 flex items-center space-x-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Journey: {journey?.journey_code || 'TM-DEL-2026'}</span>
+              <div className="flex items-center space-x-2 self-start sm:self-auto shrink-0">
+                <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 shadow-sm">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Route 1 Recommended</span>
+                </span>
+                <span className="text-xs font-mono font-bold text-slate-300 bg-white/[0.05] px-2.5 py-1 rounded-xl border border-white/10 hidden md:inline-flex">
+                  {journey?.journey_code || 'TM-DEL-2026'}
                 </span>
               </div>
             </div>
 
             {/* Responsive 3-column Corridor Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5 relative z-10">
               {availableRoutes.map((route, idx) => {
                 const isSelected = selectedRouteIndex === idx;
                 const isOptimal = route.safetyLevel === 'High' || idx === 0;
@@ -647,84 +689,133 @@ export default function SafeJourneyPage() {
                 return (
                   <div
                     key={route.id || idx}
+                    id={`card-route-option-${idx}`}
                     onClick={() => setSelectedRouteIndex(idx)}
-                    className={`p-4 sm:p-5 rounded-2xl border cursor-pointer transition-all duration-200 flex flex-col justify-between ${
+                    className={`p-4 sm:p-5 rounded-2xl border flex flex-col justify-between cursor-pointer transition-all duration-200 relative group ${
                       isSelected
                         ? isOptimal
                           ? 'bg-emerald-500/15 border-emerald-500/70 ring-2 ring-emerald-500/50 shadow-xl shadow-emerald-500/10'
                           : 'bg-cyan-500/15 border-cyan-500/70 ring-2 ring-cyan-500/50 shadow-xl shadow-cyan-500/10'
-                        : 'bg-[#111318]/90 hover:bg-white/[0.06] border-white/[0.08]'
+                        : 'bg-[#151922]/80 hover:bg-[#1c2230] border-white/[0.08] hover:border-white/20 opacity-90 hover:opacity-100 shadow-md'
                     }`}
                   >
                     <div>
+                      {/* Top Header: Radio dot + Route Label + Status Badge */}
                       <div className="flex items-center justify-between mb-2.5">
                         <div className="flex items-center space-x-2">
-                          <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                            isSelected ? 'border-emerald-400 bg-emerald-400' : 'border-slate-500'
+                          <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
+                            isSelected ? 'border-emerald-400 bg-emerald-400' : 'border-slate-500 group-hover:border-slate-400'
                           }`}>
-                            {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-black" />}
+                            {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-slate-950" />}
                           </span>
-                          <span className="text-xs font-bold text-white">
-                            Route {idx + 1}: {idx === 0 ? 'Primary' : `Alt ${idx}`}
+                          <span className="text-xs font-bold text-white tracking-wide">
+                            Route {idx + 1}: {idx === 0 ? 'Primary Corridor' : `Alternative ${idx}`}
                           </span>
                         </div>
 
-                        {isOptimal ? (
-                          <span className="px-2.5 py-0.5 rounded-md bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 text-xs font-extrabold flex items-center space-x-1">
-                            <Award className="w-3 h-3" />
-                            <span>Safest</span>
-                          </span>
-                        ) : isCaution ? (
-                          <span className="px-2.5 py-0.5 rounded-md bg-amber-500/25 text-amber-300 border border-amber-500/40 text-xs font-bold">
-                            Caution
-                          </span>
-                        ) : (
-                          <span className="px-2.5 py-0.5 rounded-md bg-cyan-500/25 text-cyan-300 border border-cyan-500/40 text-xs font-bold">
-                            Moderate
-                          </span>
-                        )}
+                        <div className="flex items-center space-x-1">
+                          {isOptimal ? (
+                            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-emerald-500 text-white shadow-sm flex items-center gap-1">
+                              <Award className="w-3 h-3" />
+                              <span>Safest Route</span>
+                            </span>
+                          ) : (
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                              isCaution
+                                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                            }`}>
+                              {isCaution ? 'Caution Advised' : 'Moderate Safety'}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
-                      <h4 className="text-sm font-bold text-white mb-3 leading-snug line-clamp-2">
+                      {/* Route Summary */}
+                      <h4 className="text-sm font-bold text-white mb-2 leading-snug line-clamp-1">
                         {route.summary}
                       </h4>
 
-                      {/* Distance, ETA, & Fare Matrix */}
-                      <div className="grid grid-cols-2 gap-2 text-xs mb-3">
-                        <div className="p-2.5 rounded-xl bg-black/40 border border-white/[0.05]">
-                          <span className="text-slate-400 text-[10px] uppercase font-bold block">Distance & ETA</span>
-                          <span className="font-mono font-bold text-cyan-300 text-xs mt-0.5 block">
-                            {route.distanceText} • {route.durationText}
+                      {/* Distance & Duration Pills */}
+                      <div className="flex items-center space-x-2 text-xs font-mono font-bold text-cyan-300 mb-2.5">
+                        <span className="px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20">
+                          {route.distanceText}
+                        </span>
+                        <span className="text-slate-500">•</span>
+                        <span className="px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20">
+                          {route.durationText}
+                        </span>
+                      </div>
+
+                      {/* Est. Auto Fare Box */}
+                      <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs mb-3">
+                        <span className="text-slate-300 flex items-center gap-1.5 text-[11px] font-medium">
+                          <Calculator className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>Est. Auto Fare:</span>
+                        </span>
+                        <span className="font-mono font-bold text-emerald-300 text-xs">
+                          ₹{getEstimatedAutoFare(route.distanceKm).min} – ₹{getEstimatedAutoFare(route.distanceKm).max}
+                        </span>
+                      </div>
+
+                      {/* 3 Telemetry Breakdown Rows: CCTV, Lighting, Police Beat */}
+                      <div className="space-y-1.5 text-xs mb-3.5">
+                        <div className="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
+                          <span className="text-slate-400 flex items-center gap-1.5 text-[11px]">
+                            <Video className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                            <span>CCTV Coverage:</span>
+                          </span>
+                          <span className="font-semibold text-slate-200 text-[11px]">
+                            {route.cctvCoverage || '88% Monitored'}
                           </span>
                         </div>
 
-                        <div className="p-2.5 rounded-xl bg-black/40 border border-white/[0.05]">
-                          <span className="text-slate-400 text-[10px] uppercase font-bold block">Est. Auto Fare</span>
-                          <span className="font-mono font-bold text-emerald-400 text-xs mt-0.5 block">
-                            ₹{getEstimatedAutoFare(route.distanceKm).min} – ₹{getEstimatedAutoFare(route.distanceKm).max}
+                        <div className="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
+                          <span className="text-slate-400 flex items-center gap-1.5 text-[11px]">
+                            <Lightbulb className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                            <span>Lighting Quality:</span>
+                          </span>
+                          <span className="font-semibold text-slate-200 text-[11px] text-right truncate max-w-[150px]">
+                            {route.lighting}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
+                          <span className="text-slate-400 flex items-center gap-1.5 text-[11px]">
+                            <Car className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                            <span>Police Beat:</span>
+                          </span>
+                          <span className="font-semibold text-slate-200 text-[11px] text-right truncate max-w-[150px]">
+                            {route.policePresence}
                           </span>
                         </div>
                       </div>
+
+                      {/* Route Advisory text */}
+                      {route.advisory && (
+                        <p className="text-[11px] text-slate-300 leading-relaxed mb-3.5 line-clamp-2">
+                          {route.advisory}
+                        </p>
+                      )}
                     </div>
 
-                    {/* Safety Metrics */}
-                    <div className="pt-2 border-t border-white/[0.06] space-y-1.5 text-xs text-slate-300">
-                      <div className="flex items-center justify-between">
-                        <span className="flex items-center space-x-1.5 text-slate-400">
-                          <Lightbulb className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                          <span>Lighting:</span>
-                        </span>
-                        <span className="font-semibold text-slate-200">{route.lighting}</span>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <span className="flex items-center space-x-1.5 text-slate-400">
-                          <Car className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                          <span>Police Beat:</span>
-                        </span>
-                        <span className="font-semibold text-slate-200">{route.policePresence}</span>
-                      </div>
-                    </div>
+                    {/* Action Button */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedRouteIndex(idx);
+                      }}
+                      className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all shadow-md ${
+                        isSelected
+                          ? isOptimal
+                            ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                            : 'bg-cyan-600 hover:bg-cyan-500 text-white'
+                          : 'bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 hover:text-white'
+                      }`}
+                    >
+                      {isSelected ? '✓ Highlighted on Map' : 'Select This Corridor'}
+                    </button>
                   </div>
                 );
               })}
@@ -732,7 +823,7 @@ export default function SafeJourneyPage() {
 
             {/* Soft Deviation Warning Alert Banner */}
             {simulatedDeviation && (
-              <div className="p-4 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200 shadow-lg">
+              <div className="p-4 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200 shadow-xl relative z-10">
                 <div className="flex items-start space-x-3">
                   <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
                   <div>
@@ -756,11 +847,11 @@ export default function SafeJourneyPage() {
 
         {/* District Safety Overlay Section (Active when 'zones' tab chosen) */}
         {activeTab === 'zones' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between pb-1">
-              <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
-                  <ShieldCheck className="w-4 h-4" />
+          <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-5 sm:p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden space-y-4 mb-6">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+              <div className="flex items-center space-x-3">
+                <div className="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+                  <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white font-display tracking-wide">
@@ -782,7 +873,7 @@ export default function SafeJourneyPage() {
                   className={`p-4 rounded-2xl border cursor-pointer transition-all ${
                     selectedZone?.id === zone.id
                       ? 'bg-indigo-600/20 border-indigo-500/70 shadow-lg ring-2 ring-indigo-400/40'
-                      : 'bg-[#111318]/90 border-white/[0.08] hover:bg-white/[0.06]'
+                      : 'bg-[#151922]/80 hover:bg-[#1c2230] border-white/[0.08]'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
@@ -807,11 +898,11 @@ export default function SafeJourneyPage() {
 
         {/* Night-Safe Corridor Ranker Section (Active when 'night' tab chosen) */}
         {activeTab === 'night' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between pb-1">
-              <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
-                  <Moon className="w-4 h-4" />
+          <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-5 sm:p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden space-y-4 mb-6">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+              <div className="flex items-center space-x-3">
+                <div className="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+                  <Moon className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-indigo-300 font-display tracking-wide flex items-center space-x-2">
@@ -837,7 +928,7 @@ export default function SafeJourneyPage() {
                     className={`p-4 rounded-2xl border cursor-pointer transition-all ${
                       isSelected
                         ? 'bg-emerald-500/15 border-emerald-500/70 shadow-lg ring-2 ring-emerald-400/40'
-                        : 'bg-[#111318]/90 border-white/[0.08] hover:bg-white/[0.06]'
+                        : 'bg-[#151922]/80 hover:bg-[#1c2230] border-white/[0.08]'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
@@ -863,30 +954,33 @@ export default function SafeJourneyPage() {
         )}
 
         {/* 3. FULL-WIDTH RADAR MAP CANVAS (POSITIONED DOWN / BELOW CORRIDOR CARDS) */}
-        <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-4 sm:p-6 shadow-xl flex flex-col justify-between min-h-[560px]">
+        <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-4 sm:p-6 shadow-2xl backdrop-blur-xl flex flex-col justify-between min-h-[580px] relative">
           
-          {/* Map Top Status Strip */}
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4 z-10 pb-3 border-b border-white/[0.06]">
+          {/* Map Top Status Strip HUD */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4 z-10 pb-3.5 border-b border-white/[0.06]">
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              <div className="flex items-center space-x-2.5 bg-black/50 px-3.5 py-1.5 rounded-xl border border-white/10 text-xs">
-                <span className={`w-2.5 h-2.5 rounded-full ${pickupMode === 'manual' ? 'bg-indigo-400' : 'bg-emerald-400 animate-pulse'}`} />
-                <span className="text-white font-mono font-bold text-xs sm:text-sm">
+              <div className="flex items-center space-x-2.5 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/10 text-xs shadow-sm">
+                <span className={`w-2.5 h-2.5 rounded-full ${pickupMode === 'manual' ? 'bg-blue-400 ring-2 ring-blue-400/30' : 'bg-emerald-400 radar-pulse'}`} />
+                <span className="text-slate-200 font-mono font-bold text-xs sm:text-sm" id="label-live-gps-coords">
                   {pickupMode === 'manual'
-                    ? `Manual Origin: ${currentOrigin.name}`
+                    ? `Pickup: ${currentOrigin.name}`
                     : liveGps
                       ? `GPS Lat: ${liveGps.lat}, Lng: ${liveGps.lng} (±${liveGps.accuracy}m)`
-                      : 'Acquiring Live Satellite Lock...'}
+                      : 'Acquiring Real-Time Live GPS Fix...'}
                 </span>
                 <span className="text-slate-600">•</span>
-                <span className={pickupMode === 'manual' ? 'text-indigo-400 font-bold' : 'text-emerald-400 font-bold'}>
-                  {pickupMode === 'manual' ? 'Manual Mode' : '24/7 Monitored'}
+                <span className={pickupMode === 'manual' ? 'text-blue-400 font-bold' : 'text-emerald-400 font-bold'}>
+                  {pickupMode === 'manual' ? 'Manual Origin Mode' : 'Live GPS Monitored'}
                 </span>
               </div>
 
-              {/* Active Route Indicator Chip */}
+              {/* Active Route Indicator Pill */}
               <div className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-xs text-cyan-300 font-medium">
-                <span>Active Route:</span>
-                <strong className="text-white font-bold">{activeSelectedRoute?.summary || `Route ${selectedRouteIndex + 1}`}</strong>
+                <Navigation className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                <span>Active:</span>
+                <strong className="text-white font-bold truncate max-w-[200px]">
+                  {activeSelectedRoute?.summary || `Route ${selectedRouteIndex + 1}`}
+                </strong>
                 {activeSelectedRoute?.distanceText && (
                   <span className="text-cyan-400 font-mono">({activeSelectedRoute.distanceText} • {activeSelectedRoute.durationText})</span>
                 )}
@@ -900,27 +994,27 @@ export default function SafeJourneyPage() {
                 onClick={() => setSimulatedDeviation(!simulatedDeviation)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all ${
                   simulatedDeviation
-                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-md'
+                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-md ring-1 ring-amber-400/30'
                     : 'bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 border border-white/10'
                 }`}
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span>{simulatedDeviation ? 'Reset Corridor' : 'Simulate Deviation (>500m)'}</span>
+                <span>{simulatedDeviation ? 'Reset Corridor' : 'Simulate Route Deviation (>500m)'}</span>
               </button>
 
               <a
                 href="tel:112"
-                className="px-3.5 py-1.5 rounded-xl bg-red-600/80 hover:bg-red-600 text-white font-bold text-xs flex items-center space-x-1.5 border border-red-500/40 transition-all shadow-md"
+                className="px-3.5 py-1.5 rounded-xl bg-red-600/85 hover:bg-red-600 text-white font-bold text-xs flex items-center space-x-1.5 border border-red-500/40 transition-all shadow-md shadow-red-600/20"
                 title="Quick Dial Delhi Police 112"
               >
-                <PhoneCall className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Police</span> 112
+                <PhoneCall className="w-3.5 h-3.5 text-white animate-pulse" />
+                <span className="hidden sm:inline">Delhi Police</span> 112
               </a>
             </div>
           </div>
 
           {/* Interactive Google Map with Route Overlays */}
-          <div className="relative min-h-[480px] lg:min-h-[560px] rounded-2xl overflow-hidden border border-white/[0.08]">
+          <div className="relative min-h-[480px] lg:min-h-[560px] rounded-2xl overflow-hidden border border-white/[0.08] shadow-inner">
             <GoogleMapView
               showRoute={true}
               simulatedDeviation={simulatedDeviation}
@@ -936,17 +1030,18 @@ export default function SafeJourneyPage() {
           </div>
 
           {/* Map Telemetry Footer */}
-          <div className="mt-4 pt-3 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-300">
+          <div className="mt-4 pt-3.5 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-300">
             <div className="flex items-center space-x-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Delhi Police PCR beat coverage, street lighting & live corridor deviation telemetry active.</span>
+              <Info className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>Multi-route safety layer powered by Police beat records & real-time street lighting telemetry.</span>
             </div>
             <div className="flex items-center space-x-3 shrink-0">
-              <span className="text-slate-400 font-mono">
-                Auto-Flag: <strong className="text-slate-200">&gt;500m off route</strong>
+              <span className="text-slate-400 font-mono text-[11px]">
+                Threshold: <strong className="text-slate-200">&gt;500m off route</strong>
               </span>
+              <StatusBadge status="Official" />
               <span className="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-xs font-bold flex items-center space-x-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-emerald-400 radar-pulse" />
                 <span>Safe Corridor Verified</span>
               </span>
             </div>
