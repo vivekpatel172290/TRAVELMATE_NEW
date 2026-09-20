@@ -228,67 +228,69 @@ export default function DiscoverPage() {
 
                 {/* Badges */}
                 <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none z-20">
-                  <span className="px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-md text-[10px] font-bold text-slate-200 border border-white/10 uppercase tracking-wider">
+                  <span className="px-2.5 py-1 rounded-xl bg-black/80 backdrop-blur-md text-xs font-bold text-slate-200 border border-white/15 uppercase tracking-wider shadow-md">
                     {place.category}
                   </span>
-                  <span className="px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[10px] font-extrabold uppercase">
+                  <span className="px-2.5 py-1 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-black uppercase shadow-md backdrop-blur-md">
                     ASI Verified
                   </span>
                 </div>
 
                 {/* Bottom Crowd Pill */}
-                <div className="absolute bottom-2 left-2.5 pointer-events-none z-20">
+                <div className="absolute bottom-2.5 left-2.5 pointer-events-none z-20">
                   <span
-                    className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-md border shadow-sm ${
+                    className={`inline-flex items-center text-xs font-bold px-2.5 py-1 rounded-xl backdrop-blur-md border shadow-md ${
                       place.crowd_data?.estimated_crowd === 'High'
-                        ? 'bg-rose-950/80 text-rose-300 border-rose-500/30'
+                        ? 'bg-rose-950/85 text-rose-300 border-rose-500/40'
                         : place.crowd_data?.estimated_crowd === 'Medium'
-                        ? 'bg-amber-950/80 text-amber-300 border-amber-500/30'
-                        : 'bg-cyan-950/80 text-cyan-300 border-cyan-500/30'
+                        ? 'bg-amber-950/85 text-amber-300 border-amber-500/40'
+                        : 'bg-cyan-950/85 text-cyan-300 border-cyan-500/40'
                     }`}
                   >
-                    <Users className="w-3 h-3 mr-1" />
+                    <Users className="w-3.5 h-3.5 mr-1.5" />
                     {place.crowd_data?.estimated_crowd || 'Medium'} Crowd
                   </span>
                 </div>
               </div>
 
-              {/* Card Body - Essential info only */}
-              <div className="p-4 space-y-2.5">
+              {/* Card Body - Highly Legible & Beautiful Font Sizes */}
+              <div className="p-4 sm:p-5 space-y-3">
                 <div>
-                  <h3 className="text-sm sm:text-base font-bold font-display text-white group-hover:text-indigo-300 transition-colors line-clamp-1">
+                  <h3 className="text-base sm:text-lg font-extrabold font-display text-white group-hover:text-cyan-300 transition-colors line-clamp-1">
                     {place.name}
                   </h3>
-                  <p className="text-xs text-slate-400 truncate">
+                  <p className="text-xs sm:text-sm font-semibold text-indigo-300 truncate mt-0.5">
                     {place.hindi_name}
                   </p>
                 </div>
 
                 {/* Entry Fee Box */}
-                <div className="flex items-center justify-between text-xs py-1.5 px-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                  <span className="text-slate-400 text-[11px]">Official Fee</span>
-                  <span className="font-mono font-bold text-slate-100">
+                <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08]">
+                  <span className="text-slate-300 text-xs font-bold uppercase tracking-wider">Official Fee</span>
+                  <span className="font-mono font-black text-cyan-300 text-sm sm:text-base">
                     {place.fee?.foreigner === 0 ? 'Free Entry' : `₹${place.fee?.foreigner}`}
-                    {place.fee?.foreigner > 0 && <span className="text-[10px] text-slate-400 font-normal ml-1">(Intl)</span>}
+                    {place.fee?.foreigner > 0 && <span className="text-xs text-slate-400 font-normal ml-1">(Intl)</span>}
                   </span>
                 </div>
 
                 {/* Timings */}
-                <div className="flex items-center justify-between text-[11px] text-slate-400 px-0.5">
-                  <span className="flex items-center space-x-1">
-                    <Clock className="w-3 h-3 text-indigo-400 shrink-0" />
+                <div className="flex items-center justify-between text-xs sm:text-[13px] text-slate-200 px-0.5 pt-0.5">
+                  <span className="flex items-center space-x-1.5 font-medium">
+                    <Clock className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
                     <span>{place.timings?.opening} - {place.timings?.closing}</span>
                   </span>
-                  <span className="text-slate-500 font-medium">{place.timings?.closed_on || 'Open Daily'}</span>
+                  <span className="text-xs font-bold text-indigo-300 bg-indigo-500/15 border border-indigo-500/30 px-2 py-0.5 rounded-md">
+                    {place.timings?.closed_on || 'Open Daily'}
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Click to Open Details Footer */}
-            <div className="p-4 pt-0">
-              <div className="pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs text-indigo-400 group-hover:text-indigo-300 font-bold">
+            <div className="p-4 sm:p-5 pt-0">
+              <div className="pt-3 border-t border-white/[0.08] flex items-center justify-between text-xs sm:text-sm text-cyan-400 group-hover:text-cyan-300 font-bold transition-colors">
                 <span>View Verified Info</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
           </div>

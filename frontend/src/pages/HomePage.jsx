@@ -469,29 +469,29 @@ export default function HomePage() {
                             className={`w-full h-full object-cover ${item.imagePos || 'object-center'} group-hover:scale-105 transition-transform duration-500`}
                             style={{ minWidth: '100%', minHeight: '100%', objectFit: 'cover' }}
                           />
-                          <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[8px] sm:text-[9px] font-bold text-cyan-300 border border-cyan-500/30 z-10">
+                          <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[9px] sm:text-[10px] font-bold text-cyan-300 border border-cyan-500/30 z-10">
                             ASI
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-1 mb-0.5">
-                            <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
+                            <span className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider truncate">
                               {item.category}
                             </span>
-                            <span className="text-[9px] sm:text-[10px] font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-1.5 py-0.5 rounded shrink-0">
+                            <span className="text-[10px] sm:text-xs font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-1.5 py-0.5 rounded shrink-0">
                               Verified
                             </span>
                           </div>
                           <h4 className="text-xs sm:text-sm font-bold text-white font-display truncate group-hover:text-cyan-300 transition-colors">
                             {item.name}
                           </h4>
-                          <div className="flex items-center space-x-1.5 sm:space-x-2 text-[10px] sm:text-xs text-slate-300 mt-1 font-mono">
-                            <span className="text-white font-bold">{item.indianPrice} / {item.foreignPrice}</span>
+                          <div className="flex items-center space-x-1.5 sm:space-x-2 text-[11px] sm:text-xs text-slate-300 mt-1 font-mono">
+                            <span className="text-cyan-300 font-bold">{item.indianPrice} / {item.foreignPrice}</span>
                             <span className="text-slate-500">•</span>
-                            <span className="text-[10px] sm:text-[11px] text-slate-400 truncate">{item.timings.split('(')[0]}</span>
+                            <span className="text-[11px] sm:text-xs text-slate-300 truncate">{item.timings.split('(')[0]}</span>
                           </div>
-                          <div className="flex items-center space-x-2 text-[10px] sm:text-[11px] text-slate-400 mt-1">
-                            <span className="flex items-center gap-1">
+                          <div className="flex items-center space-x-2 text-[11px] sm:text-xs text-slate-400 mt-1">
+                            <span className="flex items-center gap-1 font-medium">
                               <span className={`w-1.5 h-1.5 rounded-full ${item.crowd === 'High' ? 'bg-amber-400' : item.crowd === 'Medium' ? 'bg-cyan-400' : 'bg-emerald-400'}`} />
                               <span>Crowd: {item.crowd}</span>
                             </span>
@@ -957,7 +957,7 @@ export default function HomePage() {
               <div
                 key={m.name}
                 onClick={() => navigate(m.link)}
-                className="coder-card rounded-2xl overflow-hidden group flex flex-col justify-between cursor-pointer hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/10 hover:scale-[1.02] transition-all duration-300"
+                className="coder-card rounded-2xl overflow-hidden group flex flex-col justify-between cursor-pointer hover:border-cyan-500/50 hover:shadow-xl hover:shadow-cyan-500/10 hover:scale-[1.02] transition-all duration-300"
               >
                 {/* Uniform Even-Sized Photo Container */}
                 <div className="relative w-full h-48 sm:h-52 overflow-hidden bg-[#090b10] border-b border-white/[0.08]">
@@ -974,35 +974,35 @@ export default function HomePage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#111318] via-transparent to-black/20 pointer-events-none" />
 
                   {/* Badges */}
-                  <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/75 backdrop-blur-md text-cyan-300 border border-cyan-500/30 z-20">
+                  <span className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-md text-xs font-bold bg-black/75 backdrop-blur-md text-cyan-300 border border-cyan-500/30 z-20">
                     {m.category}
                   </span>
-                  <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 z-20">
+                  <span className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-md text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 z-20">
                     ASI Verified
                   </span>
                 </div>
 
-                <div className="p-4 flex-1 flex flex-col justify-between">
+                <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
                   <div>
-                    <h4 className="font-bold text-white text-sm font-display mb-1 group-hover:text-indigo-300 transition-colors">
+                    <h4 className="font-extrabold text-white text-base sm:text-lg font-display mb-1.5 group-hover:text-cyan-300 transition-colors">
                       {m.name}
                     </h4>
-                    <p className="text-xs text-slate-400 mb-3 flex items-center space-x-1.5">
-                      <Clock className="w-3.5 h-3.5 text-slate-500" />
+                    <p className="text-xs sm:text-sm text-slate-300 mb-3 flex items-center space-x-1.5 font-medium">
+                      <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 shrink-0" />
                       <span>{m.timings}</span>
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t border-white/[0.08] flex items-center justify-between text-xs">
+                  <div className="pt-3 border-t border-white/[0.08] flex items-center justify-between text-xs sm:text-sm">
                     <div>
-                      <span className="text-[10px] text-slate-500 block uppercase">Indian / Foreigner</span>
-                      <strong className="text-white font-mono">{m.indianPrice} / {m.foreignPrice}</strong>
+                      <span className="text-[10px] sm:text-xs text-slate-400 block uppercase font-bold tracking-wider">Indian / Foreigner</span>
+                      <strong className="text-cyan-300 font-mono text-sm sm:text-base font-bold">{m.indianPrice} / {m.foreignPrice}</strong>
                     </div>
                     <span
-                      className="px-2.5 py-1.5 rounded-lg bg-indigo-600/20 group-hover:bg-indigo-600 text-indigo-300 group-hover:text-white text-xs font-bold transition-colors flex items-center space-x-1"
+                      className="px-3 py-1.5 rounded-lg bg-cyan-500/15 group-hover:bg-cyan-500 text-cyan-300 group-hover:text-black text-xs sm:text-sm font-bold transition-all flex items-center space-x-1 shadow-sm"
                     >
                       <span>Details</span>
-                      <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                     </span>
                   </div>
                 </div>
