@@ -10,8 +10,6 @@ import {
   LayoutDashboard,
   X,
   Home,
-  ChevronLeft,
-  ChevronRight,
   QrCode,
   Globe,
   User,
@@ -145,22 +143,7 @@ export default function Sidebar({
 
     return (
       <div className="relative flex flex-col h-full bg-[#0a0c10]/95 backdrop-blur-2xl border-r border-white/[0.08] select-none text-slate-200">
-        
-        {/* RIGHT EDGE FLOATING TOGGLE TAB (Desktop only) */}
-        {!forceExpanded && (
-          <button
-            onClick={onToggleCollapse}
-            title={collapsed ? "Expand Sidebar (Ctrl+B / [ )" : "Collapse Sidebar (Ctrl+B / [ )"}
-            aria-label="Toggle Sidebar Position"
-            className="hidden md:flex absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-[#161a24] border border-white/25 text-slate-300 hover:text-white hover:bg-indigo-600 hover:border-indigo-400 shadow-xl shadow-black items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95"
-          >
-            {collapsed ? (
-              <ChevronRight className="w-3.5 h-3.5 text-indigo-400" />
-            ) : (
-              <ChevronLeft className="w-3.5 h-3.5 text-slate-300" />
-            )}
-          </button>
-        )}
+
 
         {/* Mobile Slide-over Header (Only visible on mobile drawer) */}
         {forceExpanded && (
