@@ -462,13 +462,14 @@ export default function HomePage() {
                         onClick={() => navigate(`/place/${item.id}`)}
                         className="bg-[#121622]/90 border border-white/[0.08] hover:border-cyan-500/50 rounded-2xl overflow-hidden shadow-md cursor-pointer transition-all hover:scale-[1.01] hover:bg-[#161b2a] group flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-3"
                       >
-                        <div className="relative w-20 sm:w-28 h-18 sm:h-22 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-white/10">
+                        <div className="relative w-20 h-20 sm:w-28 sm:h-24 rounded-xl overflow-hidden shrink-0 flex-shrink-0 bg-slate-900 border border-white/10 aspect-[4/3] sm:aspect-[7/6]">
                           <img
                             src={item.image}
                             alt={item.name}
                             className={`w-full h-full object-cover ${item.imagePos || 'object-center'} group-hover:scale-105 transition-transform duration-500`}
+                            style={{ minWidth: '100%', minHeight: '100%', objectFit: 'cover' }}
                           />
-                          <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[8px] sm:text-[9px] font-bold text-emerald-300 border border-emerald-500/30">
+                          <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[8px] sm:text-[9px] font-bold text-emerald-300 border border-emerald-500/30 z-10">
                             ASI
                           </span>
                         </div>
