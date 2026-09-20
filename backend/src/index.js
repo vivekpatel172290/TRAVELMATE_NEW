@@ -13,6 +13,7 @@ const fareRoutes = require('./routes/fare');
 const emergencyRoutes = require('./routes/emergency');
 const incidentRoutes = require('./routes/incidents');
 const adminRoutes = require('./routes/admin');
+const aiRoutes = require('./routes/ai');
 
 const app = express();
 
@@ -87,6 +88,7 @@ app.use('/api/fare', fareRoutes);
 app.use('/api/emergency', emergencyRoutes);
 app.use('/api/incidents', incidentRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Global Error Handler
 app.use(errorHandler);

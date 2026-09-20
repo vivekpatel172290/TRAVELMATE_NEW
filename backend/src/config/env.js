@@ -10,5 +10,6 @@ module.exports = {
   GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY || '',
   BHASHINI_USER_ID: process.env.BHASHINI_USER_ID || '',
   BHASHINI_API_KEY: process.env.BHASHINI_API_KEY || '',
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
   CORS_ORIGIN: process.env.CORS_ORIGIN || '*'
 };

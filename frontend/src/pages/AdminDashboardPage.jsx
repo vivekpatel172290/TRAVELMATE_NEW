@@ -286,7 +286,7 @@ export default function AdminDashboardPage() {
 
                 <div className="p-3.5 bg-surface rounded-2xl border border-surface-border space-y-1.5">
                   <span className="text-[10px] uppercase font-bold text-indigo-400 block mb-1">
-                    Claude Extracted Schema
+                    TravelMate AI Extracted Schema (Gemini)
                   </span>
                   <div><strong>Location:</strong> {inc.structured_data?.location}</div>
                   <div><strong>Parties:</strong> {inc.structured_data?.person_type_involved}</div>

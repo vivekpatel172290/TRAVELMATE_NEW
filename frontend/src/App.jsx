@@ -21,7 +21,7 @@ import AdminDashboardPage from './pages/AdminDashboardPage';
 import TripPlannerPage from './pages/TripPlannerPage';
 import PhraseHelperPage from './pages/PhraseHelperPage';
 import PlaceDetailPage from './pages/PlaceDetailPage';
-import { Bot } from 'lucide-react';
+import { Bot, Languages, Mic } from 'lucide-react';
 
 function AppLayout() {
   const location = useLocation();
@@ -30,6 +30,7 @@ function AppLayout() {
   const [isQROpen, setIsQROpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isLangOpen, setIsLangOpen] = useState(false);
+  const [isVoiceActive, setIsVoiceActive] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   // YouTube / GitHub style collapsible sidebar persistence
@@ -115,7 +116,7 @@ function AppLayout() {
         </div>
       </div>
 
-      {/* Floating Claude Chatbot Launcher Button - Dynamically adapts to collapsed/expanded sidebar */}
+      {/* Floating Bottom AI & Translation Assist Dock - Dynamically adapts to sidebar */}
       {!isPlaceDetailPage && (
         <div
           className={`fixed bottom-4 left-4 z-30 transition-all duration-300 ${
@@ -124,15 +125,68 @@ function AppLayout() {
               : 'md:bottom-6 md:left-[17.5rem]'
           }`}
         >
-          <button
-            id="btn-floating-claude-chat"
-            onClick={() => setIsChatOpen(true)}
-            className="flex items-center space-x-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white px-3.5 py-2.5 rounded-full shadow-xl shadow-indigo-600/35 border border-indigo-400/40 transition-all duration-200 hover:scale-105 active:scale-95"
-            aria-label="Open Claude AI Tourist Assistant"
-          >
-            <Bot className="w-5 h-5 text-cyan-300 animate-pulse" />
-            <span className="text-xs font-bold font-display tracking-wide hidden sm:inline">Ask Claude AI</span>
-          </button>
+          <div className="flex items-center space-x-2 bg-[#0c0e14]/90 backdrop-blur-xl p-1.5 rounded-full border border-white/10 shadow-2xl shadow-black/70 ring-1 ring-white/5">
+            
+            {/* 1. TravelMate AI Assistant Button (Replaces Ask Claude AI) */}
+            <button
+              id="btn-floating-travelmate-ai"
+              onClick={() => setIsChatOpen(true)}
+              className="group relative flex items-center space-x-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white px-3.5 py-2 rounded-full shadow-lg shadow-indigo-600/30 border border-indigo-400/40 transition-all duration-200 hover:scale-105 active:scale-95"
+              aria-label="Open TravelMate AI Tourist Assistant"
+            >
+              <Bot className="w-4 h-4 text-cyan-300 group-hover:rotate-12 transition-transform animate-pulse" />
+              <span className="text-xs font-bold font-display tracking-wide hidden sm:inline">
+                TravelMate AI
+              </span>
+              <span className="hidden md:inline text-[9px] font-mono px-1.5 py-0.2 bg-white/20 rounded font-semibold text-white">
+                Gemini
+              </span>
+            </button>
+
+            {/* Legacy ID alias for backwards compatibility with tests/selectors */}
+            <button
+              id="btn-floating-claude-chat"
+              onClick={() => setIsChatOpen(true)}
+              className="hidden"
+              aria-hidden="true"
+              tabIndex={-1}
+            />
+
+            {/* 2. Digital India Bhashini AI Multilingual Translate Button */}
+            <button
+              id="btn-floating-bhashini-translate"
+              onClick={() => {
+                setIsVoiceActive(false);
+                setIsLangOpen(true);
+              }}
+              className="group flex items-center space-x-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-3 py-2 rounded-full shadow-lg shadow-emerald-600/25 border border-emerald-400/40 transition-all duration-200 hover:scale-105 active:scale-95"
+              aria-label="Open Bhashini AI Multilingual Translator"
+              title="Digital India Bhashini Multilingual AI Translator"
+            >
+              <Languages className="w-4 h-4 text-emerald-200 group-hover:scale-110 transition-transform" />
+              <span className="text-xs font-bold font-display tracking-wide hidden sm:inline">
+                Bhashini AI
+              </span>
+            </button>
+
+            {/* 3. Voice AI (Speech-to-Speech Translation) Button */}
+            <button
+              id="btn-floating-voice-translate"
+              onClick={() => {
+                setIsVoiceActive(true);
+                setIsLangOpen(true);
+              }}
+              className="group flex items-center space-x-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-3 py-2 rounded-full shadow-lg shadow-cyan-600/25 border border-cyan-400/40 transition-all duration-200 hover:scale-105 active:scale-95"
+              aria-label="Open Voice AI Speech Translation"
+              title="1-Tap Speech-to-Speech Voice Translation"
+            >
+              <Mic className="w-4 h-4 text-cyan-200 group-hover:animate-pulse transition-transform" />
+              <span className="text-xs font-bold font-display tracking-wide hidden sm:inline">
+                Voice AI
+              </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 animate-ping hidden sm:block" />
+            </button>
+          </div>
         </div>
       )}
 
@@ -142,7 +196,14 @@ function AppLayout() {
       {/* Modals */}
       <QRModal isOpen={isQROpen} onClose={() => setIsQROpen(false)} />
       <ClaudeChatbotModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
-      <LanguageSupportModal isOpen={isLangOpen} onClose={() => setIsLangOpen(false)} />
+      <LanguageSupportModal
+        isOpen={isLangOpen}
+        onClose={() => {
+          setIsLangOpen(false);
+          setIsVoiceActive(false);
+        }}
+        initialVoiceActive={isVoiceActive}
+      />
     </div>
   );
 }

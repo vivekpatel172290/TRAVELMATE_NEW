@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   X,
@@ -15,6 +15,10 @@ import {
   ShieldAlert,
   Landmark,
   ExternalLink,
+  Mic,
+  MicOff,
+  Languages,
+  Radio
 } from 'lucide-react';
 import offlinePhrases from '../../data/offlinePhrases.json';
 import { useTraveler } from '../../context/TravelerContext';
@@ -24,9 +28,10 @@ import {
   playAudioSpeech,
   stopAudioSpeech,
   PRELOADED_TOURIST_PHRASES,
+  BHASHINI_CONFIG
 } from '../../services/bhashiniService';
 
-export default function LanguageSupportModal({ isOpen, onClose }) {
+export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActive = false }) {
   const { traveler } = useTraveler();
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('All');
@@ -35,6 +40,8 @@ export default function LanguageSupportModal({ isOpen, onClose }) {
   const [bhashiniInput, setBhashiniInput] = useState('');
   const [bhashiniResult, setBhashiniResult] = useState(null);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef(null);
 
   if (!isOpen) return null;
 
@@ -65,25 +72,83 @@ export default function LanguageSupportModal({ isOpen, onClose }) {
     playAudioSpeech(text, 'hi');
   };
 
-  const handleBhashiniTranslate = async () => {
-    if (!bhashiniInput.trim()) return;
+  const executeTranslation = async (textToTranslate, autoSpeak = false) => {
+    if (!textToTranslate || !textToTranslate.trim()) return;
     setIsTranslating(true);
     try {
-      const res = await translateText({ text: bhashiniInput, sourceLang: 'en', targetLang: 'hi' });
+      const res = await translateText({ text: textToTranslate, sourceLang: 'en', targetLang: 'hi' });
       setBhashiniResult({
-        original: bhashiniInput,
+        original: textToTranslate,
         hindi: res.hindi,
         transliteration: res.transliteration,
         phonetic: res.phonetic,
         service: res.source,
         confidence: `${Math.round(res.confidence * 100)}% Contextual Match`,
       });
+      if (autoSpeak && res.hindi) {
+        setTimeout(() => playAudioSpeech(res.hindi, 'hi'), 250);
+      }
     } catch (err) {
       console.error('Translation error:', err);
     } finally {
       setIsTranslating(false);
     }
   };
+
+  const handleBhashiniTranslate = () => {
+    executeTranslation(bhashiniInput, false);
+  };
+
+  const handleToggleListen = () => {
+    if (typeof window === 'undefined') return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Speech Recognition is not supported by your browser. Please type your phrase.');
+      return;
+    }
+
+    if (isListening && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-IN';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = () => setIsListening(true);
+      recognition.onend = () => setIsListening(false);
+      recognition.onerror = (event) => {
+        console.warn('[SpeechRecognition Error]', event.error);
+        setIsListening(false);
+      };
+      recognition.onresult = (event) => {
+        const transcript = event.results?.[0]?.[0]?.transcript || '';
+        if (transcript) {
+          setBhashiniInput(transcript);
+          executeTranslation(transcript, true);
+        }
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      console.warn('SpeechRecognition failed:', err.message);
+      setIsListening(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen && initialVoiceActive) {
+      const timer = setTimeout(() => {
+        handleToggleListen();
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, initialVoiceActive]);
 
   const handleOpenFullPage = () => {
     onClose();
@@ -200,21 +265,51 @@ export default function LanguageSupportModal({ isOpen, onClose }) {
           </div>
 
           <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder="Type any custom sentence (e.g. 'How much to Qutub Minar by meter?')..."
-              value={bhashiniInput}
-              onChange={(e) => setBhashiniInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleBhashiniTranslate()}
-              className="flex-1 px-3.5 py-2 bg-surface border border-surface-border rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
-            />
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder={isListening ? "Listening... Speak your sentence in English or Hindi now..." : "Type or speak English phrase (e.g. 'How much to Qutub Minar by meter?')..."}
+                value={bhashiniInput}
+                onChange={(e) => setBhashiniInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleBhashiniTranslate()}
+                className={`w-full pl-3.5 pr-10 py-2.5 bg-surface border rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none transition-all ${
+                  isListening
+                    ? 'border-cyan-400 ring-2 ring-cyan-400/30 bg-cyan-950/20'
+                    : 'border-surface-border focus:border-indigo-500'
+                }`}
+              />
+              <button
+                type="button"
+                onClick={handleToggleListen}
+                title={isListening ? "Stop listening" : "Click to speak with microphone (Voice AI)"}
+                className={`absolute right-1.5 top-1.5 p-1.5 rounded-lg transition-all ${
+                  isListening
+                    ? 'bg-cyan-500 text-white animate-pulse shadow-md shadow-cyan-500/40'
+                    : 'text-slate-400 hover:text-cyan-400 hover:bg-white/10'
+                }`}
+              >
+                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              </button>
+            </div>
+
             <button
               onClick={handleBhashiniTranslate}
               disabled={isTranslating || !bhashiniInput.trim()}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 shrink-0"
+              className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 shrink-0 shadow-md shadow-emerald-600/20 flex items-center space-x-1.5"
             >
-              {isTranslating ? 'Translating...' : 'Translate'}
+              <Languages className="w-3.5 h-3.5" />
+              <span>{isTranslating ? 'Translating...' : 'Translate'}</span>
             </button>
+          </div>
+
+          {/* Digital India Bhashini Status Banner */}
+          <div className="flex items-center justify-between text-[11px] text-slate-400 pt-0.5">
+            <span className="flex items-center space-x-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 radar-pulse" />
+              <strong className="text-emerald-300">Digital India Bhashini AI:</strong>
+              <span>{BHASHINI_CONFIG.USE_MOCK ? 'Contextual Engine (API Key Ready)' : 'Live ULCA Inference Pipeline'}</span>
+            </span>
+            <span className="font-mono text-[10px] text-slate-500">MeitY NLTM</span>
           </div>
 
           {/* Bhashini Output Card */}

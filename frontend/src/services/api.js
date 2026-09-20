@@ -219,10 +219,10 @@ export const api = {
     }
   },
 
-  // 6. Claude Chatbot Query
+  // 6. TravelMate AI Chatbot Query (Powered by Google Gemini)
   async askChatbot(query, travelerContext) {
     try {
-      const res = await fetch(`${AI_BASE}/chat`, {
+      const res = await fetch(`${API_BASE}/ai/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query, traveler_context: travelerContext })

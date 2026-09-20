@@ -36,10 +36,10 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
       try {
         api.triggerSOS({
           journey_code: traveler?.temp_id || 'TM-DEL-2026-X89K',
-          trigger_type: 'claude_distress_detection',
+          trigger_type: 'travelmate_ai_distress_detection',
           lat: 28.6139,
           lng: 77.2090,
-          message: `Distress message detected in Claude Chat: "${userMsg}"`
+          message: `Distress message detected in TravelMate AI Chat: "${userMsg}"`
         });
       } catch (_) {}
 
@@ -100,10 +100,13 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
             />
             <div>
               <div className="flex items-center space-x-2">
-                <h3 className="text-sm font-bold text-white">TravelMate Claude Assistant</h3>
+                <h3 className="text-sm font-bold text-white">TravelMate AI</h3>
+                <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                  Gemini Grounded
+                </span>
                 <StatusBadge status="Official" />
               </div>
-              <p className="text-[10px] text-emerald-400 font-medium">Grounded RAG • Zero Hallucination Mode</p>
+              <p className="text-[10px] text-emerald-400 font-medium">ASI Delhi Heritage RAG • Zero Hallucination Guardrail</p>
             </div>
           </div>
           <button

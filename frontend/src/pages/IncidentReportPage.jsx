@@ -172,10 +172,10 @@ export default function IncidentReportPage() {
               <span>Incident Structuring & Admin Escrow</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-white">
-              Incident Reporting & <span className="coder-text-gradient">Claude Auto-Structuring</span>
+              Incident Reporting & <span className="coder-text-gradient">TravelMate AI Auto-Structuring</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              Submit in any language. Claude parses facts into standardized schema for human police verification.
+              Submit in any language. TravelMate AI (Gemini) parses facts into standardized schema for human police verification.
             </p>
           </div>
 
@@ -307,20 +307,20 @@ export default function IncidentReportPage() {
           </div>
 
           <button
-            id="btn-structure-incident-claude"
+            id="btn-structure-incident-travelmate-ai"
             onClick={handleStructureWithClaude}
             disabled={isStructuring || !rawText.trim()}
             className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold rounded-xl text-xs flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/25 transition-all"
           >
             <Sparkles className="w-4 h-4" />
-            <span>{isStructuring ? 'Claude Structuring Schema...' : 'Run Claude Auto-Structuring'}</span>
+            <span>{isStructuring ? 'TravelMate AI Structuring Schema...' : 'Run TravelMate AI Auto-Structuring'}</span>
           </button>
 
           {/* AI Decision Support Disclaimer (Core Design Principle) */}
           <div className="p-3 rounded-xl bg-surface border border-surface-border text-[11px] text-slate-400 space-y-1">
             <span className="font-bold text-slate-300 block">AI Decision-Support Boundary:</span>
             <p>
-              Claude strictly extracts and standardizes fields (location, time, parties).
+              TravelMate AI strictly extracts and standardizes fields (location, time, parties).
               It does NOT determine guilt, assess legal liability, or close cases.
               All reports are queued for human administrator review.
             </p>
@@ -333,7 +333,7 @@ export default function IncidentReportPage() {
             <div className="glass-card p-6 rounded-3xl space-y-4 border border-indigo-500/30">
               <div className="flex items-center justify-between pb-3 border-b border-white/10">
                 <span className="text-xs font-bold uppercase text-indigo-400 tracking-wider">
-                  Claude Structured Output
+                  TravelMate AI Structured Output
                 </span>
                 <span className="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded font-mono">
                   Confidence: {structuredPreview.confidence || '0.94'}

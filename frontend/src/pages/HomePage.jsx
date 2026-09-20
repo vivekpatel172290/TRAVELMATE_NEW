@@ -736,7 +736,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Feature 6: Claude AI Assistant */}
+            {/* Feature 6: TravelMate AI Assistant (Powered by Gemini) */}
             <div className="relative group">
               {/* Ambient Multi-Color Glow Backdrop (signature glowing bg like hero animated section) */}
               <div className="absolute -inset-2 rounded-[30px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 group-hover:opacity-65 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
@@ -750,24 +750,24 @@ export default function HomePage() {
                   </div>
                   <div className="flex items-center justify-between mb-2.5">
                     <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-rose-300 transition-colors">
-                      Ask Claude AI
+                      TravelMate AI
                     </h3>
                     <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 uppercase tracking-wider">
-                      Zero-Hallucination
+                      Gemini Grounded
                     </span>
                   </div>
                   <p className="text-sm sm:text-[15px] text-slate-300 leading-relaxed mb-5">
-                    AI decision-support grounded strictly in verified Delhi monuments, police emergency protocols, and current advisories.
+                    AI tourist intelligence powered by Google Gemini, grounded strictly in verified Delhi monuments, police emergency protocols, and current advisories.
                   </p>
                 </div>
                 <button
                   onClick={() => {
-                    const chatBtn = document.getElementById('btn-floating-claude-chat');
+                    const chatBtn = document.getElementById('btn-floating-travelmate-ai') || document.getElementById('btn-floating-claude-chat');
                     if (chatBtn) chatBtn.click();
                   }}
                   className="relative z-10 inline-flex items-center text-sm font-bold text-rose-400 hover:text-rose-300 group-hover:translate-x-1 transition-all text-left pt-2 border-t border-white/[0.06]"
                 >
-                  <span>Launch Claude Chat</span>
+                  <span>Launch TravelMate AI</span>
                   <ArrowRight className="w-4 h-4 ml-1.5" />
                 </button>
               </div>

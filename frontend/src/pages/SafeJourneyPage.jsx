@@ -19,7 +19,9 @@ import {
   Moon,
   Info,
   CheckCircle2,
-  PhoneCall
+  PhoneCall,
+  Activity,
+  Radio
 } from 'lucide-react';
 import { useTraveler } from '../context/TravelerContext';
 import StatusBadge from '../components/common/StatusBadge';
@@ -953,100 +955,234 @@ export default function SafeJourneyPage() {
           </div>
         )}
 
-        {/* 3. FULL-WIDTH RADAR MAP CANVAS (POSITIONED DOWN / BELOW CORRIDOR CARDS) */}
-        <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-4 sm:p-5 shadow-2xl backdrop-blur-xl flex flex-col relative overflow-hidden space-y-3">
+        {/* 3. RADAR MAP & ACTIVE JOURNEY MONITOR COCKPIT (BESIDE EACH OTHER) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           
-          {/* Map Top Status Strip HUD */}
-          <div className="flex flex-wrap items-center justify-between gap-3 z-10 pb-3 border-b border-white/[0.06]">
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              <div className="flex items-center space-x-2.5 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/10 text-xs shadow-sm">
-                <span className={`w-2.5 h-2.5 rounded-full ${pickupMode === 'manual' ? 'bg-blue-400 ring-2 ring-blue-400/30' : 'bg-emerald-400 radar-pulse'}`} />
-                <span className="text-slate-200 font-mono font-bold text-xs sm:text-sm" id="label-live-gps-coords">
-                  {pickupMode === 'manual'
-                    ? `Pickup: ${currentOrigin.name}`
-                    : liveGps
-                      ? `GPS Lat: ${liveGps.lat}, Lng: ${liveGps.lng} (±${liveGps.accuracy}m)`
-                      : 'Acquiring Real-Time Live GPS Fix...'}
-                </span>
-                <span className="text-slate-600">•</span>
-                <span className={pickupMode === 'manual' ? 'text-blue-400 font-bold' : 'text-emerald-400 font-bold'}>
-                  {pickupMode === 'manual' ? 'Manual Origin Mode' : 'Live GPS Monitored'}
-                </span>
+          {/* Left / Primary Column: Radar Map Canvas (lg:col-span-7 xl:col-span-8) */}
+          <div className="lg:col-span-7 xl:col-span-8 flex flex-col">
+            <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-4 sm:p-5 shadow-2xl backdrop-blur-xl flex flex-col h-full relative overflow-hidden space-y-3">
+              
+              {/* Map Top Status Strip HUD */}
+              <div className="flex flex-wrap items-center justify-between gap-3 z-10 pb-3 border-b border-white/[0.06]">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <div className="flex items-center space-x-2.5 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/10 text-xs shadow-sm">
+                    <span className={`w-2.5 h-2.5 rounded-full ${pickupMode === 'manual' ? 'bg-blue-400 ring-2 ring-blue-400/30' : 'bg-emerald-400 radar-pulse'}`} />
+                    <span className="text-slate-200 font-mono font-bold text-xs sm:text-sm" id="label-live-gps-coords">
+                      {pickupMode === 'manual'
+                        ? `Pickup: ${currentOrigin.name}`
+                        : liveGps
+                          ? `GPS Lat: ${liveGps.lat}, Lng: ${liveGps.lng} (±${liveGps.accuracy}m)`
+                          : 'Acquiring Real-Time Live GPS Fix...'}
+                    </span>
+                    <span className="text-slate-600">•</span>
+                    <span className={pickupMode === 'manual' ? 'text-blue-400 font-bold' : 'text-emerald-400 font-bold'}>
+                      {pickupMode === 'manual' ? 'Manual Origin Mode' : 'Live GPS Monitored'}
+                    </span>
+                  </div>
+
+                  {/* Active Route Indicator Pill */}
+                  <div className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-xs text-cyan-300 font-medium">
+                    <Navigation className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                    <span>Active:</span>
+                    <strong className="text-white font-bold truncate max-w-[180px]">
+                      {activeSelectedRoute?.summary || `Route ${selectedRouteIndex + 1}`}
+                    </strong>
+                    {activeSelectedRoute?.distanceText && (
+                      <span className="text-cyan-400 font-mono">({activeSelectedRoute.distanceText} • {activeSelectedRoute.durationText})</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Map Actions: Deviation Simulation */}
+                <div className="flex items-center space-x-2">
+                  <button
+                    id="btn-simulate-deviation"
+                    onClick={() => setSimulatedDeviation(!simulatedDeviation)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all ${
+                      simulatedDeviation
+                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-md ring-1 ring-amber-400/30'
+                        : 'bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 border border-white/10'
+                    }`}
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>{simulatedDeviation ? 'Reset Corridor' : 'Simulate Deviation (>500m)'}</span>
+                  </button>
+                </div>
               </div>
 
-              {/* Active Route Indicator Pill */}
-              <div className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-xs text-cyan-300 font-medium">
-                <Navigation className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                <span>Active:</span>
-                <strong className="text-white font-bold truncate max-w-[200px]">
-                  {activeSelectedRoute?.summary || `Route ${selectedRouteIndex + 1}`}
-                </strong>
-                {activeSelectedRoute?.distanceText && (
-                  <span className="text-cyan-400 font-mono">({activeSelectedRoute.distanceText} • {activeSelectedRoute.durationText})</span>
-                )}
+              {/* Interactive Google Map with Route Overlays */}
+              <div className="relative w-full h-[360px] sm:h-[390px] lg:h-[430px] rounded-2xl overflow-hidden border border-white/[0.08] shadow-2xl bg-slate-950 flex flex-col flex-1">
+                <GoogleMapView
+                  showRoute={true}
+                  simulatedDeviation={simulatedDeviation}
+                  liveTracking={true}
+                  onLocationUpdate={(coords) => setLiveGps(coords)}
+                  origin={currentOrigin}
+                  destination={destinationCoords}
+                  selectedRouteIndex={selectedRouteIndex}
+                  onRoutesFound={handleRoutesCalculated}
+                  onRouteSelect={(idx) => setSelectedRouteIndex(idx)}
+                  allowAlternatives={true}
+                  hideSearch={true}
+                  hideRouteSelector={true}
+                  hideBottomStatus={true}
+                />
               </div>
-            </div>
 
-            {/* Map Actions: Deviation Simulation & Emergency SOS dial */}
-            <div className="flex items-center space-x-2">
-              <button
-                id="btn-simulate-deviation"
-                onClick={() => setSimulatedDeviation(!simulatedDeviation)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all ${
-                  simulatedDeviation
-                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-md ring-1 ring-amber-400/30'
-                    : 'bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 border border-white/10'
-                }`}
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>{simulatedDeviation ? 'Reset Corridor' : 'Simulate Route Deviation (>500m)'}</span>
-              </button>
-
-              <a
-                href="tel:112"
-                className="px-3.5 py-1.5 rounded-xl bg-red-600/85 hover:bg-red-600 text-white font-bold text-xs flex items-center space-x-1.5 border border-red-500/40 transition-all shadow-md shadow-red-600/20"
-                title="Quick Dial Delhi Police 112"
-              >
-                <PhoneCall className="w-3.5 h-3.5 text-white animate-pulse" />
-                <span className="hidden sm:inline">Delhi Police</span> 112
-              </a>
+              {/* Map Telemetry Footer */}
+              <div className="mt-2.5 pt-2.5 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-300">
+                <div className="flex items-center space-x-2">
+                  <Info className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span className="text-[11px]">Multi-route safety layer powered by Police beats & street lighting telemetry.</span>
+                </div>
+                <div className="flex items-center space-x-2.5 shrink-0">
+                  <span className="text-slate-400 font-mono text-[10px]">
+                    Tolerance: <strong className="text-slate-200">&gt;500m off route</strong>
+                  </span>
+                  <StatusBadge status="Official" />
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Interactive Google Map with Route Overlays (Sized to fit viewport without scrolling) */}
-          <div className="relative w-full h-[340px] sm:h-[370px] lg:h-[390px] rounded-2xl overflow-hidden border border-white/[0.08] shadow-2xl bg-slate-950 flex flex-col">
-            <GoogleMapView
-              showRoute={true}
-              simulatedDeviation={simulatedDeviation}
-              liveTracking={true}
-              onLocationUpdate={(coords) => setLiveGps(coords)}
-              origin={currentOrigin}
-              destination={destinationCoords}
-              selectedRouteIndex={selectedRouteIndex}
-              onRoutesFound={handleRoutesCalculated}
-              onRouteSelect={(idx) => setSelectedRouteIndex(idx)}
-              allowAlternatives={true}
-              hideSearch={true}
-              hideRouteSelector={true}
-              hideBottomStatus={true}
-            />
-          </div>
+          {/* Right Column: Active Journey Monitor (lg:col-span-5 xl:col-span-4) */}
+          <div className="lg:col-span-5 xl:col-span-4 flex flex-col">
+            <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-4 sm:p-5 shadow-2xl backdrop-blur-xl relative overflow-hidden flex flex-col justify-between h-full space-y-3.5">
+              
+              {/* Ambient Glowing Gradient Orbs */}
+              <div className="absolute -top-16 -right-16 w-36 h-36 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute -bottom-16 -left-16 w-36 h-36 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
 
-          {/* Map Telemetry Footer */}
-          <div className="mt-3 pt-3 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-slate-300">
-            <div className="flex items-center space-x-2">
-              <Info className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Multi-route safety layer powered by Police beat records & real-time street lighting telemetry.</span>
-            </div>
-            <div className="flex items-center space-x-3 shrink-0">
-              <span className="text-slate-400 font-mono text-[11px]">
-                Threshold: <strong className="text-slate-200">&gt;500m off route</strong>
-              </span>
-              <StatusBadge status="Official" />
-              <span className="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-xs font-bold flex items-center space-x-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 radar-pulse" />
-                <span>Safe Corridor Verified</span>
-              </span>
+              {/* Header */}
+              <div className="flex items-center justify-between pb-3 border-b border-white/[0.08] relative z-10">
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center border border-cyan-500/30 shadow-sm shadow-cyan-500/20">
+                    <Activity className="w-4 h-4 text-cyan-300 animate-pulse" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-white font-display">
+                      Active Journey Monitor
+                    </h3>
+                    <p className="text-[10px] text-slate-400 font-medium">Real-Time ERSS 112 Telemetry</p>
+                  </div>
+                </div>
+                <span className="flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-[11px] font-mono font-bold text-emerald-300">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 radar-pulse" />
+                  <span>{journey?.journey_code || 'TM-DEL-2026-X89K'}</span>
+                </span>
+              </div>
+
+              {/* Real-Time Telemetry Breakdown Box */}
+              <div className="p-3.5 rounded-2xl bg-black/40 border border-white/[0.06] space-y-2 text-xs relative z-10 backdrop-blur-sm">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400 font-medium">Journey Pass:</span>
+                  <span className="font-mono font-bold text-white bg-white/5 px-2 py-0.5 rounded-lg border border-white/10 text-[11px]">
+                    {journey?.journey_code || 'TM-DEL-2026-X89K'}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400 font-medium">Start / Pickup:</span>
+                  <span className={`font-bold text-right truncate max-w-[170px] sm:max-w-[200px] text-[11px] ${pickupMode === 'manual' ? 'text-blue-400' : 'text-emerald-400'}`}>
+                    {currentOrigin.name}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400 font-medium">Live GPS Status:</span>
+                  <span className={`font-mono font-bold text-[11px] flex items-center space-x-1.5 ${liveGps ? 'text-emerald-400' : 'text-amber-400'}`}>
+                    <span className={`w-2 h-2 rounded-full ${liveGps ? 'bg-emerald-400 radar-pulse' : 'bg-amber-400'}`} />
+                    <span>{liveGps ? `Active (Lock ±${liveGps.accuracy}m)` : 'Acquiring Satellite Lock...'}</span>
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400 font-medium">Active Destination:</span>
+                  <span className="font-bold text-red-400 text-right truncate max-w-[170px] sm:max-w-[200px] text-[11px]">
+                    {destinationCoords.name}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400 font-medium">Selected Corridor:</span>
+                  <span className="font-bold text-cyan-300 text-right truncate max-w-[170px] sm:max-w-[200px] text-[11px]">
+                    {activeSelectedRoute?.summary || `Route ${selectedRouteIndex + 1}`}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400 font-medium">Est. Distance & ETA:</span>
+                  <span className="font-mono font-bold text-white text-[11px]">
+                    {activeSelectedRoute?.distanceText ? `${activeSelectedRoute.distanceText} • ${activeSelectedRoute.durationText}` : 'Calculating...'}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400 font-medium">Est. Auto Fare:</span>
+                  <span className="font-mono font-bold text-emerald-400 text-xs">
+                    ₹{getEstimatedAutoFare(activeSelectedRoute?.distanceKm || 8).min} – ₹{getEstimatedAutoFare(activeSelectedRoute?.distanceKm || 8).max}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400 font-medium">Deviation Tolerance:</span>
+                  <span className="text-slate-300 font-mono text-[11px]">
+                    &gt;500m for &gt;3 mins
+                  </span>
+                </div>
+              </div>
+
+              {/* Soft Corridor Deviation Alert Banner (Dynamic) */}
+              {simulatedDeviation && (
+                <div className="p-3 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-xs text-amber-200 animate-in fade-in duration-300 relative z-10 space-y-2">
+                  <div className="flex items-center space-x-2 font-bold text-amber-400">
+                    <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 animate-bounce" />
+                    <span>Soft Corridor Deviation Detected</span>
+                  </div>
+                  <p className="text-[11px] text-amber-200/90 leading-relaxed">
+                    Vehicle has departed from monitored safe corridor by &gt;500m. Please verify route with driver or dial Police 112 below.
+                  </p>
+                  <a
+                    href="tel:112"
+                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow-md shadow-red-600/30 transition-all"
+                  >
+                    <PhoneCall className="w-3.5 h-3.5" />
+                    <span>Dial Police 112</span>
+                  </a>
+                </div>
+              )}
+
+              {/* Silent Gesture SOS Feature Card */}
+              <div className="p-3 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-xs text-cyan-200 relative z-10 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-cyan-300 flex items-center space-x-1.5">
+                    <Radio className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+                    <span>Silent Gesture SOS Active</span>
+                  </span>
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono font-bold">112 Telemetry</span>
+                </div>
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  Rapidly shake your phone 3 times or tap below to silently transmit an emergency telemetry packet with live GPS to Delhi Police (112).
+                </p>
+              </div>
+
+              {/* Quick Action Dial Buttons */}
+              <div className="grid grid-cols-2 gap-2 pt-1 relative z-10">
+                <a
+                  href="tel:112"
+                  className="py-2.5 px-3 rounded-xl bg-red-600/90 hover:bg-red-600 text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-lg shadow-red-600/25 transition-all"
+                >
+                  <PhoneCall className="w-3.5 h-3.5 text-white animate-pulse" />
+                  <span>Police 112</span>
+                </a>
+                <a
+                  href="tel:1363"
+                  className="py-2.5 px-3 rounded-xl bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-lg shadow-emerald-600/25 transition-all"
+                >
+                  <PhoneCall className="w-3.5 h-3.5 text-white" />
+                  <span>Tourist 1363</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>
