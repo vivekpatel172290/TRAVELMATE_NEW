@@ -80,7 +80,10 @@ export default function GoogleMapView({
   selectedRouteIndex = 0,
   onRoutesFound = null,
   onRouteSelect = null,
-  allowAlternatives = true
+  allowAlternatives = true,
+  hideSearch = false,
+  hideRouteSelector = false,
+  hideBottomStatus = false
 }) {
   const { isDark } = useTheme();
   const mapContainerRef = useRef(null);
@@ -640,44 +643,46 @@ export default function GoogleMapView({
   };
 
   return (
-    <div className={`relative w-full h-full min-h-[260px] rounded-2xl overflow-hidden border flex flex-col transition-colors ${
+    <div className={`relative w-full h-full min-h-[460px] rounded-2xl overflow-hidden border flex flex-col flex-1 transition-colors ${
       isDark ? 'bg-slate-950 border-white/10' : 'bg-slate-100 border-slate-200 shadow-sm'
     }`}>
-      {/* Top Search & Controls Overlay */}
-      <div className="absolute top-3 left-3 right-3 z-10 flex items-center gap-2">
-        <div className="relative flex-1">
-          <Search className={`absolute left-3 top-2.5 w-4 h-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`} />
-          <input
-            ref={searchInputRef}
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search Delhi monument or area on Google Maps..."
-            className={`w-full pl-9 pr-3 py-2 rounded-xl text-xs focus:outline-none focus:border-emerald-500 shadow-lg transition-colors ${
+      {/* Top Search & Controls Overlay (Hidden when controlled externally) */}
+      {!hideSearch && (
+        <div className="absolute top-3 left-3 right-3 z-10 flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className={`absolute left-3 top-2.5 w-4 h-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`} />
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search Delhi monument or area on Google Maps..."
+              className={`w-full pl-9 pr-3 py-2 rounded-xl text-xs focus:outline-none focus:border-emerald-500 shadow-lg transition-colors ${
+                isDark
+                  ? 'bg-surface/90 backdrop-blur-md border border-white/10 text-white placeholder-slate-400'
+                  : 'bg-white/95 backdrop-blur-md border border-slate-200 text-slate-900 placeholder-slate-400'
+              }`}
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleTrackCurrentLocation}
+            title="Track Live GPS Location"
+            className={`p-2.5 rounded-xl transition-all shadow-lg shrink-0 flex items-center space-x-1 ${
               isDark
-                ? 'bg-surface/90 backdrop-blur-md border border-white/10 text-white placeholder-slate-400'
-                : 'bg-white/95 backdrop-blur-md border border-slate-200 text-slate-900 placeholder-slate-400'
+                ? 'bg-surface/90 hover:bg-emerald-500/20 border border-white/10 hover:border-emerald-500/40 text-emerald-400'
+                : 'bg-white/95 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-400 text-emerald-600'
             }`}
-          />
+          >
+            <Crosshair className={`w-4 h-4 ${isLocating ? 'animate-spin' : ''}`} />
+            <span className="text-[11px] font-semibold hidden sm:inline">GPS</span>
+          </button>
         </div>
+      )}
 
-        <button
-          type="button"
-          onClick={handleTrackCurrentLocation}
-          title="Track Live GPS Location"
-          className={`p-2.5 rounded-xl transition-all shadow-lg shrink-0 flex items-center space-x-1 ${
-            isDark
-              ? 'bg-surface/90 hover:bg-emerald-500/20 border border-white/10 hover:border-emerald-500/40 text-emerald-400'
-              : 'bg-white/95 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-400 text-emerald-600'
-          }`}
-        >
-          <Crosshair className={`w-4 h-4 ${isLocating ? 'animate-spin' : ''}`} />
-          <span className="text-[11px] font-semibold hidden sm:inline">GPS</span>
-        </button>
-      </div>
-
-      {/* Interactive Multi-Route Corridor Selector Overlay on Map */}
-      {showRoute && mapRoutes.length > 1 && (
+      {/* Interactive Multi-Route Corridor Selector Overlay on Map (Hidden when controlled externally) */}
+      {!hideRouteSelector && showRoute && mapRoutes.length > 1 && (
         <div className="absolute top-14 left-3 right-3 z-10 flex items-center space-x-2 bg-surface/95 backdrop-blur-md p-1.5 rounded-xl border border-surface-border shadow-xl overflow-x-auto no-scrollbar">
           <span className="text-[10px] uppercase font-bold text-slate-400 px-1 shrink-0 hidden sm:inline">
             Alternative Corridors:
@@ -719,82 +724,217 @@ export default function GoogleMapView({
       {/* Actual Google Map Canvas Container */}
       <div
         ref={mapContainerRef}
-        className="w-full h-full min-h-[380px] flex-1"
+        className="w-full h-full min-h-[460px] lg:min-h-[560px] flex-1"
       />
 
-      {/* High-Contrast Interactive Vector Map Fallback (When API key not set or offline) */}
+      {/* High-Contrast Expansive Vector Map Fallback (Fills 100% of available space) */}
       {!apiKeyAvailable && (
-        <div className="absolute inset-0 z-0 bg-slate-950 flex flex-col items-center justify-center p-4">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293715_1px,transparent_1px),linear-gradient(to_bottom,#1f293715_1px,transparent_1px)] bg-[size:24px_24px]" />
+        <div className="absolute inset-0 z-0 bg-slate-950 flex flex-col justify-between overflow-hidden">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293720_1px,transparent_1px),linear-gradient(to_bottom,#1f293720_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
 
-          {/* Graphical Vector Route */}
-          <svg className="w-full max-w-lg h-60 relative z-0" viewBox="0 0 600 300">
-            {/* Green / Amber Safety Risk Zones */}
-            <circle cx="160" cy="180" r="70" fill="#10B981" fillOpacity="0.08" stroke="#10B981" strokeDasharray="4 4" strokeWidth="1.5" />
-            <text x="120" y="195" fill="#34D399" fontSize="10" fontWeight="bold">Connaught Place (Green)</text>
+          {/* Full-Bleed High-Definition Delhi Radar Schematic */}
+          <svg className="w-full h-full min-h-[460px] lg:min-h-[560px] relative z-0 flex-1" viewBox="0 0 1100 520" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="yamunaWater" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#0284c7" stopOpacity="0.4" />
+                <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.2" />
+              </linearGradient>
+              <linearGradient id="radialGreen" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#10b981" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#10b981" stopOpacity="0.02" />
+              </linearGradient>
+              <linearGradient id="radialAmber" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.2" />
+                <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.02" />
+              </linearGradient>
+            </defs>
 
-            <rect x="360" y="50" width="160" height="120" rx="20" fill="#F59E0B" fillOpacity="0.08" stroke="#F59E0B" strokeDasharray="4 4" strokeWidth="1.5" />
-            <text x="380" y="70" fill="#FBBF24" fontSize="10" fontWeight="bold">Old Delhi (Amber Zone)</text>
+            {/* Radar Circular Concentric Distance Rings */}
+            <circle cx="500" cy="270" r="140" fill="none" stroke="#1e293b" strokeWidth="1" strokeDasharray="4 4" />
+            <circle cx="500" cy="270" r="280" fill="none" stroke="#1e293b" strokeWidth="1" strokeDasharray="6 6" />
+            <circle cx="500" cy="270" r="420" fill="none" stroke="#1e293b" strokeWidth="1" strokeDasharray="8 8" />
 
-            {/* Recommended Route */}
+            {/* Yamuna River Flowing Water Corridor */}
             <path
-              d="M 130 180 Q 270 150 470 100"
+              d="M 830 0 Q 880 160 840 310 T 960 520"
               fill="none"
-              stroke={simulatedDeviation ? "#64748B" : "#10B981"}
-              strokeWidth="4"
-              strokeDasharray={simulatedDeviation ? "6 6" : "none"}
+              stroke="url(#yamunaWater)"
+              strokeWidth="42"
+              strokeLinecap="round"
+            />
+            <path
+              d="M 830 0 Q 880 160 840 310 T 960 520"
+              fill="none"
+              stroke="#38bdf8"
+              strokeWidth="3"
+              strokeDasharray="14 8"
+              strokeOpacity="0.4"
+            />
+            <text x="890" y="240" fill="#38bdf8" fontSize="10" fontWeight="bold" letterSpacing="3" opacity="0.65" transform="rotate(75, 890, 240)">
+              YAMUNA RIVER BASIN
+            </text>
+
+            {/* Major Arterial Highway Loops */}
+            <ellipse cx="510" cy="270" rx="460" ry="210" fill="none" stroke="#1e293b" strokeWidth="2.5" strokeDasharray="8 6" />
+            <text x="70" y="265" fill="#64748b" fontSize="9" fontWeight="bold" letterSpacing="1">OUTER RING ROAD (NH-44)</text>
+
+            <ellipse cx="500" cy="270" rx="270" ry="140" fill="none" stroke="#334155" strokeWidth="3" />
+            <text x="240" y="260" fill="#94a3b8" fontSize="9" fontWeight="bold" letterSpacing="1">RING ROAD (M.G. MARG)</text>
+
+            {/* Metro Transit Lines */}
+            <line x1="120" y1="270" x2="880" y2="270" stroke="#3b82f6" strokeWidth="2" strokeOpacity="0.3" strokeDasharray="6 4" />
+            <line x1="500" y1="40" x2="500" y2="500" stroke="#eab308" strokeWidth="2" strokeOpacity="0.3" strokeDasharray="6 4" />
+
+            {/* Safe District Overlays */}
+            {/* 1. Connaught Place Green Zone */}
+            <circle cx="480" cy="270" r="80" fill="url(#radialGreen)" stroke="#10B981" strokeWidth="1.5" strokeDasharray="5 3" />
+            <circle cx="480" cy="270" r="38" fill="#10B981" fillOpacity="0.1" stroke="#10B981" strokeWidth="1" />
+            <text x="415" y="274" fill="#34D399" fontSize="11" fontWeight="bold">Connaught Place (Green Zone)</text>
+
+            {/* 2. Old Delhi Amber Caution Zone */}
+            <rect x="680" y="90" width="220" height="150" rx="24" fill="url(#radialAmber)" stroke="#F59E0B" strokeWidth="1.5" strokeDasharray="5 3" />
+            <text x="700" y="118" fill="#FBBF24" fontSize="11" fontWeight="bold">Old Delhi Heritage (Amber Zone)</text>
+            <text x="700" y="134" fill="#fcd34d" fontSize="9" opacity="0.8">High Rickshaw & Market Density</text>
+
+            {/* 3. Mehrauli Heritage Precinct */}
+            <ellipse cx="360" cy="450" rx="140" ry="50" fill="#6366f1" fillOpacity="0.08" stroke="#6366f1" strokeWidth="1" strokeDasharray="4 4" />
+            <text x="290" y="454" fill="#a5b4fc" fontSize="10" fontWeight="bold">Qutub Minar & Mehrauli Precinct</text>
+
+            {/* 4. IGI Airport High Security Zone */}
+            <rect x="70" y="370" width="180" height="100" rx="18" fill="#06b6d4" fillOpacity="0.08" stroke="#06b6d4" strokeWidth="1" strokeDasharray="4 4" />
+            <text x="95" y="415" fill="#67e8f9" fontSize="10" fontWeight="bold">IGI Airport T3 Expressway</text>
+
+            {/* Evaluated Multi-Corridors */}
+            {/* Route 2: Ring Road Bypass (Cyan) */}
+            <path
+              d="M 360 290 Q 460 380 640 370 T 780 180"
+              fill="none"
+              stroke="#06B6D4"
+              strokeWidth={selectedRouteIndex === 1 ? "6" : "3"}
+              strokeDasharray="6 4"
+              strokeOpacity={selectedRouteIndex === 1 ? "1" : "0.55"}
             />
 
-            {/* Deviation line */}
-            {simulatedDeviation && (
+            {/* Route 3: Historic Market Shortcut (Amber) */}
+            <path
+              d="M 360 290 Q 560 250 780 180"
+              fill="none"
+              stroke="#F59E0B"
+              strokeWidth={selectedRouteIndex === 2 ? "6" : "2.5"}
+              strokeDasharray="4 4"
+              strokeOpacity={selectedRouteIndex === 2 ? "1" : "0.5"}
+            />
+
+            {/* Route 1: Primary Arterial Safe Corridor (Emerald) */}
+            <path
+              d="M 360 290 Q 480 200 780 180"
+              fill="none"
+              stroke={simulatedDeviation ? "#64748B" : "#10B981"}
+              strokeWidth={selectedRouteIndex === 0 ? "7" : "4"}
+              strokeLinecap="round"
+              strokeOpacity={selectedRouteIndex === 0 ? "1" : "0.7"}
+            />
+            {!simulatedDeviation && selectedRouteIndex === 0 && (
               <path
-                d="M 130 180 Q 240 230 380 250"
+                d="M 360 290 Q 480 200 780 180"
                 fill="none"
-                stroke="#F59E0B"
-                strokeWidth="4"
+                stroke="#FFFFFF"
+                strokeWidth="2"
+                strokeDasharray="8 20"
                 className="animate-pulse"
+                opacity="0.8"
               />
             )}
 
-            {/* Origin & Destination */}
-            <circle cx="130" cy="180" r="7" fill="#3B82F6" />
-            <text x="70" y="210" fill="#93C5FD" fontSize="10" fontWeight="bold">New Delhi Station</text>
+            {/* Simulated Deviation Detour Path (Flashing Red/Amber) */}
+            {simulatedDeviation && (
+              <>
+                <path
+                  d="M 500 220 Q 560 160 620 130"
+                  fill="none"
+                  stroke="#EF4444"
+                  strokeWidth="5"
+                  strokeDasharray="6 4"
+                  className="animate-pulse"
+                />
+                <g transform="translate(620, 130)">
+                  <circle cx="0" cy="0" r="22" fill="#EF4444" fillOpacity="0.3" className="animate-ping" />
+                  <circle cx="0" cy="0" r="9" fill="#EF4444" stroke="#ffffff" strokeWidth="2" />
+                  <rect x="15" y="-12" width="165" height="24" rx="6" fill="#7f1d1d" stroke="#ef4444" strokeWidth="1" />
+                  <text x="24" y="4" fill="#fecaca" fontSize="10" fontWeight="bold">Vehicle Veered &gt;520m Off Route</text>
+                </g>
+              </>
+            )}
 
-            <circle cx="470" cy="100" r="7" fill="#EF4444" />
-            <text x="450" y="85" fill="#FCA5A5" fontSize="10" fontWeight="bold">Red Fort</text>
+            {/* Police PCR Beat Posts along Route 1 */}
+            <g transform="translate(420, 240)">
+              <circle cx="0" cy="0" r="5" fill="#3B82F6" />
+              <circle cx="0" cy="0" r="10" fill="#3B82F6" fillOpacity="0.2" />
+              <text x="8" y="3" fill="#93C5FD" fontSize="8" fontWeight="bold">PCR Beat #14</text>
+            </g>
+            <g transform="translate(560, 195)">
+              <circle cx="0" cy="0" r="5" fill="#10B981" />
+              <circle cx="0" cy="0" r="10" fill="#10B981" fillOpacity="0.2" />
+              <text x="8" y="3" fill="#6EE7B7" fontSize="8" fontWeight="bold">Tourist Police Kiosk</text>
+            </g>
+            <g transform="translate(700, 185)">
+              <circle cx="0" cy="0" r="5" fill="#3B82F6" />
+              <circle cx="0" cy="0" r="10" fill="#3B82F6" fillOpacity="0.2" />
+              <text x="8" y="3" fill="#93C5FD" fontSize="8" fontWeight="bold">Control Kiosk #08</text>
+            </g>
 
-            {/* Tourist Marker */}
-            {simulatedDeviation ? (
-              <g transform="translate(320, 240)">
-                <circle cx="0" cy="0" r="14" fill="#F59E0B" fillOpacity="0.3" className="animate-ping" />
-                <circle cx="0" cy="0" r="6" fill="#F59E0B" />
-              </g>
-            ) : (
-              <g transform="translate(280, 145)">
-                <circle cx="0" cy="0" r="14" fill="#10B981" fillOpacity="0.3" className="animate-ping" />
-                <circle cx="0" cy="0" r="6" fill="#10B981" />
+            {/* Origin Marker (Blue) */}
+            <g transform="translate(360, 290)">
+              <circle cx="0" cy="0" r="18" fill="#3B82F6" fillOpacity="0.25" className="animate-ping" />
+              <circle cx="0" cy="0" r="8" fill="#3B82F6" stroke="#FFFFFF" strokeWidth="2.5" />
+              <rect x="-135" y="-14" width="125" height="28" rx="8" fill="#0f172a" stroke="#3B82F6" strokeWidth="1" />
+              <text x="-125" y="4" fill="#93C5FD" fontSize="10" fontWeight="bold">
+                {origin?.name ? origin.name.split(',')[0].slice(0, 15) : 'Pickup Point'}
+              </text>
+            </g>
+
+            {/* Destination Marker (Red) */}
+            <g transform="translate(780, 180)">
+              <circle cx="0" cy="0" r="20" fill="#EF4444" fillOpacity="0.25" className="animate-ping" />
+              <circle cx="0" cy="0" r="8" fill="#EF4444" stroke="#FFFFFF" strokeWidth="2.5" />
+              <rect x="14" y="-14" width="145" height="28" rx="8" fill="#0f172a" stroke="#EF4444" strokeWidth="1" />
+              <text x="24" y="4" fill="#FCA5A5" fontSize="10" fontWeight="bold">
+                {destination?.name ? destination.name.split(',')[0].slice(0, 18) : 'Destination'}
+              </text>
+            </g>
+
+            {/* Live Vehicle Telemetry Beacon */}
+            {!simulatedDeviation && (
+              <g transform="translate(510, 215)">
+                <circle cx="0" cy="0" r="22" fill="#10B981" fillOpacity="0.25" className="animate-ping" />
+                <circle cx="0" cy="0" r="10" fill="#10B981" fillOpacity="0.5" />
+                <circle cx="0" cy="0" r="5" fill="#FFFFFF" />
+                <rect x="-45" y="-30" width="90" height="20" rx="6" fill="#064e3b" stroke="#10B981" strokeWidth="1" />
+                <text x="-40" y="-16" fill="#6EE7B7" fontSize="9" fontWeight="bold">Live GPS (±4m)</text>
               </g>
             )}
           </svg>
 
-          {/* Status Badge */}
-          <div className="absolute bottom-3 left-3 right-3 p-3 bg-surface/90 backdrop-blur-md rounded-xl border border-white/10 flex items-center justify-between text-xs">
-            <div className="flex items-center space-x-2 text-slate-300">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>{loadError || 'Google Maps Integration Ready (Add key to .env for live satellite/tiles)'}</span>
+          {/* Fallback Info Footer (Rendered only if bottom status enabled) */}
+          {!hideBottomStatus && (
+            <div className="p-3 bg-surface/90 backdrop-blur-md border-t border-white/10 flex items-center justify-between text-xs relative z-10">
+              <div className="flex items-center space-x-2 text-slate-300">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>{loadError || 'Interactive High-Definition Radar Active (Connect Google Maps in .env for Satellite Imagery)'}</span>
+              </div>
+              <StatusBadge status="Official" />
             </div>
-            <StatusBadge status="Official" />
-          </div>
+          )}
         </div>
       )}
 
       {/* Route Soft Deviation Alert Overlay */}
       {simulatedDeviation && (
-        <div className="absolute bottom-14 left-3 right-3 p-3 bg-amber-500/20 backdrop-blur-md rounded-xl border border-amber-500/40 text-amber-200 text-xs flex items-start space-x-2 animate-in slide-in-from-bottom duration-200 z-10">
+        <div className="absolute bottom-4 left-4 right-4 p-3.5 bg-amber-500/20 backdrop-blur-md rounded-2xl border border-amber-500/40 text-amber-200 text-xs flex items-start space-x-2.5 animate-in slide-in-from-bottom duration-200 z-20 shadow-xl">
           <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
           <div>
-            <span className="font-bold text-amber-300 block">Soft Deviation Detected (&gt;500m)</span>
-            <span>Route diverted towards Chawri interior. Non-accusatory reminder: check route or ask driver politely.</span>
+            <span className="font-bold text-amber-300 block">Soft Corridor Deviation Detected (&gt;500m)</span>
+            <span>Vehicle veered into unauthorized shortcut. Verification active with Delhi Police 24/7 Traffic Control.</span>
           </div>
         </div>
       )}

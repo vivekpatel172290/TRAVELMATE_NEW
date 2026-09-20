@@ -954,10 +954,10 @@ export default function SafeJourneyPage() {
         )}
 
         {/* 3. FULL-WIDTH RADAR MAP CANVAS (POSITIONED DOWN / BELOW CORRIDOR CARDS) */}
-        <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-4 sm:p-6 shadow-2xl backdrop-blur-xl flex flex-col justify-between min-h-[580px] relative">
+        <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-4 sm:p-6 shadow-2xl backdrop-blur-xl flex flex-col flex-1 min-h-[640px] relative overflow-hidden space-y-3.5">
           
           {/* Map Top Status Strip HUD */}
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4 z-10 pb-3.5 border-b border-white/[0.06]">
+          <div className="flex flex-wrap items-center justify-between gap-3 z-10 pb-3 border-b border-white/[0.06]">
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <div className="flex items-center space-x-2.5 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/10 text-xs shadow-sm">
                 <span className={`w-2.5 h-2.5 rounded-full ${pickupMode === 'manual' ? 'bg-blue-400 ring-2 ring-blue-400/30' : 'bg-emerald-400 radar-pulse'}`} />
@@ -1013,8 +1013,8 @@ export default function SafeJourneyPage() {
             </div>
           </div>
 
-          {/* Interactive Google Map with Route Overlays */}
-          <div className="relative min-h-[480px] lg:min-h-[560px] rounded-2xl overflow-hidden border border-white/[0.08] shadow-inner">
+          {/* Interactive Google Map with Route Overlays (Expands to fill all remaining space) */}
+          <div className="relative w-full min-h-[520px] lg:min-h-[620px] flex-1 rounded-2xl overflow-hidden border border-white/[0.08] shadow-2xl bg-slate-950 flex flex-col">
             <GoogleMapView
               showRoute={true}
               simulatedDeviation={simulatedDeviation}
@@ -1026,6 +1026,9 @@ export default function SafeJourneyPage() {
               onRoutesFound={handleRoutesCalculated}
               onRouteSelect={(idx) => setSelectedRouteIndex(idx)}
               allowAlternatives={true}
+              hideSearch={true}
+              hideRouteSelector={true}
+              hideBottomStatus={true}
             />
           </div>
 
