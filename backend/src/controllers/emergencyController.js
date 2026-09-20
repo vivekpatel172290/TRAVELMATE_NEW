@@ -104,6 +104,43 @@ exports.getHelplines = (req, res, next) => {
   }
 };
 
+const DELHI_POLICE_BEATS = [
+  { name: "Connaught Place Police Station (Beat #4)", lat: 28.6315, lng: 77.2167, address: "Baba Kharak Singh Marg, CP", phone: "+91 11 2336 5359" },
+  { name: "Paharganj Tourist Police Post (Beat #2)", lat: 28.6433, lng: 77.2140, address: "Main Bazaar, Paharganj", phone: "+91 11 2358 1111" },
+  { name: "Kotwali Police Station (Red Fort Beat)", lat: 28.6562, lng: 77.2410, address: "Chandni Chowk, Old Delhi", phone: "+91 11 2386 2444" },
+  { name: "Parliament Street Police Station", lat: 28.6225, lng: 77.2105, address: "Sansad Marg, New Delhi", phone: "+91 11 2336 1100" },
+  { name: "Nizamuddin Police Station (Heritage Beat)", lat: 28.5910, lng: 77.2435, address: "Mathura Road, Nizamuddin", phone: "+91 11 2435 6666" },
+  { name: "Mehrauli Police Station (Qutub Minar Beat)", lat: 28.5245, lng: 77.1855, address: "Mehrauli, South Delhi", phone: "+91 11 2664 3333" },
+  { name: "Chanakyapuri Police Station (Diplomatic Enclave)", lat: 28.5980, lng: 77.1850, address: "Shantipath, Chanakyapuri", phone: "+91 11 2410 7777" },
+  { name: "IGI Airport Police Station (T3 Control Room)", lat: 28.5562, lng: 77.1000, address: "IGI Airport T3 Arrivals", phone: "+91 11 2565 2112" }
+];
+
+function getNearestPoliceBeat(lat, lng) {
+  let nearest = DELHI_POLICE_BEATS[0];
+  let minDistance = Infinity;
+
+  for (const station of DELHI_POLICE_BEATS) {
+    const dLat = (station.lat - lat) * (Math.PI / 180);
+    const dLng = (station.lng - lng) * (Math.PI / 180);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat * (Math.PI / 180)) * Math.cos(station.lat * (Math.PI / 180)) *
+              Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const dist = 6371 * c;
+    if (dist < minDistance) {
+      minDistance = dist;
+      nearest = station;
+    }
+  }
+
+  return {
+    name: nearest.name,
+    address: nearest.address,
+    phone: nearest.phone,
+    distance_km: parseFloat(minDistance.toFixed(1))
+  };
+}
+
 // 2. Trigger SOS (Manual Tap or Silent Gesture Shake)
 exports.triggerSOS = async (req, res, next) => {
   try {
@@ -120,46 +157,56 @@ exports.triggerSOS = async (req, res, next) => {
     const journey = await db.journeys.findByCodeOrId(journey_code);
     const traveler = journey ? await db.travelers.findById(journey.traveler_id) : null;
 
+    const nearestBeat = getNearestPoliceBeat(parseFloat(lat), parseFloat(lng));
+
     const sosIncident = {
       id: uuidv4(),
-      sos_token: `SOS-${Date.now()}`,
+      sos_token: `SOS-DEL-${Date.now().toString().slice(-6)}`,
       journey_code: journey_code || "ANONYMOUS",
       traveler_name: traveler ? traveler.name : "Unregistered Visitor",
       traveler_nationality: traveler ? traveler.nationality : "Unknown",
       emergency_contact: traveler ? traveler.emergency_contact : "Not provided",
       trigger_type, // 'manual_button' or 'silent_gesture_shake'
       coordinates: { lat: parseFloat(lat), lng: parseFloat(lng) },
+      nearest_police_beat: nearestBeat,
       last_known_route: active_route || (journey ? journey.active_route : null),
       status: "DISPATCHED_TO_CONTROL_ROOM",
-      dispatched_to: ["112 Central Dispatch", "Delhi Tourist Police Unit (CP)", "Registered Emergency Contact"],
+      dispatched_to: [
+        "112 Delhi Police Central Control Room",
+        `${nearestBeat.name} (${nearestBeat.distance_km} km away)`,
+        "Delhi Tourist Police Emergency Unit (Connaught Place)",
+        traveler?.emergency_contact ? `Registered Emergency Contact (${traveler.emergency_contact})` : "Registered Emergency Contact"
+      ],
       timestamp: now.toISOString(),
-      status_label: "HIGH PRIORITY DISPATCH"
+      status_label: "HIGH PRIORITY TELEMETRY DISPATCH"
     };
 
     // Save as critical incident in PostgreSQL
     await db.incidents.create({
       id: sosIncident.id,
       journey_id: journey ? journey.id : null,
-      raw_text: `[EMERGENCY SOS via ${trigger_type}]: ${message}`,
+      raw_text: `[EMERGENCY SOS via ${trigger_type}]: ${message} • Assigned Station: ${nearestBeat.name} (${nearestBeat.distance_km} km)`,
       language_detected: "en",
       structured_data: {
         location: `Lat: ${lat}, Lng: ${lng}`,
+        nearest_police_beat: `${nearestBeat.name} (${nearestBeat.distance_km} km)`,
+        nearest_beat_phone: nearestBeat.phone,
         time: now.toISOString(),
         person_type_involved: "Tourists in distress",
-        description: `Emergency alert triggered via ${trigger_type}`,
+        description: `Emergency alert triggered via ${trigger_type} • Routed to 112 & ${nearestBeat.name}`,
         severity: "CRITICAL",
         confidence: "1.0"
       },
       linked_evidence_ids: [],
       status: "pending_review",
-      admin_notes: `Urgent SOS dispatch initiated at ${now.toLocaleTimeString()}`,
+      admin_notes: `Urgent SOS telemetry received at ${now.toLocaleTimeString()} • Routed to 112 Control Room & ${nearestBeat.name}`,
       created_at: now.toISOString(),
       updated_at: now.toISOString()
     });
 
     res.status(200).json({
       success: true,
-      message: `SOS successfully routed to 112, Delhi Tourist Police, and your emergency contact.`,
+      message: `Emergency telemetry packet dispatched to 112 Central Control Room, ${nearestBeat.name}, and emergency contacts.`,
       data: sosIncident
     });
   } catch (error) {

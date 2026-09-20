@@ -1149,12 +1149,42 @@ export default function HomePage() {
               </ul>
             </div>
 
-            {/* Col 4: Official Emergency Helplines */}
+            {/* Col 4: Official Emergency Helplines & SOS Dispatch */}
             <div>
               <h5 className="font-bold text-white text-sm sm:text-base uppercase tracking-wider mb-3.5 flex items-center space-x-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-rose-400" />
-                <span>24/7 Helplines</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-400 animate-pulse" />
+                <span>24/7 Emergency & SOS</span>
               </h5>
+
+              {/* 1-Tap Emergency SOS Dispatch Trigger */}
+              <button
+                type="button"
+                id="btn-footer-sos-trigger"
+                onClick={() => {
+                  const btn = document.getElementById('btn-floating-sos');
+                  if (btn) btn.click();
+                }}
+                className="w-full mb-3 p-3 rounded-2xl bg-gradient-to-r from-red-600/30 via-rose-600/20 to-red-600/30 hover:from-red-600/40 hover:to-rose-600/40 border border-red-500/50 flex items-center justify-between group transition-all shadow-lg shadow-red-600/20 active:scale-95"
+              >
+                <div className="flex items-center space-x-2.5">
+                  <span className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
+                  </span>
+                  <div className="text-left">
+                    <span className="text-xs sm:text-sm font-extrabold text-white block leading-tight">
+                      Trigger SOS Telemetry
+                    </span>
+                    <span className="text-[10px] text-red-300 block">
+                      GPS packet to 112 Control Room
+                    </span>
+                  </div>
+                </div>
+                <span className="px-2 py-0.5 rounded-lg bg-red-600 text-white font-mono font-black text-xs shrink-0 shadow-sm">
+                  112 SOS
+                </span>
+              </button>
+
               <div className="space-y-2.5 text-sm sm:text-[15px]">
                 <a
                   href="tel:112"
