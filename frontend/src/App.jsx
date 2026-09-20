@@ -109,6 +109,7 @@ function AppLayout() {
               <Route path="/planner" element={<TripPlannerPage />} />
               <Route path="/trip-planner" element={<TripPlannerPage />} />
               <Route path="/phrase-helper" element={<PhraseHelperPage />} />
+              <Route path="/bhashini-translator" element={<PhraseHelperPage />} />
               <Route path="/language" element={<PhraseHelperPage />} />
               <Route path="/fare-meter" element={<FareMeterPage />} />
               <Route path="/safe-journey" element={<SafeJourneyPage />} />
