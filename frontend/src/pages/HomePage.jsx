@@ -565,170 +565,212 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Feature 1: SafeVisit Pass */}
-            <div className="relative rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 border-2 border-[#2f323e]/70 hover:border-indigo-500/60 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-1">
-              <div>
-                <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                  <QrCode className="w-7 h-7" />
+            <div className="relative group">
+              {/* Ambient Multi-Color Glow Backdrop (signature glowing bg like hero animated section) */}
+              <div className="absolute -inset-2 rounded-[30px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 group-hover:opacity-65 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
+              
+              <div className="relative h-full rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 border-2 border-[#2f323e]/70 hover:border-indigo-400/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl hover:-translate-y-1 overflow-hidden">
+                {/* Internal ambient corner glow */}
+                <div className="absolute -top-12 -right-12 w-36 h-36 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none" />
+                <div className="relative z-10">
+                  <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <QrCode className="w-7 h-7" />
+                  </div>
+                  <div className="flex items-center justify-between mb-2.5">
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-indigo-300 transition-colors">
+                      SafeVisit Pass
+                    </h3>
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase tracking-wider">
+                      Instant QR Pass
+                    </span>
+                  </div>
+                  <p className="text-sm sm:text-[15px] text-slate-300 leading-relaxed mb-5">
+                    Generates a verified 7-day cryptographic QR identity for safety check-ins and emergency contact throughout your Delhi trip.
+                  </p>
                 </div>
-                <div className="flex items-center justify-between mb-2.5">
-                  <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-indigo-300 transition-colors">
-                    SafeVisit Pass
-                  </h3>
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase tracking-wider">
-                    Instant QR Pass
-                  </span>
-                </div>
-                <p className="text-sm sm:text-[15px] text-slate-300 leading-relaxed mb-5">
-                  Generates a verified 7-day cryptographic QR identity for safety check-ins and emergency contact throughout your Delhi trip.
-                </p>
+                <Link
+                  to="/safe-pass"
+                  className="relative z-10 inline-flex items-center text-sm font-bold text-indigo-400 hover:text-indigo-300 group-hover:translate-x-1 transition-all pt-2 border-t border-white/[0.06]"
+                >
+                  <span>Generate Pass</span>
+                  <ArrowRight className="w-4 h-4 ml-1.5" />
+                </Link>
               </div>
-              <Link
-                to="/safe-pass"
-                className="inline-flex items-center text-sm font-bold text-indigo-400 hover:text-indigo-300 group-hover:translate-x-1 transition-all pt-2 border-t border-white/[0.06]"
-              >
-                <span>Generate Pass</span>
-                <ArrowRight className="w-4 h-4 ml-1.5" />
-              </Link>
             </div>
 
             {/* Feature 2: Phrase Converter */}
-            <div className="relative rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 border-2 border-[#2f323e]/70 hover:border-purple-500/60 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-1">
-              <div>
-                <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                  <Globe className="w-7 h-7" />
+            <div className="relative group">
+              {/* Ambient Multi-Color Glow Backdrop (signature glowing bg like hero animated section) */}
+              <div className="absolute -inset-2 rounded-[30px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 group-hover:opacity-65 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
+              
+              <div className="relative h-full rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 border-2 border-[#2f323e]/70 hover:border-purple-400/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl hover:-translate-y-1 overflow-hidden">
+                {/* Internal ambient corner glow */}
+                <div className="absolute -top-12 -right-12 w-36 h-36 bg-purple-500/20 rounded-full blur-2xl pointer-events-none" />
+                <div className="relative z-10">
+                  <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <Globe className="w-7 h-7" />
+                  </div>
+                  <div className="flex items-center justify-between mb-2.5">
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-purple-300 transition-colors">
+                      Phrase Converter
+                    </h3>
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase tracking-wider">
+                      Bhashini AI
+                    </span>
+                  </div>
+                  <p className="text-sm sm:text-[15px] text-slate-300 leading-relaxed mb-5">
+                    Translates crucial travel phrases, bargaining queries, and safety inquiries into Hindi text with clear phonetic pronunciation audio.
+                  </p>
                 </div>
-                <div className="flex items-center justify-between mb-2.5">
-                  <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-purple-300 transition-colors">
-                    Phrase Converter
-                  </h3>
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase tracking-wider">
-                    Bhashini AI
-                  </span>
-                </div>
-                <p className="text-sm sm:text-[15px] text-slate-300 leading-relaxed mb-5">
-                  Translates crucial travel phrases, bargaining queries, and safety inquiries into Hindi text with clear phonetic pronunciation audio.
-                </p>
+                <Link
+                  to="/phrase-helper"
+                  className="relative z-10 inline-flex items-center text-sm font-bold text-purple-400 hover:text-purple-300 group-hover:translate-x-1 transition-all pt-2 border-t border-white/[0.06]"
+                >
+                  <span>Open Phrase Converter</span>
+                  <ArrowRight className="w-4 h-4 ml-1.5" />
+                </Link>
               </div>
-              <Link
-                to="/phrase-helper"
-                className="inline-flex items-center text-sm font-bold text-purple-400 hover:text-purple-300 group-hover:translate-x-1 transition-all pt-2 border-t border-white/[0.06]"
-              >
-                <span>Open Phrase Converter</span>
-                <ArrowRight className="w-4 h-4 ml-1.5" />
-              </Link>
             </div>
 
             {/* Feature 3: Fair Fare Meter */}
-            <div className="relative rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 border-2 border-[#2f323e]/70 hover:border-cyan-500/60 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl hover:shadow-cyan-500/10 hover:-translate-y-1">
-              <div>
-                <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                  <Calculator className="w-7 h-7" />
+            <div className="relative group">
+              {/* Ambient Multi-Color Glow Backdrop (signature glowing bg like hero animated section) */}
+              <div className="absolute -inset-2 rounded-[30px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 group-hover:opacity-65 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
+              
+              <div className="relative h-full rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 border-2 border-[#2f323e]/70 hover:border-cyan-400/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl hover:-translate-y-1 overflow-hidden">
+                {/* Internal ambient corner glow */}
+                <div className="absolute -top-12 -right-12 w-36 h-36 bg-cyan-500/20 rounded-full blur-2xl pointer-events-none" />
+                <div className="relative z-10">
+                  <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <Calculator className="w-7 h-7" />
+                  </div>
+                  <div className="flex items-center justify-between mb-2.5">
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-cyan-300 transition-colors">
+                      Fair Fare Meter
+                    </h3>
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
+                      Delhi Govt Rate
+                    </span>
+                  </div>
+                  <p className="text-sm sm:text-[15px] text-slate-300 leading-relaxed mb-5">
+                    Computes exact gazetted tariffs for Delhi Autos and Taxis with automatic +25% night surcharge detection to prevent meter rigging.
+                  </p>
                 </div>
-                <div className="flex items-center justify-between mb-2.5">
-                  <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-cyan-300 transition-colors">
-                    Fair Fare Meter
-                  </h3>
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
-                    Delhi Govt Rate
-                  </span>
-                </div>
-                <p className="text-sm sm:text-[15px] text-slate-300 leading-relaxed mb-5">
-                  Computes exact gazetted tariffs for Delhi Autos and Taxis with automatic +25% night surcharge detection to prevent meter rigging.
-                </p>
+                <Link
+                  to="/fare-meter"
+                  className="relative z-10 inline-flex items-center text-sm font-bold text-cyan-400 hover:text-cyan-300 group-hover:translate-x-1 transition-all pt-2 border-t border-white/[0.06]"
+                >
+                  <span>Calculate Fair Fare</span>
+                  <ArrowRight className="w-4 h-4 ml-1.5" />
+                </Link>
               </div>
-              <Link
-                to="/fare-meter"
-                className="inline-flex items-center text-sm font-bold text-cyan-400 hover:text-cyan-300 group-hover:translate-x-1 transition-all pt-2 border-t border-white/[0.06]"
-              >
-                <span>Calculate Fair Fare</span>
-                <ArrowRight className="w-4 h-4 ml-1.5" />
-              </Link>
             </div>
 
             {/* Feature 4: Safe Track */}
-            <div className="relative rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 border-2 border-[#2f323e]/70 hover:border-emerald-500/60 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl hover:shadow-emerald-500/10 hover:-translate-y-1">
-              <div>
-                <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                  <Navigation className="w-7 h-7" />
+            <div className="relative group">
+              {/* Ambient Multi-Color Glow Backdrop (signature glowing bg like hero animated section) */}
+              <div className="absolute -inset-2 rounded-[30px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 group-hover:opacity-65 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
+              
+              <div className="relative h-full rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 border-2 border-[#2f323e]/70 hover:border-emerald-400/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl hover:-translate-y-1 overflow-hidden">
+                {/* Internal ambient corner glow */}
+                <div className="absolute -top-12 -right-12 w-36 h-36 bg-emerald-500/20 rounded-full blur-2xl pointer-events-none" />
+                <div className="relative z-10">
+                  <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <Navigation className="w-7 h-7" />
+                  </div>
+                  <div className="flex items-center justify-between mb-2.5">
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-emerald-300 transition-colors">
+                      Safe Track & Corridors
+                    </h3>
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider">
+                      Live GPS
+                    </span>
+                  </div>
+                  <p className="text-sm sm:text-[15px] text-slate-300 leading-relaxed mb-5">
+                    Multi-route safety scoring with continuous deviation monitor. Dispatches a soft check prompt if a vehicle veers &gt;500m off course.
+                  </p>
                 </div>
-                <div className="flex items-center justify-between mb-2.5">
-                  <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-emerald-300 transition-colors">
-                    Safe Track & Corridors
-                  </h3>
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider">
-                    Live GPS
-                  </span>
-                </div>
-                <p className="text-sm sm:text-[15px] text-slate-300 leading-relaxed mb-5">
-                  Multi-route safety scoring with continuous deviation monitor. Dispatches a soft check prompt if a vehicle veers &gt;500m off course.
-                </p>
+                <Link
+                  to="/safe-journey"
+                  className="relative z-10 inline-flex items-center text-sm font-bold text-emerald-400 hover:text-emerald-300 group-hover:translate-x-1 transition-all pt-2 border-t border-white/[0.06]"
+                >
+                  <span>Track Journey</span>
+                  <ArrowRight className="w-4 h-4 ml-1.5" />
+                </Link>
               </div>
-              <Link
-                to="/safe-journey"
-                className="inline-flex items-center text-sm font-bold text-emerald-400 hover:text-emerald-300 group-hover:translate-x-1 transition-all pt-2 border-t border-white/[0.06]"
-              >
-                <span>Track Journey</span>
-                <ArrowRight className="w-4 h-4 ml-1.5" />
-              </Link>
             </div>
 
             {/* Feature 5: RideSafe Evidence Vault */}
-            <div className="relative rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 border-2 border-[#2f323e]/70 hover:border-amber-500/60 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl hover:shadow-amber-500/10 hover:-translate-y-1">
-              <div>
-                <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                  <Camera className="w-7 h-7" />
+            <div className="relative group">
+              {/* Ambient Multi-Color Glow Backdrop (signature glowing bg like hero animated section) */}
+              <div className="absolute -inset-2 rounded-[30px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 group-hover:opacity-65 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
+              
+              <div className="relative h-full rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 border-2 border-[#2f323e]/70 hover:border-amber-400/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl hover:-translate-y-1 overflow-hidden">
+                {/* Internal ambient corner glow */}
+                <div className="absolute -top-12 -right-12 w-36 h-36 bg-amber-500/20 rounded-full blur-2xl pointer-events-none" />
+                <div className="relative z-10">
+                  <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <Camera className="w-7 h-7" />
+                  </div>
+                  <div className="flex items-center justify-between mb-2.5">
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-amber-300 transition-colors">
+                      RideSafe Evidence Vault
+                    </h3>
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-wider">
+                      OCR Plate Reader
+                    </span>
+                  </div>
+                  <p className="text-sm sm:text-[15px] text-slate-300 leading-relaxed mb-5">
+                    Snap a quick photo before boarding. Python OCR reads the vehicle plate and secures timestamped evidence locally for your peace of mind.
+                  </p>
                 </div>
-                <div className="flex items-center justify-between mb-2.5">
-                  <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-amber-300 transition-colors">
-                    RideSafe Evidence Vault
-                  </h3>
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-wider">
-                    OCR Plate Reader
-                  </span>
-                </div>
-                <p className="text-sm sm:text-[15px] text-slate-300 leading-relaxed mb-5">
-                  Snap a quick photo before boarding. Python OCR reads the vehicle plate and secures timestamped evidence locally for your peace of mind.
-                </p>
+                <Link
+                  to="/vault"
+                  className="relative z-10 inline-flex items-center text-sm font-bold text-amber-400 hover:text-amber-300 group-hover:translate-x-1 transition-all pt-2 border-t border-white/[0.06]"
+                >
+                  <span>Open Evidence Vault</span>
+                  <ArrowRight className="w-4 h-4 ml-1.5" />
+                </Link>
               </div>
-              <Link
-                to="/vault"
-                className="inline-flex items-center text-sm font-bold text-amber-400 hover:text-amber-300 group-hover:translate-x-1 transition-all pt-2 border-t border-white/[0.06]"
-              >
-                <span>Open Evidence Vault</span>
-                <ArrowRight className="w-4 h-4 ml-1.5" />
-              </Link>
             </div>
 
             {/* Feature 6: Claude AI Assistant */}
-            <div className="relative rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 border-2 border-[#2f323e]/70 hover:border-rose-500/60 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl hover:shadow-rose-500/10 hover:-translate-y-1">
-              <div>
-                <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                  <Bot className="w-7 h-7" />
+            <div className="relative group">
+              {/* Ambient Multi-Color Glow Backdrop (signature glowing bg like hero animated section) */}
+              <div className="absolute -inset-2 rounded-[30px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 group-hover:opacity-65 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
+              
+              <div className="relative h-full rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 border-2 border-[#2f323e]/70 hover:border-rose-400/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl hover:-translate-y-1 overflow-hidden">
+                {/* Internal ambient corner glow */}
+                <div className="absolute -top-12 -right-12 w-36 h-36 bg-rose-500/20 rounded-full blur-2xl pointer-events-none" />
+                <div className="relative z-10">
+                  <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <Bot className="w-7 h-7" />
+                  </div>
+                  <div className="flex items-center justify-between mb-2.5">
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-rose-300 transition-colors">
+                      Ask Claude AI
+                    </h3>
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 uppercase tracking-wider">
+                      Zero-Hallucination
+                    </span>
+                  </div>
+                  <p className="text-sm sm:text-[15px] text-slate-300 leading-relaxed mb-5">
+                    AI decision-support grounded strictly in verified Delhi monuments, police emergency protocols, and current advisories.
+                  </p>
                 </div>
-                <div className="flex items-center justify-between mb-2.5">
-                  <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-rose-300 transition-colors">
-                    Ask Claude AI
-                  </h3>
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 uppercase tracking-wider">
-                    Zero-Hallucination
-                  </span>
-                </div>
-                <p className="text-sm sm:text-[15px] text-slate-300 leading-relaxed mb-5">
-                  AI decision-support grounded strictly in verified Delhi monuments, police emergency protocols, and current advisories.
-                </p>
+                <button
+                  onClick={() => {
+                    const chatBtn = document.getElementById('btn-floating-claude-chat');
+                    if (chatBtn) chatBtn.click();
+                  }}
+                  className="relative z-10 inline-flex items-center text-sm font-bold text-rose-400 hover:text-rose-300 group-hover:translate-x-1 transition-all text-left pt-2 border-t border-white/[0.06]"
+                >
+                  <span>Launch Claude Chat</span>
+                  <ArrowRight className="w-4 h-4 ml-1.5" />
+                </button>
               </div>
-              <button
-                onClick={() => {
-                  const chatBtn = document.getElementById('btn-floating-claude-chat');
-                  if (chatBtn) chatBtn.click();
-                }}
-                className="inline-flex items-center text-sm font-bold text-rose-400 hover:text-rose-300 group-hover:translate-x-1 transition-all text-left pt-2 border-t border-white/[0.06]"
-              >
-                <span>Launch Claude Chat</span>
-                <ArrowRight className="w-4 h-4 ml-1.5" />
-              </button>
             </div>
           </div>
         </section>
@@ -739,9 +781,13 @@ export default function HomePage() {
         {/* 5. INTERACTIVE LIVE FARE CALCULATOR WIDGET (COMPACT & SLEEK) */}
         {/* ==================================================================== */}
         <section className="my-10 sm:my-12 max-w-4xl mx-auto">
-          <div className="relative rounded-2xl sm:rounded-3xl p-5 sm:p-6 border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-xl overflow-hidden group">
-            {/* Subtle Cyan Glow Accent */}
-            <div className="absolute -top-16 -right-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative group">
+            {/* Ambient Multi-Color Glow Backdrop (signature glowing bg like hero animated section) */}
+            <div className="absolute -inset-2 sm:-inset-3 rounded-[32px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-25 group-hover:opacity-55 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
+
+            <div className="relative rounded-2xl sm:rounded-3xl p-5 sm:p-6 border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-xl overflow-hidden">
+              {/* Subtle Cyan Glow Accent */}
+              <div className="absolute -top-16 -right-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
             {/* Header: Compact & Direct */}
             <div className="flex items-center justify-between gap-3 pb-3.5 border-b border-white/[0.08] relative z-10">
@@ -853,7 +899,8 @@ export default function HomePage() {
 
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
         {/* ==================================================================== */}
         {/* 6. VERIFIED MONUMENTS PREVIEW */}
