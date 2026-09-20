@@ -549,3 +549,75 @@ export const api = {
   }
 };
 
+export const authAPI = {
+  async register(payload) {
+    const res = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to register');
+    return data;
+  },
+
+  async login(payload) {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to sign in');
+    return data;
+  },
+
+  async googleAuth(payload) {
+    const res = await fetch(`${API_BASE}/auth/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Google authentication failed');
+    return data;
+  },
+
+  async getMe(token) {
+    const res = await fetch(`${API_BASE}/auth/me`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to verify session');
+    return data;
+  },
+
+  async updateProfile(token, updates) {
+    const res = await fetch(`${API_BASE}/auth/profile`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(updates)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update profile');
+    return data;
+  },
+
+  async logout(token) {
+    try {
+      await fetch(`${API_BASE}/auth/logout`, {
+        method: 'POST',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
+    } catch (e) {
+      console.warn('Logout network notice:', e.message);
+    }
+    return { success: true };
+  }
+};
+

@@ -7,6 +7,24 @@
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- 0. USERS (Registered tourists, travel companions, & Google OAuth accounts)
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255),
+    name VARCHAR(150) NOT NULL,
+    avatar_url TEXT,
+    google_id VARCHAR(255) UNIQUE,
+    auth_provider VARCHAR(50) DEFAULT 'local', -- 'local' or 'google'
+    role VARCHAR(50) DEFAULT 'tourist',
+    nationality VARCHAR(100) DEFAULT 'International',
+    phone VARCHAR(50),
+    emergency_contact VARCHAR(100),
+    journey_code VARCHAR(50),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    last_login_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- 1. TRAVELERS (Passport-free minimal profile with auto-expiry)
 CREATE TABLE IF NOT EXISTS travelers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

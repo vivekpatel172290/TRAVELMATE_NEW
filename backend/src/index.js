@@ -14,6 +14,7 @@ const emergencyRoutes = require('./routes/emergency');
 const incidentRoutes = require('./routes/incidents');
 const adminRoutes = require('./routes/admin');
 const aiRoutes = require('./routes/ai');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 
@@ -89,6 +90,7 @@ app.use('/api/emergency', emergencyRoutes);
 app.use('/api/incidents', incidentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/auth', authRoutes);
 
 // Global Error Handler
 app.use(errorHandler);

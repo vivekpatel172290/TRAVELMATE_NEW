@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { TravelerProvider } from './context/TravelerContext';
+import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Header from './components/common/Header';
 import Sidebar from './components/common/Sidebar';
@@ -12,6 +13,7 @@ import LanguageSupportModal from './components/common/LanguageSupportModal';
 // Pages
 import HomePage from './pages/HomePage';
 import OnboardingPage from './pages/OnboardingPage';
+import AuthPage from './pages/AuthPage';
 import DiscoverPage from './pages/DiscoverPage';
 import FareMeterPage from './pages/FareMeterPage';
 import SafeJourneyPage from './pages/SafeJourneyPage';
@@ -96,6 +98,8 @@ function AppLayout() {
           <main className={`flex-1 ${isPlaceDetailPage ? 'h-[calc(100vh-4rem)] overflow-hidden' : 'pb-24 md:pb-16 overflow-x-hidden'}`}>
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="/login" element={<AuthPage defaultMode="login" />} />
+              <Route path="/signup" element={<AuthPage defaultMode="signup" />} />
               <Route path="/safe-pass" element={<OnboardingPage />} />
               <Route path="/onboarding" element={<OnboardingPage />} />
               <Route path="/home" element={<DiscoverPage />} />
@@ -213,9 +217,11 @@ export default function App() {
   return (
     <ThemeProvider>
       <TravelerProvider>
-        <BrowserRouter>
-          <AppLayout />
-        </BrowserRouter>
+        <AuthProvider>
+          <BrowserRouter>
+            <AppLayout />
+          </BrowserRouter>
+        </AuthProvider>
       </TravelerProvider>
     </ThemeProvider>
   );

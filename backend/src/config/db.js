@@ -373,6 +373,7 @@ const INITIAL_SAFETY_ZONES = [
 
 // Unified In-Memory Fallback Store (Always kept in sync)
 const store = {
+  users: [],
   travelers: [],
   journeys: [],
   places: [...INITIAL_PLACES],
@@ -543,6 +544,15 @@ async function initDatabase() {
         store.travelers = travelersFromDb.rows;
       }
 
+      try {
+        const usersFromDb = await client.query('SELECT * FROM users;');
+        if (usersFromDb.rows.length > 0) {
+          store.users = usersFromDb.rows;
+        }
+      } catch (userErr) {
+        console.warn('[Database] Note on users table:', userErr.message);
+      }
+
       isPostgresConnected = true;
       return true;
     } finally {
@@ -565,6 +575,134 @@ const db = {
   isPostgresConnected: () => isPostgresConnected,
   getPool: () => pool,
   getSupabase: () => supabase,
+
+  // 0. USERS (Registered tourists, travel companions, & Google OAuth accounts)
+  users: {
+    async create(user) {
+      if (isPostgresConnected && pool) {
+        try {
+          const res = await pool.query(
+            `INSERT INTO users (id, email, password_hash, name, avatar_url, google_id, auth_provider, role, nationality, phone, emergency_contact, journey_code, created_at, last_login_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+             RETURNING *;`,
+            [
+              user.id,
+              user.email,
+              user.password_hash || null,
+              user.name,
+              user.avatar_url || null,
+              user.google_id || null,
+              user.auth_provider || 'local',
+              user.role || 'tourist',
+              user.nationality || 'International',
+              user.phone || null,
+              user.emergency_contact || null,
+              user.journey_code || null,
+              user.created_at || new Date().toISOString(),
+              user.last_login_at || new Date().toISOString()
+            ]
+          );
+          const saved = res.rows[0];
+          store.users = store.users.filter(u => u.id !== saved.id);
+          store.users.push(saved);
+          return saved;
+        } catch (e) {
+          console.error('[DB DAL] users.create error:', e.message);
+        }
+      }
+      store.users = store.users.filter(u => u.id !== user.id);
+      store.users.push(user);
+      return user;
+    },
+
+    async findByEmail(email) {
+      if (!email) return null;
+      const normalized = email.trim().toLowerCase();
+      if (isPostgresConnected && pool) {
+        try {
+          const res = await pool.query('SELECT * FROM users WHERE LOWER(email) = LOWER($1);', [normalized]);
+          if (res.rows.length > 0) return res.rows[0];
+        } catch (e) {
+          console.error('[DB DAL] users.findByEmail error:', e.message);
+        }
+      }
+      return store.users.find(u => (u.email || '').toLowerCase() === normalized) || null;
+    },
+
+    async findById(id) {
+      if (!id) return null;
+      if (isPostgresConnected && pool) {
+        try {
+          const res = await pool.query('SELECT * FROM users WHERE id = $1;', [id]);
+          if (res.rows.length > 0) return res.rows[0];
+        } catch (e) {
+          console.error('[DB DAL] users.findById error:', e.message);
+        }
+      }
+      return store.users.find(u => u.id === id) || null;
+    },
+
+    async findByGoogleId(googleId) {
+      if (!googleId) return null;
+      if (isPostgresConnected && pool) {
+        try {
+          const res = await pool.query('SELECT * FROM users WHERE google_id = $1;', [googleId]);
+          if (res.rows.length > 0) return res.rows[0];
+        } catch (e) {
+          console.error('[DB DAL] users.findByGoogleId error:', e.message);
+        }
+      }
+      return store.users.find(u => u.google_id === googleId) || null;
+    },
+
+    async update(id, updates) {
+      if (isPostgresConnected && pool) {
+        try {
+          const fields = [];
+          const values = [];
+          let idx = 1;
+          for (const [key, val] of Object.entries(updates)) {
+            fields.push(`${key} = $${idx}`);
+            values.push(val);
+            idx++;
+          }
+          if (fields.length > 0) {
+            values.push(id);
+            const res = await pool.query(
+              `UPDATE users SET ${fields.join(', ')} WHERE id = $${idx} RETURNING *;`,
+              values
+            );
+            if (res.rows.length > 0) {
+              const updated = res.rows[0];
+              const localIdx = store.users.findIndex(u => u.id === id);
+              if (localIdx >= 0) store.users[localIdx] = { ...store.users[localIdx], ...updated };
+              return updated;
+            }
+          }
+        } catch (e) {
+          console.error('[DB DAL] users.update error:', e.message);
+        }
+      }
+      const u = store.users.find(x => x.id === id);
+      if (u) {
+        Object.assign(u, updates);
+        return u;
+      }
+      return null;
+    },
+
+    async getAll() {
+      if (isPostgresConnected && pool) {
+        try {
+          const res = await pool.query('SELECT id, email, name, avatar_url, auth_provider, role, nationality, phone, emergency_contact, journey_code, created_at, last_login_at FROM users ORDER BY created_at DESC;');
+          return res.rows;
+        } catch (e) {
+          console.error('[DB DAL] users.getAll error:', e.message);
+        }
+      }
+      return store.users.map(({ password_hash, ...rest }) => rest);
+    }
+  },
 
   // 1. TRAVELERS
   travelers: {
