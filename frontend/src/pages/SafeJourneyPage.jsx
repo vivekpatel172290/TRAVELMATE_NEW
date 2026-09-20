@@ -608,14 +608,266 @@ export default function SafeJourneyPage() {
           </div>
         </div>
 
-        {/* 2. MAIN RADAR MAP & MULTI-CORRIDOR EVALUATION GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* 2. CORRIDOR EVALUATION CARDS SECTION (POSITIONED ABOVE MAP) */}
+        {activeTab === 'tracking' && (
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
+                  <Navigation className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white font-display tracking-wide flex items-center space-x-2">
+                    <span>Corridor Safety Ranking</span>
+                    <span className="text-xs font-mono font-bold text-cyan-400 bg-cyan-500/15 px-2.5 py-0.5 rounded-full border border-cyan-500/30">
+                      {availableRoutes.length} Evaluated
+                    </span>
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Click any corridor to activate real-time radar tracking, lighting benchmarks, and fare estimation.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2 self-start sm:self-auto">
+                <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/15 px-3 py-1 rounded-xl border border-emerald-500/30 flex items-center space-x-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Journey: {journey?.journey_code || 'TM-DEL-2026'}</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Responsive 3-column Corridor Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {availableRoutes.map((route, idx) => {
+                const isSelected = selectedRouteIndex === idx;
+                const isOptimal = route.safetyLevel === 'High' || idx === 0;
+                const isCaution = route.safetyLevel === 'Caution' || idx === 2;
+
+                return (
+                  <div
+                    key={route.id || idx}
+                    onClick={() => setSelectedRouteIndex(idx)}
+                    className={`p-4 sm:p-5 rounded-2xl border cursor-pointer transition-all duration-200 flex flex-col justify-between ${
+                      isSelected
+                        ? isOptimal
+                          ? 'bg-emerald-500/15 border-emerald-500/70 ring-2 ring-emerald-500/50 shadow-xl shadow-emerald-500/10'
+                          : 'bg-cyan-500/15 border-cyan-500/70 ring-2 ring-cyan-500/50 shadow-xl shadow-cyan-500/10'
+                        : 'bg-[#111318]/90 hover:bg-white/[0.06] border-white/[0.08]'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2.5">
+                        <div className="flex items-center space-x-2">
+                          <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                            isSelected ? 'border-emerald-400 bg-emerald-400' : 'border-slate-500'
+                          }`}>
+                            {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-black" />}
+                          </span>
+                          <span className="text-xs font-bold text-white">
+                            Route {idx + 1}: {idx === 0 ? 'Primary' : `Alt ${idx}`}
+                          </span>
+                        </div>
+
+                        {isOptimal ? (
+                          <span className="px-2.5 py-0.5 rounded-md bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 text-xs font-extrabold flex items-center space-x-1">
+                            <Award className="w-3 h-3" />
+                            <span>Safest</span>
+                          </span>
+                        ) : isCaution ? (
+                          <span className="px-2.5 py-0.5 rounded-md bg-amber-500/25 text-amber-300 border border-amber-500/40 text-xs font-bold">
+                            Caution
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-0.5 rounded-md bg-cyan-500/25 text-cyan-300 border border-cyan-500/40 text-xs font-bold">
+                            Moderate
+                          </span>
+                        )}
+                      </div>
+
+                      <h4 className="text-sm font-bold text-white mb-3 leading-snug line-clamp-2">
+                        {route.summary}
+                      </h4>
+
+                      {/* Distance, ETA, & Fare Matrix */}
+                      <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+                        <div className="p-2.5 rounded-xl bg-black/40 border border-white/[0.05]">
+                          <span className="text-slate-400 text-[10px] uppercase font-bold block">Distance & ETA</span>
+                          <span className="font-mono font-bold text-cyan-300 text-xs mt-0.5 block">
+                            {route.distanceText} • {route.durationText}
+                          </span>
+                        </div>
+
+                        <div className="p-2.5 rounded-xl bg-black/40 border border-white/[0.05]">
+                          <span className="text-slate-400 text-[10px] uppercase font-bold block">Est. Auto Fare</span>
+                          <span className="font-mono font-bold text-emerald-400 text-xs mt-0.5 block">
+                            ₹{getEstimatedAutoFare(route.distanceKm).min} – ₹{getEstimatedAutoFare(route.distanceKm).max}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Safety Metrics */}
+                    <div className="pt-2 border-t border-white/[0.06] space-y-1.5 text-xs text-slate-300">
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center space-x-1.5 text-slate-400">
+                          <Lightbulb className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                          <span>Lighting:</span>
+                        </span>
+                        <span className="font-semibold text-slate-200">{route.lighting}</span>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center space-x-1.5 text-slate-400">
+                          <Car className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                          <span>Police Beat:</span>
+                        </span>
+                        <span className="font-semibold text-slate-200">{route.policePresence}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Soft Deviation Warning Alert Banner */}
+            {simulatedDeviation && (
+              <div className="p-4 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200 shadow-lg">
+                <div className="flex items-start space-x-3">
+                  <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="text-amber-400 text-sm font-bold block">Route Deviation Warning (&gt;500m Off Track)</strong>
+                    <p className="text-xs text-amber-200/90 mt-0.5">
+                      Vehicle has veered &gt;500m off the monitored safe corridor. Verify route with driver or connect immediately to Delhi Police 112.
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href="tel:112"
+                  className="shrink-0 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center space-x-2 shadow-lg shadow-red-600/30 transition-all self-start sm:self-auto"
+                >
+                  <PhoneCall className="w-4 h-4" />
+                  <span>Dial Police 112</span>
+                </a>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* District Safety Overlay Section (Active when 'zones' tab chosen) */}
+        {activeTab === 'zones' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between pb-1">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white font-display tracking-wide">
+                    District Safety Overlay & Police Jurisdiction
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Delhi Police categorized zones based on real-time lighting, PCR beats, and safety index.
+                  </p>
+                </div>
+              </div>
+              <StatusBadge status="Official" />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {delhiZones.map((zone) => (
+                <div
+                  key={zone.id}
+                  onClick={() => setSelectedZone(zone)}
+                  className={`p-4 rounded-2xl border cursor-pointer transition-all ${
+                    selectedZone?.id === zone.id
+                      ? 'bg-indigo-600/20 border-indigo-500/70 shadow-lg ring-2 ring-indigo-400/40'
+                      : 'bg-[#111318]/90 border-white/[0.08] hover:bg-white/[0.06]'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-bold text-white">{zone.name}</span>
+                    <span
+                      className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                        zone.risk_level === 'Green'
+                          ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                          : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                      }`}
+                    >
+                      {zone.risk_level} Zone
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">{zone.advisory_text}</p>
+                  <span className="text-xs text-slate-500 block mt-2 font-medium">Source: {zone.source_label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Night-Safe Corridor Ranker Section (Active when 'night' tab chosen) */}
+        {activeTab === 'night' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between pb-1">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+                  <Moon className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-indigo-300 font-display tracking-wide flex items-center space-x-2">
+                    <span>Night-Safe Corridor Ranker</span>
+                    <span className="text-xs font-bold bg-indigo-500/20 text-indigo-300 px-2.5 py-0.5 rounded-full border border-indigo-500/30">
+                      20:00 – 06:00
+                    </span>
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Routes prioritized by continuous street illumination, CCTV density, and 24/7 PCR kiosk presence.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {availableRoutes.map((route, idx) => {
+                const isSelected = selectedRouteIndex === idx;
+                return (
+                  <div
+                    key={route.id || idx}
+                    onClick={() => setSelectedRouteIndex(idx)}
+                    className={`p-4 rounded-2xl border cursor-pointer transition-all ${
+                      isSelected
+                        ? 'bg-emerald-500/15 border-emerald-500/70 shadow-lg ring-2 ring-emerald-400/40'
+                        : 'bg-[#111318]/90 border-white/[0.08] hover:bg-white/[0.06]'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-bold text-white truncate max-w-[200px]">{route.summary}</span>
+                      {idx === 0 && (
+                        <span className="text-xs font-bold bg-emerald-500 text-white px-2 py-0.5 rounded-full">
+                          Top Choice
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-emerald-400 font-semibold mb-1">
+                      {route.safetyScore}
+                    </div>
+                    <div className="text-xs text-slate-400 font-mono mb-2">
+                      {route.distanceText} • {route.durationText} • {route.cctvCoverage}
+                    </div>
+                    <p className="text-xs text-slate-300 leading-relaxed">{route.advisory}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* 3. FULL-WIDTH RADAR MAP CANVAS (POSITIONED DOWN / BELOW CORRIDOR CARDS) */}
+        <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-4 sm:p-6 shadow-xl flex flex-col justify-between min-h-[560px]">
           
-          {/* Left / Main Map Canvas (8 Cols) */}
-          <div className="lg:col-span-8 coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-4 sm:p-6 shadow-xl flex flex-col justify-between min-h-[520px]">
-            
-            {/* Map Top Status Strip */}
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-4 z-10 pb-3 border-b border-white/[0.06]">
+          {/* Map Top Status Strip */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4 z-10 pb-3 border-b border-white/[0.06]">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <div className="flex items-center space-x-2.5 bg-black/50 px-3.5 py-1.5 rounded-xl border border-white/10 text-xs">
                 <span className={`w-2.5 h-2.5 rounded-full ${pickupMode === 'manual' ? 'bg-indigo-400' : 'bg-emerald-400 animate-pulse'}`} />
                 <span className="text-white font-mono font-bold text-xs sm:text-sm">
@@ -631,7 +883,18 @@ export default function SafeJourneyPage() {
                 </span>
               </div>
 
-              {/* Simulation Button */}
+              {/* Active Route Indicator Chip */}
+              <div className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-xs text-cyan-300 font-medium">
+                <span>Active Route:</span>
+                <strong className="text-white font-bold">{activeSelectedRoute?.summary || `Route ${selectedRouteIndex + 1}`}</strong>
+                {activeSelectedRoute?.distanceText && (
+                  <span className="text-cyan-400 font-mono">({activeSelectedRoute.distanceText} • {activeSelectedRoute.durationText})</span>
+                )}
+              </div>
+            </div>
+
+            {/* Map Actions: Deviation Simulation & Emergency SOS dial */}
+            <div className="flex items-center space-x-2">
               <button
                 id="btn-simulate-deviation"
                 onClick={() => setSimulatedDeviation(!simulatedDeviation)}
@@ -644,301 +907,50 @@ export default function SafeJourneyPage() {
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>{simulatedDeviation ? 'Reset Corridor' : 'Simulate Deviation (>500m)'}</span>
               </button>
-            </div>
 
-            {/* Interactive Google Map with Route Overlays */}
-            <div className="relative min-h-[440px] rounded-2xl overflow-hidden border border-white/[0.08]">
-              <GoogleMapView
-                showRoute={true}
-                simulatedDeviation={simulatedDeviation}
-                liveTracking={true}
-                onLocationUpdate={(coords) => setLiveGps(coords)}
-                origin={currentOrigin}
-                destination={destinationCoords}
-                selectedRouteIndex={selectedRouteIndex}
-                onRoutesFound={handleRoutesCalculated}
-                onRouteSelect={(idx) => setSelectedRouteIndex(idx)}
-                allowAlternatives={true}
-              />
+              <a
+                href="tel:112"
+                className="px-3.5 py-1.5 rounded-xl bg-red-600/80 hover:bg-red-600 text-white font-bold text-xs flex items-center space-x-1.5 border border-red-500/40 transition-all shadow-md"
+                title="Quick Dial Delhi Police 112"
+              >
+                <PhoneCall className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Police</span> 112
+              </a>
             </div>
+          </div>
 
-            {/* Map Telemetry Footer */}
-            <div className="mt-4 pt-3 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-300">
-              <div className="flex items-center space-x-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Police PCR beat coverage & continuous street lighting telemetry active.</span>
-              </div>
-              <span className="px-2.5 py-0.5 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-xs font-bold">
-                Safe Corridor Verified
+          {/* Interactive Google Map with Route Overlays */}
+          <div className="relative min-h-[480px] lg:min-h-[560px] rounded-2xl overflow-hidden border border-white/[0.08]">
+            <GoogleMapView
+              showRoute={true}
+              simulatedDeviation={simulatedDeviation}
+              liveTracking={true}
+              onLocationUpdate={(coords) => setLiveGps(coords)}
+              origin={currentOrigin}
+              destination={destinationCoords}
+              selectedRouteIndex={selectedRouteIndex}
+              onRoutesFound={handleRoutesCalculated}
+              onRouteSelect={(idx) => setSelectedRouteIndex(idx)}
+              allowAlternatives={true}
+            />
+          </div>
+
+          {/* Map Telemetry Footer */}
+          <div className="mt-4 pt-3 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-300">
+            <div className="flex items-center space-x-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>Delhi Police PCR beat coverage, street lighting & live corridor deviation telemetry active.</span>
+            </div>
+            <div className="flex items-center space-x-3 shrink-0">
+              <span className="text-slate-400 font-mono">
+                Auto-Flag: <strong className="text-slate-200">&gt;500m off route</strong>
+              </span>
+              <span className="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-xs font-bold flex items-center space-x-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Safe Corridor Verified</span>
               </span>
             </div>
           </div>
-
-          {/* Right Corridor Evaluation & Telemetry Panels (4 Cols) */}
-          <div className="lg:col-span-4 space-y-5">
-            
-            {/* PANEL 1: EVALUATED CORRIDORS (Interactive Corridor Selector) */}
-            <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-5 shadow-xl space-y-3.5">
-              <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
-                <div className="flex items-center space-x-2">
-                  <Navigation className="w-4 h-4 text-cyan-400" />
-                  <h3 className="text-sm font-bold text-white font-display uppercase tracking-wider">
-                    Corridor Safety Ranking
-                  </h3>
-                </div>
-                <span className="text-xs font-bold text-cyan-400 font-mono">
-                  {availableRoutes.length} Evaluated
-                </span>
-              </div>
-
-              {/* Corridor Cards */}
-              <div className="space-y-3">
-                {availableRoutes.map((route, idx) => {
-                  const isSelected = selectedRouteIndex === idx;
-                  const isOptimal = route.safetyLevel === 'High' || idx === 0;
-                  const isCaution = route.safetyLevel === 'Caution' || idx === 2;
-
-                  return (
-                    <div
-                      key={route.id || idx}
-                      onClick={() => setSelectedRouteIndex(idx)}
-                      className={`p-4 rounded-2xl border cursor-pointer transition-all duration-200 ${
-                        isSelected
-                          ? isOptimal
-                            ? 'bg-emerald-500/15 border-emerald-500/70 ring-1 ring-emerald-500/40 shadow-lg shadow-emerald-500/10'
-                            : 'bg-cyan-500/15 border-cyan-500/70 ring-1 ring-cyan-500/40 shadow-lg'
-                          : 'bg-white/[0.02] hover:bg-white/[0.06] border-white/[0.06]'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center space-x-2">
-                          <span className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center ${
-                            isSelected ? 'border-emerald-400 bg-emerald-400' : 'border-slate-500'
-                          }`}>
-                            {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-black" />}
-                          </span>
-                          <span className="text-xs font-bold text-white">
-                            Route {idx + 1}: {idx === 0 ? 'Primary' : `Alt ${idx}`}
-                          </span>
-                        </div>
-
-                        {isOptimal ? (
-                          <span className="px-2 py-0.5 rounded-md bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 text-xs font-extrabold flex items-center space-x-1">
-                            <Award className="w-3 h-3" />
-                            <span>Safest</span>
-                          </span>
-                        ) : isCaution ? (
-                          <span className="px-2 py-0.5 rounded-md bg-amber-500/25 text-amber-300 border border-amber-500/40 text-xs font-bold">
-                            Caution
-                          </span>
-                        ) : (
-                          <span className="px-2 py-0.5 rounded-md bg-cyan-500/25 text-cyan-300 border border-cyan-500/40 text-xs font-bold">
-                            Moderate
-                          </span>
-                        )}
-                      </div>
-
-                      <h4 className="text-xs sm:text-sm font-bold text-white mb-2 leading-snug line-clamp-1">
-                        {route.summary}
-                      </h4>
-
-                      {/* Distance, ETA, & Fare Matrix */}
-                      <div className="grid grid-cols-2 gap-2 text-xs mb-2.5">
-                        <div className="p-2 rounded-xl bg-black/40 border border-white/[0.05]">
-                          <span className="text-slate-400 text-xs block">DISTANCE & TIME</span>
-                          <span className="font-mono font-bold text-cyan-300 text-xs">
-                            {route.distanceText} • {route.durationText}
-                          </span>
-                        </div>
-
-                        <div className="p-2 rounded-xl bg-black/40 border border-white/[0.05]">
-                          <span className="text-slate-400 text-xs block">EST. AUTO FARE</span>
-                          <span className="font-mono font-bold text-emerald-400 text-xs">
-                            ₹{getEstimatedAutoFare(route.distanceKm).min} – ₹{getEstimatedAutoFare(route.distanceKm).max}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Safety Metrics */}
-                      <div className="space-y-1 text-xs text-slate-300">
-                        <div className="flex items-center justify-between py-0.5">
-                          <span className="flex items-center space-x-1.5 text-slate-400">
-                            <Lightbulb className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                            <span>Lighting:</span>
-                          </span>
-                          <span className="font-semibold text-slate-200">{route.lighting}</span>
-                        </div>
-
-                        <div className="flex items-center justify-between py-0.5">
-                          <span className="flex items-center space-x-1.5 text-slate-400">
-                            <Car className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                            <span>Police Beat:</span>
-                          </span>
-                          <span className="font-semibold text-slate-200">{route.policePresence}</span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* PANEL 2: ACTIVE JOURNEY MONITOR & TELEMETRY */}
-            {activeTab === 'tracking' && (
-              <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-5 shadow-xl space-y-4">
-                <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
-                  <h3 className="text-sm font-bold text-white font-display uppercase tracking-wider flex items-center space-x-2">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                    <span>Telemetry Status</span>
-                  </h3>
-                  <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/30">
-                    {journey?.journey_code || 'TM-DEL-2026'}
-                  </span>
-                </div>
-
-                <div className="space-y-2.5 text-xs sm:text-sm">
-                  <div className="flex items-center justify-between py-1 border-b border-white/[0.04]">
-                    <span className="text-slate-400">Selected Route:</span>
-                    <strong className="text-cyan-300 truncate max-w-[180px]">
-                      {activeSelectedRoute?.summary}
-                    </strong>
-                  </div>
-
-                  <div className="flex items-center justify-between py-1 border-b border-white/[0.04]">
-                    <span className="text-slate-400">ETA & Distance:</span>
-                    <strong className="text-white font-mono">
-                      {activeSelectedRoute?.distanceText} • {activeSelectedRoute?.durationText}
-                    </strong>
-                  </div>
-
-                  <div className="flex items-center justify-between py-1 border-b border-white/[0.04]">
-                    <span className="text-slate-400">Corridor Threshold:</span>
-                    <strong className="text-slate-200 font-mono">&gt;500m off track</strong>
-                  </div>
-                </div>
-
-                {/* Soft Deviation Alert Notice */}
-                {simulatedDeviation && (
-                  <div className="p-4 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-200 space-y-1.5 animate-in fade-in duration-200">
-                    <div className="flex items-center space-x-2 font-bold text-amber-400 text-xs sm:text-sm">
-                      <AlertTriangle className="w-4 h-4 shrink-0" />
-                      <span>Route Deviation Warning</span>
-                    </div>
-                    <p className="text-xs text-amber-300/90 leading-relaxed">
-                      Vehicle has veered &gt;500m off the monitored safe corridor. Verify route with driver or tap Delhi Police SOS 112 below.
-                    </p>
-                  </div>
-                )}
-
-                {/* Gesture SOS Prompt */}
-                <div className="p-3.5 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-xs text-slate-300 space-y-1">
-                  <strong className="text-white block font-bold">Emergency Quick Dial</strong>
-                  <p className="text-xs text-slate-400">
-                    Shake phone 3 times or tap below to immediately connect to Delhi Police Central Control.
-                  </p>
-                  <a
-                    href="tel:112"
-                    className="mt-2 inline-flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs transition-all shadow-md"
-                  >
-                    <PhoneCall className="w-3.5 h-3.5" />
-                    <span>Dial Emergency 112</span>
-                  </a>
-                </div>
-              </div>
-            )}
-
-            {/* PANEL 3: ZONE RISK OVERLAY */}
-            {activeTab === 'zones' && (
-              <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-5 shadow-xl space-y-3.5">
-                <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
-                  <h3 className="text-sm font-bold text-white font-display uppercase tracking-wider">
-                    District Safety Overlay
-                  </h3>
-                  <StatusBadge status="Official" />
-                </div>
-
-                <div className="space-y-2.5 max-h-[420px] overflow-y-auto pr-1 custom-scrollbar">
-                  {delhiZones.map((zone) => (
-                    <div
-                      key={zone.id}
-                      onClick={() => setSelectedZone(zone)}
-                      className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${
-                        selectedZone?.id === zone.id
-                          ? 'bg-indigo-600/20 border-indigo-500/50 shadow-md ring-1 ring-indigo-400/30'
-                          : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06]'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-xs sm:text-sm font-bold text-white">{zone.name}</span>
-                        <span
-                          className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                            zone.risk_level === 'Green'
-                              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                              : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                          }`}
-                        >
-                          {zone.risk_level} Zone
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-300 leading-relaxed">{zone.advisory_text}</p>
-                      <span className="text-xs text-slate-500 block mt-1 font-medium">Source: {zone.source_label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* PANEL 4: NIGHT-SAFE ROUTE RANKER */}
-            {activeTab === 'night' && (
-              <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-5 shadow-xl space-y-3.5">
-                <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
-                  <h3 className="text-sm font-bold text-indigo-400 font-display uppercase tracking-wider flex items-center space-x-1.5">
-                    <Moon className="w-4 h-4" />
-                    <span>Night-Safe Corridor Ranker</span>
-                  </h3>
-                  <span className="text-xs font-bold bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/30">
-                    20:00 - 06:00
-                  </span>
-                </div>
-
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Ranks routes by continuous street lighting and active Police beat kiosks over dark shortcuts.
-                </p>
-
-                <div className="space-y-3">
-                  {availableRoutes.map((route, idx) => (
-                    <div
-                      key={route.id || idx}
-                      onClick={() => setSelectedRouteIndex(idx)}
-                      className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${
-                        selectedRouteIndex === idx
-                          ? 'bg-emerald-500/15 border-emerald-500/50 shadow-md ring-1 ring-emerald-400/30'
-                          : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06]'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs sm:text-sm font-bold text-white">{route.summary}</span>
-                        {idx === 0 && (
-                          <span className="text-xs font-bold bg-emerald-500 text-white px-2 py-0.5 rounded-full">
-                            Top Choice
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-emerald-400 font-semibold mb-1">
-                        {route.safetyScore}
-                      </div>
-                      <div className="text-xs text-slate-400 font-mono mb-1.5">
-                        {route.distanceText} • {route.durationText} • {route.cctvCoverage}
-                      </div>
-                      <p className="text-xs text-slate-300 leading-relaxed">{route.advisory}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-          </div>
-
         </div>
 
       </div>
