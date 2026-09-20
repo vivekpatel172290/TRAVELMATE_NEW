@@ -341,17 +341,17 @@ export default function DiscoverPage() {
 
             {/* Best Time to Visit in Modal */}
             {(selectedPlace.best_time_to_visit || selectedPlace.crowd_data?.best_time) && (
-              <div className="best-time-box mb-6 p-4 rounded-2xl border space-y-1.5">
-                <div className="best-time-header flex items-center space-x-2 font-bold text-xs">
-                  <Clock className="w-4 h-4" />
+              <div className="best-time-box mb-5 p-4 rounded-2xl border space-y-1.5 bg-white/[0.03] border-white/10">
+                <div className="best-time-header flex items-center space-x-2 font-bold text-xs sm:text-sm text-indigo-300">
+                  <Clock className="w-4 h-4 text-indigo-400" />
                   <span>Official Best Time to Visit Recommendation</span>
                 </div>
-                <p className="best-time-desc text-xs leading-relaxed">
+                <p className="best-time-desc text-xs sm:text-sm text-slate-200 leading-relaxed">
                   {selectedPlace.best_time_to_visit || `Recommended: ${selectedPlace.crowd_data.best_time}`}
                 </p>
                 {selectedPlace.lighting_tip && (
-                  <p className="best-time-tip text-xs italic flex items-center gap-1.5 pt-0.5">
-                    <Camera className="w-3.5 h-3.5" />
+                  <p className="best-time-tip text-xs sm:text-sm text-cyan-300 italic flex items-center gap-1.5 pt-0.5">
+                    <Camera className="w-4 h-4 text-cyan-400 shrink-0" />
                     <span>{selectedPlace.lighting_tip}</span>
                   </p>
                 )}
@@ -359,40 +359,40 @@ export default function DiscoverPage() {
             )}
 
             {/* Fee & Official Source Info */}
-            <div className="my-6 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-              <div className="modal-stat-box p-3 rounded-xl border">
-                <span className="text-[10px] uppercase font-bold block">Foreign Visitor</span>
-                <span className="text-lg font-bold font-mono text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-300">
-                  {selectedPlace.fee?.foreigner === 0 ? 'Free' : `₹${selectedPlace.fee?.foreigner}`}
+            <div className="my-5 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+              <div className="modal-stat-box p-3.5 rounded-2xl bg-black/40 border border-white/10">
+                <span className="text-xs uppercase font-extrabold text-slate-400 block mb-1">Foreign Visitor</span>
+                <span className="text-xl sm:text-2xl font-black font-mono text-cyan-300">
+                  {selectedPlace.fee?.foreigner === 0 ? 'Free Entry' : `₹${selectedPlace.fee?.foreigner}`}
                 </span>
               </div>
-              <div className="modal-stat-box p-3 rounded-xl border">
-                <span className="text-[10px] uppercase font-bold block">Indian / SAARC</span>
-                <span className="text-lg font-bold font-mono text-slate-900 dark:text-slate-200">
+              <div className="modal-stat-box p-3.5 rounded-2xl bg-black/40 border border-white/10">
+                <span className="text-xs uppercase font-extrabold text-slate-400 block mb-1">Indian / SAARC</span>
+                <span className="text-xl sm:text-2xl font-black font-mono text-white">
                   {selectedPlace.fee?.indian === 0 ? 'Free' : `₹${selectedPlace.fee?.indian}`}
                 </span>
               </div>
-              <div className="modal-stat-box p-3 rounded-xl border">
-                <span className="text-[10px] uppercase font-bold block">Children &lt;15</span>
-                <span className="text-lg font-bold font-mono text-cyan-600 dark:text-cyan-400">Free</span>
+              <div className="modal-stat-box p-3.5 rounded-2xl bg-black/40 border border-white/10">
+                <span className="text-xs uppercase font-extrabold text-slate-400 block mb-1">Children &lt;15</span>
+                <span className="text-xl sm:text-2xl font-black font-mono text-emerald-400">Free</span>
               </div>
-              <div className="modal-stat-box p-3 rounded-xl border">
-                <span className="text-[10px] uppercase font-bold block">Last Verified</span>
-                <span className="text-xs font-semibold block mt-1">{selectedPlace.last_verified}</span>
+              <div className="modal-stat-box p-3.5 rounded-2xl bg-black/40 border border-white/10">
+                <span className="text-xs uppercase font-extrabold text-slate-400 block mb-1">Last Verified</span>
+                <span className="text-xs sm:text-sm font-bold text-slate-200 block mt-1">{selectedPlace.last_verified}</span>
               </div>
             </div>
 
             {/* Safety & Cultural Notes */}
             <div className="mb-6">
-              <h4 className="text-sm font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center mb-3">
-                <ShieldCheck className="w-4 h-4 mr-1.5" />
+              <h4 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-amber-400 flex items-center mb-3">
+                <ShieldCheck className="w-4 h-4 mr-1.5 shrink-0" />
                 <span>Essential Safety & Scam Prevention Notes</span>
               </h4>
-              <ul className="space-y-2 text-xs">
+              <ul className="space-y-2 text-xs sm:text-sm">
                 {selectedPlace.safety_notes?.map((note, idx) => (
-                  <li key={idx} className="modal-safety-note flex items-start space-x-2 p-2.5 rounded-lg border">
+                  <li key={idx} className="modal-safety-note flex items-start space-x-2.5 p-3 rounded-xl bg-black/40 border border-white/5 text-slate-200">
                     <span className="text-cyan-400 font-bold">•</span>
-                    <span>{note}</span>
+                    <span className="font-medium leading-relaxed">{note}</span>
                   </li>
                 ))}
               </ul>
