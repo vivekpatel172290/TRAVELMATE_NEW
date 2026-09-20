@@ -39,11 +39,11 @@ router.get('/languages', (req, res) => {
 });
 
 /**
- * POST /api/bhashini/translate
+ * POST /api/bhashini/translate or POST /api/translate
  * Translates input text between source and target language
  * Body: { text, sourceLang, targetLang, apiKey, userId, inferenceApiKey }
  */
-router.post('/translate', async (req, res, next) => {
+const handleTranslationRequest = async (req, res, next) => {
   try {
     const { text, sourceLang = 'en', targetLang = 'hi', apiKey, userId, inferenceApiKey } = req.body;
 
@@ -70,7 +70,11 @@ router.post('/translate', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-});
+};
+
+router.post('/translate', handleTranslationRequest);
+router.post('/', handleTranslationRequest);
+
 
 /**
  * POST /api/bhashini/verify-key

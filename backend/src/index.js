@@ -92,7 +92,11 @@ app.use('/api/incidents', incidentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/auth', authRoutes);
+
 app.use('/api/bhashini', bhashiniRoutes);
+app.use('/api/translate', bhashiniRoutes);
+
+
 
 // Global Error Handler
 app.use(errorHandler);
