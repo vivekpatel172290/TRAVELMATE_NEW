@@ -253,7 +253,7 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-indigo-300 flex items-center space-x-1.5">
               <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Digital India Bhashini English → Hindi Translator</span>
+              <span>Digital India Bhashini Phrase Translator</span>
             </span>
             <button
               onClick={handleOpenFullPage}

@@ -56,7 +56,7 @@ export default function Sidebar({
         },
         {
           to: '/phrase-helper',
-          label: 'Phrase Converter',
+          label: 'Phrase Translator',
           shortLabel: 'Phrases',
           badge: 'Bhashini AI',
           badgeColor: 'indigo',
