@@ -164,7 +164,7 @@ export default function AuthPage({ defaultMode = 'login' }) {
         {/* Top Header & Branding */}
         <div className="text-center mb-6">
           <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[#161b26] border border-white/10 text-xs font-bold text-cyan-300 shadow-md shadow-cyan-500/10 mb-3">
-            <Shield className="w-3.5 h-3.5 text-emerald-400" />
+            <Shield className="w-3.5 h-3.5 text-cyan-400" />
             <span>Official SafeVisit Security Layer • Delhi</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black font-display tracking-tight text-white">
@@ -217,8 +217,8 @@ export default function AuthPage({ defaultMode = 'login' }) {
               </div>
             )}
             {successMsg && (
-              <div className="mb-5 p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs flex items-start space-x-2.5 animate-in fade-in">
-                <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-400" />
+              <div className="mb-5 p-3 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 text-xs flex items-start space-x-2.5 animate-in fade-in">
+                <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-cyan-400" />
                 <span className="font-medium">{successMsg}</span>
               </div>
             )}
@@ -256,7 +256,7 @@ export default function AuthPage({ defaultMode = 'login' }) {
                   <span className="text-xs sm:text-sm font-bold font-display tracking-wide">
                     {mode === 'signup' ? 'Sign up with Google' : 'Continue with Google'}
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-extrabold border border-emerald-500/30 hidden sm:inline">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-extrabold border border-cyan-500/30 hidden sm:inline">
                     INSTANT
                   </span>
                 </div>

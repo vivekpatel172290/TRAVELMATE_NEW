@@ -267,8 +267,8 @@ export function evaluateDestinationSafety(placeKey, dateStr) {
     status: 'good',
     label: 'Good time to visit',
     reason: '✅ Smooth transit, verified open monument hours, and no active civic disruptions reported.',
-    badgeClass: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-    tagColor: 'emerald',
+    badgeClass: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
+    tagColor: 'cyan',
     recommendationType: 'optimal',
   };
 }

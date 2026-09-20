@@ -138,7 +138,7 @@ export default function DiscoverPage() {
             placeholder="Search Red Fort, Qutub, timings..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-surface-card border border-surface-border rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500"
+            className="w-full pl-10 pr-4 py-2.5 bg-black/40 border border-white/10 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
           />
         </div>
       </div>
@@ -153,8 +153,8 @@ export default function DiscoverPage() {
               onClick={() => setActiveCategory(cat)}
               className={`category-filter-pill px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
                 activeCategory === cat
-                  ? 'active bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
-                  : 'bg-surface-card text-slate-400 hover:text-white border border-surface-border'
+                  ? 'active bg-gradient-to-r from-[#6b30e3] to-[#8b5cf6] text-white shadow-lg shadow-indigo-500/30'
+                  : 'bg-black/30 text-slate-400 hover:text-white border border-white/10 hover:border-indigo-500/30'
               }`}
             >
               {cat}
@@ -162,12 +162,12 @@ export default function DiscoverPage() {
           ))}
         </div>
 
-        <div className="view-mode-container flex items-center space-x-1 bg-surface-card p-1 rounded-xl border border-surface-border shrink-0 self-start sm:self-auto">
+        <div className="view-mode-container flex items-center space-x-1 bg-black/40 p-1 rounded-xl border border-white/10 shrink-0 self-start sm:self-auto">
           <button
             onClick={() => setViewMode('grid')}
             className={`view-mode-btn flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               viewMode === 'grid'
-                ? 'active bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                ? 'active bg-gradient-to-r from-[#6b30e3]/40 to-[#8b5cf6]/40 text-indigo-300 border border-indigo-500/50 shadow-[0_0_12px_rgba(99,102,241,0.25)]'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -178,7 +178,7 @@ export default function DiscoverPage() {
             onClick={() => setViewMode('map')}
             className={`view-mode-btn flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               viewMode === 'map'
-                ? 'active bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                ? 'active bg-gradient-to-r from-[#6b30e3]/40 to-[#8b5cf6]/40 text-indigo-300 border border-indigo-500/50 shadow-[0_0_12px_rgba(99,102,241,0.25)]'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -190,7 +190,7 @@ export default function DiscoverPage() {
 
       {/* Map View Mode */}
       {viewMode === 'map' && (
-        <div className="mb-8 h-[380px] sm:h-[420px] rounded-2xl overflow-hidden">
+        <div className="mb-8 h-[380px] sm:h-[420px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
           <GoogleMapView
             places={places}
             showRoute={false}
@@ -205,7 +205,7 @@ export default function DiscoverPage() {
           <div
             key={place.id || place.place_key}
             onClick={() => navigate(`/place/${place.id || place.place_key}`)}
-            className="coder-card bg-[#111318]/90 hover:bg-[#151922] border border-white/[0.08] hover:border-indigo-500/50 rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-indigo-500/10 flex flex-col justify-between"
+            className="coder-card relative rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300 hover:scale-[1.02] border-2 border-[#2f323e]/70 hover:border-indigo-500/60 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-xl hover:shadow-indigo-500/20 flex flex-col justify-between"
           >
             <div>
               {/* Uniform Even-Sized Photo Container */}
@@ -231,7 +231,7 @@ export default function DiscoverPage() {
                   <span className="px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-md text-[10px] font-bold text-slate-200 border border-white/10 uppercase tracking-wider">
                     {place.category}
                   </span>
-                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-extrabold uppercase">
+                  <span className="px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[10px] font-extrabold uppercase">
                     ASI Verified
                   </span>
                 </div>
@@ -244,7 +244,7 @@ export default function DiscoverPage() {
                         ? 'bg-rose-950/80 text-rose-300 border-rose-500/30'
                         : place.crowd_data?.estimated_crowd === 'Medium'
                         ? 'bg-amber-950/80 text-amber-300 border-amber-500/30'
-                        : 'bg-emerald-950/80 text-emerald-300 border-emerald-500/30'
+                        : 'bg-cyan-950/80 text-cyan-300 border-cyan-500/30'
                     }`}
                   >
                     <Users className="w-3 h-3 mr-1" />
@@ -298,7 +298,7 @@ export default function DiscoverPage() {
       {/* Place Detail & Review Modal */}
       {selectedPlace && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="place-modal-card relative w-full max-w-2xl bg-surface border border-surface-border rounded-3xl p-6 sm:p-8 overflow-y-auto max-h-[88vh] shadow-2xl">
+          <div className="place-modal-card relative w-full max-w-2xl bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] border-2 border-[#2f323e]/80 rounded-3xl p-6 sm:p-8 overflow-y-auto max-h-[88vh] shadow-2xl">
             {/* Modal Header Photo */}
             <div className="relative w-full h-48 sm:h-56 rounded-2xl overflow-hidden mb-6 bg-[#080a0f] border border-white/10 flex items-center justify-center">
               <img
@@ -335,7 +335,7 @@ export default function DiscoverPage() {
                   <StatusBadge status={selectedPlace.verification_status} />
                 </div>
                 <h2 className="text-xl sm:text-2xl font-bold font-display text-white mt-1">{selectedPlace.name}</h2>
-                <p className="text-xs text-emerald-300 font-medium">{selectedPlace.hindi_name}</p>
+                <p className="text-xs text-cyan-300 font-medium">{selectedPlace.hindi_name}</p>
               </div>
             </div>
 
@@ -362,7 +362,7 @@ export default function DiscoverPage() {
             <div className="my-6 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
               <div className="modal-stat-box p-3 rounded-xl border">
                 <span className="text-[10px] uppercase font-bold block">Foreign Visitor</span>
-                <span className="text-lg font-bold font-mono text-emerald-600 dark:text-emerald-400">
+                <span className="text-lg font-bold font-mono text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-300">
                   {selectedPlace.fee?.foreigner === 0 ? 'Free' : `₹${selectedPlace.fee?.foreigner}`}
                 </span>
               </div>
@@ -391,7 +391,7 @@ export default function DiscoverPage() {
               <ul className="space-y-2 text-xs">
                 {selectedPlace.safety_notes?.map((note, idx) => (
                   <li key={idx} className="modal-safety-note flex items-start space-x-2 p-2.5 rounded-lg border">
-                    <span className="text-emerald-600 dark:text-emerald-400 font-bold">•</span>
+                    <span className="text-cyan-400 font-bold">•</span>
                     <span>{note}</span>
                   </li>
                 ))}
@@ -399,13 +399,13 @@ export default function DiscoverPage() {
             </div>
 
             {/* Verified Traveler Review Form (Scope #16: History Enforcement) */}
-            <div className="p-5 rounded-2xl bg-surface-card border border-surface-border space-y-4">
+            <div className="p-5 rounded-2xl bg-black/40 border border-white/10 space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-white/10">
                 <div>
                   <div className="flex items-center space-x-2">
                     <h4 className="text-sm font-bold text-white">Verified Traveler Review</h4>
                     {isPlaceVisited(selectedPlace) ? (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                         Visit Confirmed ✓
                       </span>
                     ) : (
@@ -415,7 +415,7 @@ export default function DiscoverPage() {
                     )}
                   </div>
                   <p className="text-[11px] text-slate-400 mt-0.5">
-                    Journey Pass: <span className="font-mono text-emerald-400 font-semibold">{journey?.journey_code}</span>
+                    Journey Pass: <span className="font-mono text-cyan-400 font-semibold">{journey?.journey_code}</span>
                   </p>
                 </div>
 
@@ -443,11 +443,11 @@ export default function DiscoverPage() {
                     placeholder="Share verified safety tips, quiet entrance gates, or queue advice for other travelers..."
                     value={reviewText}
                     onChange={(e) => setReviewText(e.target.value)}
-                    className="w-full p-3 bg-surface border border-surface-border rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 leading-relaxed"
+                    className="w-full p-3 bg-black/40 border border-white/10 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 leading-relaxed"
                   />
 
                   {reviewFeedback && (
-                    <div className="text-xs font-semibold text-emerald-400 flex items-center">
+                    <div className="text-xs font-semibold text-cyan-400 flex items-center">
                       <CheckCircle className="w-3.5 h-3.5 mr-1.5" />
                       <span>{reviewFeedback}</span>
                     </div>
@@ -460,7 +460,7 @@ export default function DiscoverPage() {
                     <button
                       type="submit"
                       id="btn-submit-review"
-                      className="py-1.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-all shadow-md shadow-emerald-600/20"
+                      className="py-2 px-5 coder-btn-primary text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/25"
                     >
                       Submit Verified Review
                     </button>
@@ -487,7 +487,7 @@ export default function DiscoverPage() {
                       type="button"
                       id="btn-checkin-to-unlock-review"
                       onClick={() => handleCheckIn(selectedPlace)}
-                      className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-all"
+                      className="px-4 py-2 coder-btn-primary text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-indigo-600/25"
                     >
                       Check In as Visited & Unlock Review →
                     </button>

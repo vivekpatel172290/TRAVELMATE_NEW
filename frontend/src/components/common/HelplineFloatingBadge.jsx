@@ -294,9 +294,9 @@ export default function HelplineFloatingBadge() {
                 {/* 3. Nearest Station Direct Line */}
                 <a
                   href={`tel:${sosIncident?.nearest_police_beat?.phone?.replace(/[^0-9+]/g, '') || '+911123365359'}`}
-                  className="py-2.5 px-3 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-200 rounded-xl text-xs font-bold flex items-center justify-center space-x-2 transition-all text-center"
+                  className="py-2.5 px-3 bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/40 text-cyan-200 rounded-xl text-xs font-bold flex items-center justify-center space-x-2 transition-all text-center"
                 >
-                  <Building2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <Building2 className="w-4 h-4 text-cyan-400 shrink-0" />
                   <span>Call Assigned Police Beat ({sosIncident?.nearest_police_beat?.distance_km ?? 1.1} km)</span>
                 </a>
               </div>
@@ -351,7 +351,7 @@ export default function HelplineFloatingBadge() {
                       <div className="font-bold text-white">Ministry of Tourism (12 Languages)</div>
                       <div className="text-[11px] text-slate-400">Toll-Free 1800-11-1363 • Short Code 1363</div>
                     </div>
-                    <a href="tel:1363" className="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg font-bold border border-emerald-500/30">
+                    <a href="tel:1363" className="px-3 py-1 bg-cyan-500/20 text-cyan-300 rounded-lg font-bold border border-cyan-500/30">
                       Call 1363
                     </a>
                   </div>

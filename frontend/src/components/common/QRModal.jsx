@@ -28,82 +28,85 @@ export default function QRModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-      <div className="relative w-full max-w-sm bg-surface border border-emerald-500/40 rounded-3xl p-6 text-center shadow-2xl animate-in zoom-in-95 duration-150">
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-4 text-slate-400 hover:text-white p-1"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        <div className="inline-flex items-center justify-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-3">
-          <img src="/logo.jpg" alt="TravelMate" className="w-5 h-5 rounded-md object-cover ring-1 ring-emerald-400/40 shrink-0" />
-          <span>Delhi SafeVisit Pass</span>
-        </div>
-
-        <h3 className="text-xl font-bold font-mono text-white mb-1">
-          {journey?.journey_code || 'TM-DEL-2026-X89K'}
-        </h3>
-        <p className="text-xs text-slate-400 mb-6">
-          Issued to {traveler?.name || 'Sarah Jenkins'} ({traveler?.nationality || 'United Kingdom'})
-        </p>
-
-        {/* QR Visual */}
-        <div className="p-4 bg-white rounded-2xl mx-auto w-48 h-48 shadow-lg flex items-center justify-center">
-          <svg className="w-40 h-40" viewBox="0 0 100 100" fill="none">
-            <rect width="100" height="100" fill="white" />
-            <rect x="10" y="10" width="26" height="26" fill="#090E17" rx="4" />
-            <rect x="14" y="14" width="18" height="18" fill="white" rx="2" />
-            <rect x="18" y="18" width="10" height="10" fill="#10B981" rx="1" />
-
-            <rect x="64" y="10" width="26" height="26" fill="#090E17" rx="4" />
-            <rect x="68" y="14" width="18" height="18" fill="white" rx="2" />
-            <rect x="72" y="18" width="10" height="10" fill="#10B981" rx="1" />
-
-            <rect x="10" y="64" width="26" height="26" fill="#090E17" rx="4" />
-            <rect x="14" y="68" width="18" height="18" fill="white" rx="2" />
-            <rect x="18" y="72" width="10" height="10" fill="#10B981" rx="1" />
-
-            <rect x="42" y="14" width="6" height="6" fill="#090E17" />
-            <rect x="52" y="14" width="6" height="6" fill="#090E17" />
-            <rect x="42" y="42" width="16" height="16" fill="#090E17" rx="2" />
-            <rect x="74" y="74" width="12" height="12" fill="#10B981" rx="2" />
-          </svg>
-        </div>
-
-        <div className="mt-4 flex items-center justify-center space-x-1.5 text-xs text-amber-400 font-medium">
-          <Clock className="w-3.5 h-3.5" />
-          <span>
-            {journey?.status === 'expired' ? 'Pass Expired • Data Purged' : 'Valid for 7 Days • Passport-Free Token'}
-          </span>
-        </div>
-
-        {purgeMsg && (
-          <div className="mt-3 p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs text-left flex items-start space-x-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-            <span>{purgeMsg}</span>
-          </div>
-        )}
-
-        <div className="mt-5 pt-4 border-t border-white/10 flex flex-col space-y-2">
-          {journey?.status !== 'expired' && !purgeMsg && (
-            <button
-              onClick={handleConcludeJourney}
-              disabled={isConcluding}
-              className="w-full py-2 bg-white/5 hover:bg-rose-500/20 border border-white/10 hover:border-rose-500/30 text-slate-300 hover:text-rose-300 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>{isConcluding ? 'Purging Profile...' : 'Conclude Journey & Purge Data (Scope #18)'}</span>
-            </button>
-          )}
-
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+      <div className="relative w-full max-w-sm">
+        <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 rounded-3xl opacity-30 blur-xl pointer-events-none" />
+        <div className="relative w-full bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] border-2 border-[#2f323e]/70 rounded-3xl p-6 text-center shadow-2xl animate-in zoom-in-95 duration-150">
           <button
             onClick={onClose}
-            className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition-all shadow-md shadow-emerald-600/20"
+            className="absolute right-4 top-4 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors"
           >
-            Done
+            <X className="w-5 h-5" />
           </button>
+
+          <div className="inline-flex items-center justify-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-bold uppercase tracking-wider mb-3">
+            <img src="/logo.jpg" alt="TravelMate" className="w-5 h-5 rounded-md object-cover ring-1 ring-cyan-400/40 shrink-0" />
+            <span>Delhi SafeVisit Pass</span>
+          </div>
+
+          <h3 className="text-xl font-black font-mono text-white mb-1 tracking-tight">
+            {journey?.journey_code || 'TM-DEL-2026-X89K'}
+          </h3>
+          <p className="text-xs text-slate-400 mb-6">
+            Issued to {traveler?.name || 'Sarah Jenkins'} ({traveler?.nationality || 'United Kingdom'})
+          </p>
+
+          {/* QR Visual */}
+          <div className="p-4 bg-white rounded-2xl mx-auto w-48 h-48 shadow-xl flex items-center justify-center ring-4 ring-indigo-500/20">
+            <svg className="w-40 h-40" viewBox="0 0 100 100" fill="none">
+              <rect width="100" height="100" fill="white" />
+              <rect x="10" y="10" width="26" height="26" fill="#090E17" rx="4" />
+              <rect x="14" y="14" width="18" height="18" fill="white" rx="2" />
+              <rect x="18" y="18" width="10" height="10" fill="#6366F1" rx="1" />
+
+              <rect x="64" y="10" width="26" height="26" fill="#090E17" rx="4" />
+              <rect x="68" y="14" width="18" height="18" fill="white" rx="2" />
+              <rect x="72" y="18" width="10" height="10" fill="#6366F1" rx="1" />
+
+              <rect x="10" y="64" width="26" height="26" fill="#090E17" rx="4" />
+              <rect x="14" y="68" width="18" height="18" fill="white" rx="2" />
+              <rect x="18" y="72" width="10" height="10" fill="#6366F1" rx="1" />
+
+              <rect x="42" y="14" width="6" height="6" fill="#090E17" />
+              <rect x="52" y="14" width="6" height="6" fill="#090E17" />
+              <rect x="42" y="42" width="16" height="16" fill="#090E17" rx="2" />
+              <rect x="74" y="74" width="12" height="12" fill="#06B6D4" rx="2" />
+            </svg>
+          </div>
+
+          <div className="mt-4 flex items-center justify-center space-x-1.5 text-xs text-amber-400 font-medium">
+            <Clock className="w-3.5 h-3.5" />
+            <span>
+              {journey?.status === 'expired' ? 'Pass Expired • Data Purged' : 'Valid for 7 Days • Passport-Free Token'}
+            </span>
+          </div>
+
+          {purgeMsg && (
+            <div className="mt-3 p-3 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 text-xs text-left flex items-start space-x-2">
+              <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+              <span>{purgeMsg}</span>
+            </div>
+          )}
+
+          <div className="mt-5 pt-4 border-t border-white/10 flex flex-col space-y-2">
+            {journey?.status !== 'expired' && !purgeMsg && (
+              <button
+                onClick={handleConcludeJourney}
+                disabled={isConcluding}
+                className="w-full py-2 bg-white/5 hover:bg-rose-500/20 border border-white/10 hover:border-rose-500/30 text-slate-300 hover:text-rose-300 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>{isConcluding ? 'Purging Profile...' : 'Conclude Journey & Purge Data (Scope #18)'}</span>
+              </button>
+            )}
+
+            <button
+              onClick={onClose}
+              className="w-full py-2.5 coder-btn-primary text-white font-bold rounded-xl text-xs transition-all"
+            >
+              Done
+            </button>
+          </div>
         </div>
       </div>
     </div>

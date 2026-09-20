@@ -401,15 +401,15 @@ export default function IncidentReportPage() {
               </div>
 
               {submissionStatus ? (
-                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <div className="p-4 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 text-xs font-semibold flex items-center space-x-2">
+                  <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
                   <span>{submissionStatus.message}</span>
                 </div>
               ) : (
                 <button
                   id="btn-submit-incident-final"
                   onClick={handleFinalSubmit}
-                  className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center justify-center space-x-2 shadow-lg shadow-emerald-600/30 transition-all"
+                  className="w-full py-3.5 coder-btn-primary text-white font-bold rounded-xl text-xs flex items-center justify-center space-x-2 transition-all"
                 >
                   <Send className="w-4 h-4" />
                   <span>Queue for Human Administrator Review</span>

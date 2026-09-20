@@ -88,126 +88,129 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
-      <div className="relative w-full max-w-lg bg-surface border border-surface-border rounded-3xl shadow-2xl flex flex-col h-[600px] max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-150">
-        {/* Header */}
-        <div className="p-4 bg-surface-card border-b border-white/10 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <img
-              src="/logo.jpg"
-              alt="TravelMate Assistant"
-              className="w-9 h-9 rounded-xl object-cover ring-1 ring-white/20 shadow-md shadow-cyan-500/20"
-            />
-            <div>
-              <div className="flex items-center space-x-2">
-                <h3 className="text-sm font-bold text-white">TravelMate AI</h3>
-                <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                  Gemini Grounded
-                </span>
-                <StatusBadge status="Official" />
-              </div>
-              <p className="text-[10px] text-emerald-400 font-medium">ASI Delhi Heritage RAG • Zero Hallucination Guardrail</p>
-            </div>
-          </div>
-          <button
-            id="btn-close-chatbot-modal"
-            onClick={onClose}
-            className="text-slate-400 hover:text-white p-1 rounded-lg"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Chat History */}
-        <div className="flex-1 p-4 overflow-y-auto space-y-3">
-          {messages.map((m, idx) => (
-            <div
-              key={idx}
-              className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[85%] rounded-2xl p-3 text-xs leading-relaxed ${
-                  m.sender === 'user'
-                    ? 'bg-emerald-600 text-white rounded-br-none'
-                    : 'bg-surface-card border border-surface-border text-slate-200 rounded-bl-none'
-                }`}
-              >
-                <p className="whitespace-pre-line">{m.text}</p>
-                {m.is_distress && (
-                  <div className="mt-3 pt-2.5 border-t border-rose-500/30 flex flex-wrap items-center gap-2">
-                    <a
-                      href="tel:112"
-                      className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-[11px] font-bold flex items-center space-x-1 shadow-md shadow-red-600/30"
-                    >
-                      <PhoneCall className="w-3.5 h-3.5" />
-                      <span>Dial 112 Emergency</span>
-                    </a>
-                    <a
-                      href="tel:1363"
-                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[11px] font-bold flex items-center space-x-1"
-                    >
-                      <PhoneCall className="w-3.5 h-3.5" />
-                      <span>Dial 1363 Infoline</span>
-                    </a>
-                  </div>
-                )}
-                {m.source && (
-                  <div className="mt-2 pt-1.5 border-t border-white/10 flex items-center justify-between text-[9px] text-slate-400">
-                    <span>Source: {m.source}</span>
-                    <span className="text-emerald-400 font-semibold">{m.confidence}</span>
-                  </div>
-                )}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+      <div className="relative w-full max-w-lg">
+        <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 rounded-3xl opacity-30 blur-xl pointer-events-none" />
+        <div className="relative w-full bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] border-2 border-[#2f323e]/70 rounded-3xl shadow-2xl flex flex-col h-[600px] max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-150">
+          {/* Header */}
+          <div className="p-4 bg-white/[0.02] border-b border-white/10 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <img
+                src="/logo.jpg"
+                alt="TravelMate Assistant"
+                className="w-9 h-9 rounded-xl object-cover ring-1 ring-white/20 shadow-md shadow-cyan-500/20"
+              />
+              <div>
+                <div className="flex items-center space-x-2">
+                  <h3 className="text-sm font-bold text-white font-display">TravelMate AI</h3>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                    Gemini Grounded
+                  </span>
+                  <StatusBadge status="Official" />
+                </div>
+                <p className="text-[10px] text-cyan-400 font-medium">ASI Delhi Heritage RAG • Zero Hallucination Guardrail</p>
               </div>
             </div>
-          ))}
-
-          {loading && (
-            <div className="flex justify-start">
-              <div className="p-3 bg-surface-card border border-surface-border rounded-2xl rounded-bl-none text-xs text-slate-400 flex items-center space-x-2">
-                <Sparkles className="w-3.5 h-3.5 text-indigo-400 animate-spin" />
-                <span>Grounding against ASI Delhi registry...</span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Suggested Quick Prompts */}
-        <div className="px-4 py-2 bg-surface/50 border-t border-white/5 flex items-center space-x-2 overflow-x-auto no-scrollbar">
-          {[
-            'Foreigner fee for Red Fort?',
-            'Timings for Qutub Minar?',
-            'Emergency help, someone is following me!',
-            'Lotus Temple shoe policy?'
-          ].map((prompt, i) => (
             <button
-              key={i}
-              onClick={() => setInputQuery(prompt)}
-              className="text-[10px] whitespace-nowrap px-2.5 py-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-slate-300 hover:text-white transition-colors"
+              id="btn-close-chatbot-modal"
+              onClick={onClose}
+              className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors"
             >
-              {prompt}
+              <X className="w-5 h-5" />
             </button>
-          ))}
-        </div>
+          </div>
 
-        {/* Input Bar */}
-        <form onSubmit={handleSend} className="p-3 bg-surface-card border-t border-white/10 flex items-center space-x-2">
-          <input
-            type="text"
-            id="input-chatbot-query"
-            value={inputQuery}
-            onChange={(e) => setInputQuery(e.target.value)}
-            placeholder="Ask about Delhi monument tickets, timings, 112..."
-            className="flex-1 px-4 py-2.5 bg-surface border border-surface-border rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
-          />
-          <button
-            type="submit"
-            id="btn-send-chatbot"
-            disabled={loading || !inputQuery.trim()}
-            className="p-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-xl transition-all"
-          >
-            <Send className="w-4 h-4" />
-          </button>
-        </form>
+          {/* Chat History */}
+          <div className="flex-1 p-4 overflow-y-auto space-y-3">
+            {messages.map((m, idx) => (
+              <div
+                key={idx}
+                className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-[85%] rounded-2xl p-3 text-xs leading-relaxed ${
+                    m.sender === 'user'
+                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-br-none shadow-md shadow-indigo-600/20'
+                      : 'bg-[#181a24] border border-white/10 text-slate-200 rounded-bl-none shadow-sm'
+                  }`}
+                >
+                  <p className="whitespace-pre-line">{m.text}</p>
+                  {m.is_distress && (
+                    <div className="mt-3 pt-2.5 border-t border-rose-500/30 flex flex-wrap items-center gap-2">
+                      <a
+                        href="tel:112"
+                        className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-[11px] font-bold flex items-center space-x-1 shadow-md shadow-red-600/30"
+                      >
+                        <PhoneCall className="w-3.5 h-3.5" />
+                        <span>Dial 112 Emergency</span>
+                      </a>
+                      <a
+                        href="tel:1363"
+                        className="px-3 py-1.5 bg-[#6b30e3] hover:bg-[#8b5cf6] text-white rounded-lg text-[11px] font-bold flex items-center space-x-1 shadow-md shadow-purple-600/20"
+                      >
+                        <PhoneCall className="w-3.5 h-3.5" />
+                        <span>Dial 1363 Infoline</span>
+                      </a>
+                    </div>
+                  )}
+                  {m.source && (
+                    <div className="mt-2 pt-1.5 border-t border-white/10 flex items-center justify-between text-[9px] text-slate-400">
+                      <span>Source: {m.source}</span>
+                      <span className="text-cyan-400 font-semibold">{m.confidence}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {loading && (
+              <div className="flex justify-start">
+                <div className="p-3 bg-[#181a24] border border-white/10 rounded-2xl rounded-bl-none text-xs text-slate-400 flex items-center space-x-2">
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-400 animate-spin" />
+                  <span>Grounding against ASI Delhi registry...</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Suggested Quick Prompts */}
+          <div className="px-4 py-2 bg-black/20 border-t border-white/5 flex items-center space-x-2 overflow-x-auto no-scrollbar">
+            {[
+              'Foreigner fee for Red Fort?',
+              'Timings for Qutub Minar?',
+              'Emergency help, someone is following me!',
+              'Lotus Temple shoe policy?'
+            ].map((prompt, i) => (
+              <button
+                key={i}
+                onClick={() => setInputQuery(prompt)}
+                className="text-[10px] whitespace-nowrap px-2.5 py-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-slate-300 hover:text-white transition-colors"
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+
+          {/* Input Bar */}
+          <form onSubmit={handleSend} className="p-3 bg-white/[0.02] border-t border-white/10 flex items-center space-x-2">
+            <input
+              type="text"
+              id="input-chatbot-query"
+              value={inputQuery}
+              onChange={(e) => setInputQuery(e.target.value)}
+              placeholder="Ask about Delhi monument tickets, timings, 112..."
+              className="flex-1 px-4 py-2.5 bg-[#12141c] border border-white/10 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+            />
+            <button
+              type="submit"
+              id="btn-send-chatbot"
+              disabled={loading || !inputQuery.trim()}
+              className="p-2.5 coder-btn-primary disabled:opacity-50 text-white rounded-xl transition-all"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

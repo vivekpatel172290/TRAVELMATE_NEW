@@ -398,12 +398,12 @@ export default function SafeJourneyPage() {
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
                   <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${
-                    pickupMode === 'manual' ? 'bg-indigo-500/20 text-indigo-300' : 'bg-emerald-500/20 text-emerald-300'
+                    pickupMode === 'manual' ? 'bg-indigo-500/20 text-indigo-300' : 'bg-cyan-500/20 text-cyan-300'
                   }`}>
                     {pickupMode === 'manual' ? (
                       <MapPin className="w-4 h-4" />
                     ) : (
-                      <Crosshair className="w-4 h-4 animate-pulse" />
+                      <Crosshair className="w-4 h-4 text-cyan-400 animate-pulse" />
                     )}
                   </div>
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
@@ -424,7 +424,7 @@ export default function SafeJourneyPage() {
                   <button
                     type="button"
                     onClick={handleSwitchToLiveGps}
-                    className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 transition-all"
+                    className="text-xs font-bold text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 transition-all"
                   >
                     <Crosshair className="w-3 h-3" />
                     <span>Use GPS</span>
@@ -438,7 +438,7 @@ export default function SafeJourneyPage() {
                     My Current Location
                   </span>
                   {liveGps ? (
-                    <span className="font-mono text-xs font-semibold px-2.5 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    <span className="font-mono text-xs font-semibold px-2.5 py-0.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
                       {liveGps.lat}, {liveGps.lng}
                     </span>
                   ) : (
@@ -649,12 +649,12 @@ export default function SafeJourneyPage() {
         {activeTab === 'tracking' && (
           <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-5 sm:p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden space-y-5">
             {/* Ambient subtle glow */}
-            <div className="absolute top-0 right-0 w-96 h-32 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 right-0 w-96 h-32 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
             {/* Section Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/[0.08] relative z-10">
               <div className="flex items-center space-x-3">
-                <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 shadow-md shadow-emerald-500/10">
+                <div className="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/10">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
@@ -671,8 +671,8 @@ export default function SafeJourneyPage() {
               </div>
 
               <div className="flex items-center space-x-2 self-start sm:self-auto shrink-0">
-                <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 shadow-sm">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500/20 to-cyan-500/20 text-indigo-300 border border-indigo-500/30 flex items-center gap-1.5 shadow-sm">
+                  <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
                   <span>Route 1 Recommended</span>
                 </span>
                 <span className="text-xs font-mono font-bold text-slate-300 bg-white/[0.05] px-2.5 py-1 rounded-xl border border-white/10 hidden md:inline-flex">
@@ -696,7 +696,7 @@ export default function SafeJourneyPage() {
                     className={`p-4 sm:p-5 rounded-2xl border flex flex-col justify-between cursor-pointer transition-all duration-200 relative group ${
                       isSelected
                         ? isOptimal
-                          ? 'bg-emerald-500/15 border-emerald-500/70 ring-2 ring-emerald-500/50 shadow-xl shadow-emerald-500/10'
+                          ? 'bg-gradient-to-br from-indigo-950/40 via-purple-950/20 to-[#14161c] border-indigo-500/70 ring-2 ring-indigo-500/50 shadow-xl shadow-indigo-500/20'
                           : 'bg-cyan-500/15 border-cyan-500/70 ring-2 ring-cyan-500/50 shadow-xl shadow-cyan-500/10'
                         : 'bg-[#151922]/80 hover:bg-[#1c2230] border-white/[0.08] hover:border-white/20 opacity-90 hover:opacity-100 shadow-md'
                     }`}
@@ -706,7 +706,7 @@ export default function SafeJourneyPage() {
                       <div className="flex items-center justify-between mb-2.5">
                         <div className="flex items-center space-x-2">
                           <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
-                            isSelected ? 'border-emerald-400 bg-emerald-400' : 'border-slate-500 group-hover:border-slate-400'
+                            isSelected ? 'border-cyan-400 bg-cyan-400' : 'border-slate-500 group-hover:border-slate-400'
                           }`}>
                             {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-slate-950" />}
                           </span>
@@ -717,7 +717,7 @@ export default function SafeJourneyPage() {
 
                         <div className="flex items-center space-x-1">
                           {isOptimal ? (
-                            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-emerald-500 text-white shadow-sm flex items-center gap-1">
+                            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-sm flex items-center gap-1">
                               <Award className="w-3 h-3" />
                               <span>Safest Route</span>
                             </span>
@@ -750,12 +750,12 @@ export default function SafeJourneyPage() {
                       </div>
 
                       {/* Est. Auto Fare Box */}
-                      <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs mb-3">
+                      <div className="flex items-center justify-between p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-xs mb-3">
                         <span className="text-slate-300 flex items-center gap-1.5 text-[11px] font-medium">
-                          <Calculator className="w-3.5 h-3.5 text-emerald-400" />
+                          <Calculator className="w-3.5 h-3.5 text-cyan-400" />
                           <span>Est. Auto Fare:</span>
                         </span>
-                        <span className="font-mono font-bold text-emerald-300 text-xs">
+                        <span className="font-mono font-bold text-cyan-300 text-xs">
                           ₹{getEstimatedAutoFare(route.distanceKm).min} – ₹{getEstimatedAutoFare(route.distanceKm).max}
                         </span>
                       </div>
@@ -784,7 +784,7 @@ export default function SafeJourneyPage() {
 
                         <div className="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
                           <span className="text-slate-400 flex items-center gap-1.5 text-[11px]">
-                            <Car className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                            <Car className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
                             <span>Police Beat:</span>
                           </span>
                           <span className="font-semibold text-slate-200 text-[11px] text-right truncate max-w-[150px]">
@@ -811,7 +811,7 @@ export default function SafeJourneyPage() {
                       className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all shadow-md ${
                         isSelected
                           ? isOptimal
-                            ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                            ? 'coder-btn-primary text-white shadow-indigo-600/30'
                             : 'bg-cyan-600 hover:bg-cyan-500 text-white'
                           : 'bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 hover:text-white'
                       }`}
@@ -883,7 +883,7 @@ export default function SafeJourneyPage() {
                     <span
                       className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                         zone.risk_level === 'Green'
-                          ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                          ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
                           : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
                       }`}
                     >
@@ -929,19 +929,19 @@ export default function SafeJourneyPage() {
                     onClick={() => setSelectedRouteIndex(idx)}
                     className={`p-4 rounded-2xl border cursor-pointer transition-all ${
                       isSelected
-                        ? 'bg-emerald-500/15 border-emerald-500/70 shadow-lg ring-2 ring-emerald-400/40'
+                        ? 'bg-gradient-to-br from-indigo-950/40 via-purple-950/20 to-[#14161c] border-indigo-500/70 shadow-lg ring-2 ring-indigo-400/40'
                         : 'bg-[#151922]/80 hover:bg-[#1c2230] border-white/[0.08]'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-bold text-white truncate max-w-[200px]">{route.summary}</span>
                       {idx === 0 && (
-                        <span className="text-xs font-bold bg-emerald-500 text-white px-2 py-0.5 rounded-full">
+                        <span className="text-xs font-bold bg-gradient-to-r from-cyan-500 to-indigo-600 text-white px-2 py-0.5 rounded-full">
                           Top Choice
                         </span>
                       )}
                     </div>
-                    <div className="text-xs text-emerald-400 font-semibold mb-1">
+                    <div className="text-xs text-cyan-400 font-semibold mb-1">
                       {route.safetyScore}
                     </div>
                     <div className="text-xs text-slate-400 font-mono mb-2">
@@ -975,7 +975,7 @@ export default function SafeJourneyPage() {
                           : 'Acquiring Real-Time Live GPS Fix...'}
                     </span>
                     <span className="text-slate-600">•</span>
-                    <span className={pickupMode === 'manual' ? 'text-blue-400 font-bold' : 'text-emerald-400 font-bold'}>
+                    <span className={pickupMode === 'manual' ? 'text-blue-400 font-bold' : 'text-cyan-400 font-bold'}>
                       {pickupMode === 'manual' ? 'Manual Origin Mode' : 'Live GPS Monitored'}
                     </span>
                   </div>
@@ -1032,7 +1032,7 @@ export default function SafeJourneyPage() {
               {/* Map Telemetry Footer */}
               <div className="mt-2.5 pt-2.5 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-300">
                 <div className="flex items-center space-x-2">
-                  <Info className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <Info className="w-4 h-4 text-cyan-400 shrink-0" />
                   <span className="text-[11px]">Multi-route safety layer powered by Police beats & street lighting telemetry.</span>
                 </div>
                 <div className="flex items-center space-x-2.5 shrink-0">
@@ -1066,7 +1066,7 @@ export default function SafeJourneyPage() {
                     <p className="text-[10px] text-slate-400 font-medium">Real-Time ERSS 112 Telemetry</p>
                   </div>
                 </div>
-                <span className="flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-[11px] font-mono font-bold text-emerald-300">
+                <span className="flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-[11px] font-mono font-bold text-indigo-300">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 radar-pulse" />
                   <span>{journey?.journey_code || 'TM-DEL-2026-X89K'}</span>
                 </span>
@@ -1083,14 +1083,14 @@ export default function SafeJourneyPage() {
 
                 <div className="flex justify-between items-center">
                   <span className="text-slate-400 font-medium">Start / Pickup:</span>
-                  <span className={`font-bold text-right truncate max-w-[170px] sm:max-w-[200px] text-[11px] ${pickupMode === 'manual' ? 'text-blue-400' : 'text-emerald-400'}`}>
+                  <span className={`font-bold text-right truncate max-w-[170px] sm:max-w-[200px] text-[11px] ${pickupMode === 'manual' ? 'text-blue-400' : 'text-cyan-400'}`}>
                     {currentOrigin.name}
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center">
                   <span className="text-slate-400 font-medium">Live GPS Status:</span>
-                  <span className={`font-mono font-bold text-[11px] flex items-center space-x-1.5 ${liveGps ? 'text-emerald-400' : 'text-amber-400'}`}>
+                  <span className={`font-mono font-bold text-[11px] flex items-center space-x-1.5 ${liveGps ? 'text-cyan-400' : 'text-amber-400'}`}>
                     <span className={`w-2 h-2 rounded-full ${liveGps ? 'bg-emerald-400 radar-pulse' : 'bg-amber-400'}`} />
                     <span>{liveGps ? `Active (Lock ±${liveGps.accuracy}m)` : 'Acquiring Satellite Lock...'}</span>
                   </span>
@@ -1119,7 +1119,7 @@ export default function SafeJourneyPage() {
 
                 <div className="flex justify-between items-center">
                   <span className="text-slate-400 font-medium">Est. Auto Fare:</span>
-                  <span className="font-mono font-bold text-emerald-400 text-xs">
+                  <span className="font-mono font-bold text-cyan-400 text-xs">
                     ₹{getEstimatedAutoFare(activeSelectedRoute?.distanceKm || 8).min} – ₹{getEstimatedAutoFare(activeSelectedRoute?.distanceKm || 8).max}
                   </span>
                 </div>
@@ -1177,7 +1177,7 @@ export default function SafeJourneyPage() {
                 </a>
                 <a
                   href="tel:1363"
-                  className="py-2.5 px-3 rounded-xl bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-lg shadow-emerald-600/25 transition-all"
+                  className="py-2.5 px-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-lg shadow-indigo-600/25 transition-all"
                 >
                   <PhoneCall className="w-3.5 h-3.5 text-white" />
                   <span>Tourist 1363</span>

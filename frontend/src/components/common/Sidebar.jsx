@@ -50,7 +50,7 @@ export default function Sidebar({
           label: 'SafeVisit Pass',
           shortLabel: 'SafePass',
           badge: 'Verified',
-          badgeColor: 'emerald',
+          badgeColor: 'cyan',
           icon: QrCode,
           description: 'Digital 7-day QR identity'
         },
@@ -351,7 +351,7 @@ export default function Sidebar({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-1">
                       <p className="text-xs font-bold text-white truncate">{user.name}</p>
-                      <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
+                      <span className="text-[9.5px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-500/30">
                         Active
                       </span>
                     </div>

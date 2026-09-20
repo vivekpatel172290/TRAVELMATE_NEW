@@ -215,8 +215,8 @@ export default function TripPlannerPage() {
         <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-6 sm:p-7 shadow-xl">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
             <div className="space-y-2">
-              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5" />
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500/20 to-cyan-500/20 border border-indigo-500/30 text-indigo-300 text-xs font-bold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
                 <span>AI-Cross-Referenced Itinerary Engine</span>
               </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black font-display text-white tracking-tight">
@@ -233,7 +233,7 @@ export default function TripPlannerPage() {
                 <span className="font-bold text-slate-400">Total:</span>
                 <span className="font-mono font-bold text-white text-sm">{totalDays} Days</span>
                 <span className="text-slate-600">•</span>
-                <span className="font-bold text-emerald-400">{goodCount} Verified Good</span>
+                <span className="font-bold text-cyan-400">{goodCount} Verified Good</span>
                 {rescheduleCount > 0 && (
                   <>
                     <span className="text-slate-600">•</span>
@@ -272,7 +272,7 @@ export default function TripPlannerPage() {
           <div className="lg:col-span-7 space-y-4">
             <div className="flex items-center justify-between pb-1 border-b border-white/[0.06]">
               <div className="flex items-center space-x-2">
-                <Calendar className="w-4 h-4 text-emerald-400" />
+                <Calendar className="w-4 h-4 text-indigo-400" />
                 <h2 className="text-sm sm:text-base font-bold text-white font-display uppercase tracking-wider">
                   Day-by-Day Schedule
                 </h2>
@@ -347,7 +347,7 @@ export default function TripPlannerPage() {
                             <h3 className="text-base sm:text-lg font-bold text-white font-display mt-0.5 flex items-center space-x-2">
                               <span>{place.name}</span>
                               {place.hindi_name && (
-                                <span className="text-xs font-normal text-emerald-400">
+                                <span className="text-xs font-normal text-cyan-400">
                                   ({place.hindi_name})
                                 </span>
                               )}
@@ -381,7 +381,7 @@ export default function TripPlannerPage() {
                             ? 'bg-rose-950/40 border-rose-500/40 text-rose-300'
                             : evalResult.status === 'warning'
                             ? 'bg-amber-950/40 border-amber-500/40 text-amber-300'
-                            : 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300'
+                            : 'bg-cyan-950/30 border-cyan-500/30 text-cyan-300'
                         }`}
                       >
                         <div className="flex items-center space-x-2">
@@ -390,7 +390,7 @@ export default function TripPlannerPage() {
                           ) : evalResult.status === 'warning' ? (
                             <Info className="w-4 h-4 text-amber-400 shrink-0" />
                           ) : (
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
                           )}
                           <span className="text-xs font-bold uppercase tracking-wider">
                             {evalResult.label}
@@ -435,7 +435,7 @@ export default function TripPlannerPage() {
           <div className="lg:col-span-5 space-y-4">
             <div className="flex items-center justify-between pb-1 border-b border-white/[0.06]">
               <div className="flex items-center space-x-2">
-                <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
+                <Radio className="w-4 h-4 text-cyan-400 animate-pulse" />
                 <h2 className="text-sm sm:text-base font-bold text-white font-display uppercase tracking-wider">
                   Destination Safety Radar
                 </h2>
@@ -482,14 +482,14 @@ export default function TripPlannerPage() {
               <div className={`p-4 rounded-2xl border space-y-2 ${
                 activePlaceEval.status === 'reschedule'
                   ? 'bg-rose-950/40 border-rose-500/40 text-rose-300'
-                  : 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300'
+                  : 'bg-cyan-950/30 border-cyan-500/30 text-cyan-300'
               }`}>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5">
                     {activePlaceEval.status === 'reschedule' ? (
                       <AlertTriangle className="w-4 h-4 text-rose-400" />
                     ) : (
-                      <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                      <ShieldCheck className="w-4 h-4 text-cyan-400" />
                     )}
                     <span>Official Status: {activePlaceEval.label}</span>
                   </span>
@@ -556,7 +556,7 @@ export default function TripPlannerPage() {
                                 ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
                                 : news.severity === 'warning'
                                 ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                                : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                                : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
                             }`}
                           >
                             {news.category}
@@ -597,7 +597,7 @@ export default function TripPlannerPage() {
               {/* Police Advisory Integration Note */}
               <div className="p-3.5 bg-white/[0.03] rounded-2xl border border-white/[0.06] space-y-1 text-xs text-slate-400">
                 <div className="font-bold text-slate-200 flex items-center space-x-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <ShieldCheck className="w-4 h-4 text-indigo-400" />
                   <span>Delhi Police & ASI Calendar Sync</span>
                 </div>
                 <p className="leading-relaxed">

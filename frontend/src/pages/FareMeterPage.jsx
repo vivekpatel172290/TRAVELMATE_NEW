@@ -205,7 +205,7 @@ export default function FareMeterPage() {
         {/* Page Title */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <div className="inline-flex items-center space-x-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-1">
+            <div className="inline-flex items-center space-x-2 text-cyan-400 text-xs font-bold uppercase tracking-wider mb-1">
               <Calculator className="w-4 h-4" />
               <span>Delhi Transport Department Reference Model</span>
             </div>
@@ -221,92 +221,95 @@ export default function FareMeterPage() {
         <button
           id="btn-hero-fare-preset"
           onClick={loadHeroPreset}
-          className="px-4 py-2 bg-gradient-to-r from-amber-500/20 to-amber-600/20 hover:from-amber-500/30 hover:to-amber-600/30 border border-amber-500/40 text-amber-300 rounded-xl text-xs font-bold flex items-center space-x-2 transition-all shrink-0"
+          className="px-4 py-2 bg-gradient-to-r from-indigo-500/20 to-purple-600/20 hover:from-indigo-500/30 hover:to-purple-600/30 border border-indigo-500/40 text-indigo-300 rounded-xl text-xs font-bold flex items-center space-x-2 transition-all shrink-0 shadow-md shadow-indigo-600/10"
         >
-          <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
           <span>Load "NDLS → Red Fort" Hero Demo</span>
         </button>
       </div>
 
-      {/* 1 & 2: LIVE TRANSIT MAP (PROPORTIONAL SIZE: 300-320px, POSITIONED DIRECTLY ABOVE ROUTE & FARE DETAILS) */}
-      <div className="mb-8 glass-card p-4 sm:p-5 rounded-3xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
-          <div>
-            <div className="inline-flex items-center space-x-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-0.5">
-              <Navigation className="w-3.5 h-3.5" />
-              <span>Live Transit Route & GPS Navigation</span>
+      {/* 1 & 2: LIVE TRANSIT MAP (HOMEPAGE SIGNATURE GLOWING BLUE/PURPLE BACKDROP) */}
+      <div className="relative group mb-8">
+        <div className="absolute -inset-2 rounded-[32px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-25 group-hover:opacity-55 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
+        <div className="relative rounded-3xl p-4 sm:p-5 border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl overflow-hidden">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
+            <div>
+              <div className="inline-flex items-center space-x-2 text-cyan-400 text-xs font-bold uppercase tracking-wider mb-0.5">
+                <Navigation className="w-3.5 h-3.5" />
+                <span>Live Transit Route & GPS Navigation</span>
+              </div>
+              <h3 className="text-sm sm:text-base font-bold font-display text-white">
+                Trip Route: {origin} → {destination}
+              </h3>
+              {routeStats && (
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Google Driving Distance: <span className="text-cyan-300 font-bold">{routeStats.distanceText}</span> • Typical Travel Time: <span className="text-white font-bold">{routeStats.durationText}</span>
+                </p>
+              )}
             </div>
-            <h3 className="text-sm sm:text-base font-bold font-display text-white">
-              Trip Route: {origin} → {destination}
-            </h3>
-            {routeStats && (
-              <p className="text-xs text-slate-400 mt-0.5">
-                Google Driving Distance: <span className="text-emerald-400 font-bold">{routeStats.distanceText}</span> • Typical Travel Time: <span className="text-white font-bold">{routeStats.durationText}</span>
-              </p>
-            )}
+
+            <div className="flex items-center space-x-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => setLiveGpsEnabled(!liveGpsEnabled)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all ${
+                  liveGpsEnabled
+                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm shadow-cyan-500/20'
+                    : 'bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10'
+                }`}
+              >
+                <Crosshair className={`w-3.5 h-3.5 ${liveGpsEnabled ? 'animate-spin' : ''}`} />
+                <span>{liveGpsEnabled ? 'Live GPS Active' : 'Enable Live GPS'}</span>
+              </button>
+
+              {/* Open in Google Maps Link / Button */}
+              <a
+                id="link-open-google-maps"
+                href={getGoogleMapsDirectionsUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/40 text-indigo-300 hover:text-white transition-all shadow-sm"
+                title="Open Navigation in Google Maps (App / Web)"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>Open in Google Maps</span>
+              </a>
+            </div>
           </div>
 
-          <div className="flex items-center space-x-2 shrink-0">
-            <button
-              type="button"
-              onClick={() => setLiveGpsEnabled(!liveGpsEnabled)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all ${
-                liveGpsEnabled
-                  ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40'
-                  : 'bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10'
-              }`}
-            >
-              <Crosshair className={`w-3.5 h-3.5 ${liveGpsEnabled ? 'animate-spin' : ''}`} />
-              <span>{liveGpsEnabled ? 'Live GPS Active' : 'Enable Live GPS'}</span>
-            </button>
-
-            {/* Open in Google Maps Link / Button */}
-            <a
-              id="link-open-google-maps"
-              href={getGoogleMapsDirectionsUrl()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 hover:text-white transition-all shadow-sm"
-              title="Open Navigation in Google Maps (App / Web)"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              <span>Open in Google Maps</span>
-            </a>
+          {/* Proportional, Normal Sized Responsive Map (300px - 320px fixed height) */}
+          <div className="h-[280px] sm:h-[320px] w-full rounded-2xl overflow-hidden border border-white/10">
+            <GoogleMapView
+              origin={pickupCoords}
+              destination={destinationCoords}
+              showRoute={true}
+              liveTracking={liveGpsEnabled}
+              onLocationUpdate={handleLocationUpdate}
+              onRouteCalculated={handleRouteCalculated}
+            />
           </div>
-        </div>
 
-        {/* Proportional, Normal Sized Responsive Map (300px - 320px fixed height) */}
-        <div className="h-[280px] sm:h-[320px] w-full rounded-2xl overflow-hidden border border-white/10">
-          <GoogleMapView
-            origin={pickupCoords}
-            destination={destinationCoords}
-            showRoute={true}
-            liveTracking={liveGpsEnabled}
-            onLocationUpdate={handleLocationUpdate}
-            onRouteCalculated={handleRouteCalculated}
-          />
-        </div>
-
-        {/* Route Info Footer Bar */}
-        <div className="mt-3 p-2.5 bg-surface rounded-xl border border-surface-border text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div className="flex items-center space-x-2 text-slate-300">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span className="text-[11px]">
-              Active Google Maps polyline routing. Fare benchmark calculates according to live road distance.
-            </span>
-          </div>
-          <div className="flex items-center space-x-3 shrink-0">
-            <a
-              href={getGoogleMapsDirectionsUrl()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 flex items-center space-x-1 underline underline-offset-2"
-            >
-              <span>Turn-by-turn Navigation</span>
-              <ExternalLink className="w-3 h-3" />
-            </a>
-            <span className="text-[10px] text-slate-400">Delhi Rates:</span>
-            <StatusBadge status="Official" />
+          {/* Route Info Footer Bar */}
+          <div className="mt-3 p-2.5 bg-black/40 rounded-xl border border-white/[0.08] text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center space-x-2 text-slate-300">
+              <ShieldCheck className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span className="text-[11px]">
+                Active Google Maps polyline routing. Fare benchmark calculates according to live road distance.
+              </span>
+            </div>
+            <div className="flex items-center space-x-3 shrink-0">
+              <a
+                href={getGoogleMapsDirectionsUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 underline underline-offset-2"
+              >
+                <span>Turn-by-turn Navigation</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+              <span className="text-[10px] text-slate-400">Delhi Rates:</span>
+              <StatusBadge status="Official" />
+            </div>
           </div>
         </div>
       </div>
@@ -314,276 +317,285 @@ export default function FareMeterPage() {
       {/* Two-column Grid: Route & Fare Details card + Fare Result card */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Fare Input Form */}
-        <div className="lg:col-span-6 glass-card p-6 rounded-3xl">
-          <h2 className="text-lg font-bold font-display text-white mb-4 flex items-center justify-between">
-            <span>Route & Fare Details</span>
-            <StatusBadge status="Estimated" />
-          </h2>
+        <div className="relative group lg:col-span-6">
+          <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 rounded-3xl opacity-20 blur-xl group-hover:opacity-30 transition-all duration-700 pointer-events-none" />
+          <div className="relative rounded-3xl border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] p-6 sm:p-7 shadow-2xl backdrop-blur-xl">
+            <h2 className="text-lg font-bold font-display text-white mb-4 flex items-center justify-between">
+              <span className="flex items-center space-x-2">
+                <Calculator className="w-5 h-5 text-cyan-400" />
+                <span>Route & Fare Details</span>
+              </span>
+              <StatusBadge status="Estimated" />
+            </h2>
 
-          <div className="space-y-4">
-            {/* Origin & Destination */}
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-semibold text-slate-400">Pick-up Location (Start Marker)</label>
-                <button
-                  type="button"
-                  onClick={handleUseCurrentLocation}
-                  className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 flex items-center space-x-1 transition-colors"
-                  title="Detect GPS Location"
-                >
-                  <Crosshair className="w-3 h-3" />
-                  <span>Use Live GPS</span>
-                </button>
-              </div>
-              <input
-                type="text"
-                id="input-fare-origin"
-                value={origin}
-                onChange={(e) => setOrigin(e.target.value)}
-                placeholder="e.g. New Delhi Railway Station, Airport..."
-                className="w-full px-3.5 py-2.5 bg-surface border border-surface-border rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1">Destination (End Marker)</label>
-              <input
-                type="text"
-                id="input-fare-destination"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                placeholder="e.g. Chandni Chowk, Red Fort, Airport..."
-                className="w-full px-3.5 py-2.5 bg-surface border border-surface-border rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
-              />
-              <div className="flex items-center gap-1.5 mt-2 overflow-x-auto pb-1 no-scrollbar">
-                {['Chandni Chowk', 'Red Fort', 'India Gate', 'Qutub Minar', 'Lotus Temple', 'Delhi Airport (IGI T3)'].map((spot) => (
-                  <button
-                    key={spot}
-                    type="button"
-                    onClick={() => setDestination(spot)}
-                    className="px-2 py-0.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] text-slate-300 whitespace-nowrap transition-all"
-                  >
-                    {spot}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Vehicle Type Tabs */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Vehicle Type</label>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { id: 'auto', label: 'Auto-Rickshaw', desc: '₹30 first 1.5km + ₹11/km' },
-                  { id: 'taxi_non_ac', label: 'Non-AC Taxi', desc: '₹40 first 1km + ₹17/km' },
-                  { id: 'taxi_ac', label: 'AC Cab', desc: '₹40 first 1km + ₹20/km' }
-                ].map((v) => (
-                  <button
-                    key={v.id}
-                    type="button"
-                    id={`vehicle-btn-${v.id}`}
-                    onClick={() => setVehicleType(v.id)}
-                    className={`p-2.5 rounded-xl border text-center transition-all ${
-                      vehicleType === v.id
-                        ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
-                        : 'bg-surface border-surface-border text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    <span className="block text-xs font-bold">{v.label}</span>
-                    <span className="text-[10px] opacity-70 block">{v.id === 'auto' ? 'CNG Auto' : 'Taxi'}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Distance & Quoted Fare */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4">
+              {/* Origin & Destination */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-semibold text-slate-400">
-                    Est. Distance (km)
-                  </label>
-                  {routeStats && (
-                    <span className="text-[10px] text-emerald-400 font-semibold">
-                      Maps: {routeStats.distanceText}
-                    </span>
-                  )}
+                  <label className="block text-xs font-semibold text-slate-400">Pick-up Location (Start Marker)</label>
+                  <button
+                    type="button"
+                    onClick={handleUseCurrentLocation}
+                    className="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 transition-colors"
+                    title="Detect GPS Location"
+                  >
+                    <Crosshair className="w-3 h-3" />
+                    <span>Use Live GPS</span>
+                  </button>
                 </div>
                 <input
-                  type="number"
-                  step="0.1"
-                  id="input-distance-km"
-                  value={distanceKm}
-                  onChange={(e) => setDistanceKm(parseFloat(e.target.value) || 0)}
-                  className="w-full px-3.5 py-2.5 bg-surface border border-surface-border rounded-xl text-sm font-mono text-white"
+                  type="text"
+                  id="input-fare-origin"
+                  value={origin}
+                  onChange={(e) => setOrigin(e.target.value)}
+                  placeholder="e.g. New Delhi Railway Station, Airport..."
+                  className="w-full px-3.5 py-2.5 bg-black/40 border border-white/10 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">
-                  Quoted Fare (₹ INR)
-                </label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1">Destination (End Marker)</label>
                 <input
-                  type="number"
-                  id="input-quoted-fare"
-                  value={quotedFare}
-                  onChange={(e) => setQuotedFare(e.target.value)}
-                  placeholder="e.g. 500"
-                  className="w-full px-3.5 py-2.5 bg-surface border border-surface-border rounded-xl text-sm font-mono font-bold text-amber-300 placeholder-slate-600 focus:border-amber-500"
+                  type="text"
+                  id="input-fare-destination"
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
+                  placeholder="e.g. Chandni Chowk, Red Fort, Airport..."
+                  className="w-full px-3.5 py-2.5 bg-black/40 border border-white/10 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
                 />
-              </div>
-            </div>
-
-            {/* 3: DAY / NIGHT FEATURE (AUTO-DETECT + MANUAL TOGGLE) */}
-            <div className="p-3 rounded-xl bg-surface border border-surface-border text-xs space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  {isNight ? (
-                    <Moon className="w-4 h-4 text-indigo-400 shrink-0" />
-                  ) : (
-                    <Sun className="w-4 h-4 text-amber-400 shrink-0" />
-                  )}
-                  <div>
-                    <span className="font-semibold text-slate-200 block">
-                      {isNight ? 'Night Surcharge Active (+25%)' : 'Day Standard Fare (05:00 – 23:00)'}
-                    </span>
-                    <span className="text-[10px] text-slate-400">
-                      Official Delhi Transport Gazette: 23:00 to 05:00 (+25%)
-                    </span>
-                  </div>
+                <div className="flex items-center gap-1.5 mt-2 overflow-x-auto pb-1 no-scrollbar">
+                  {['Chandni Chowk', 'Red Fort', 'India Gate', 'Qutub Minar', 'Lotus Temple', 'Delhi Airport (IGI T3)'].map((spot) => (
+                    <button
+                      key={spot}
+                      type="button"
+                      onClick={() => setDestination(spot)}
+                      className="px-2 py-0.5 rounded-lg bg-white/5 hover:bg-cyan-500/10 border border-white/10 hover:border-cyan-500/30 text-[10px] text-slate-300 hover:text-cyan-300 whitespace-nowrap transition-all"
+                    >
+                      {spot}
+                    </button>
+                  ))}
                 </div>
-                <button
-                  type="button"
-                  id="btn-toggle-night"
-                  onClick={handleToggleNight}
-                  className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors shrink-0 ${
-                    isNight ? 'bg-indigo-600' : 'bg-slate-700'
-                  }`}
-                  title="Toggle Day / Night Surcharge"
-                >
-                  <div
-                    className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                      isNight ? 'translate-x-5' : ''
-                    }`}
-                  />
-                </button>
               </div>
-              <div className="text-[11px] text-indigo-300/90 pt-1 border-t border-white/5 flex items-center justify-between">
-                <span>{dayNightNote}</span>
-                <span className="text-[10px] opacity-75">{isNight ? 'Night Mode' : 'Day Mode'}</span>
-              </div>
-            </div>
 
-            <button
-              type="button"
-              id="btn-evaluate-fare"
-              onClick={() => calculateFare()}
-              disabled={loading}
-              className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm shadow-lg shadow-emerald-600/25 transition-all"
-            >
-              {loading ? 'Evaluating Delhi Rates...' : 'Calculate Fair Fare Range'}
-            </button>
+              {/* Vehicle Type Tabs */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Vehicle Type</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'auto', label: 'Auto-Rickshaw', desc: '₹30 first 1.5km + ₹11/km' },
+                    { id: 'taxi_non_ac', label: 'Non-AC Taxi', desc: '₹40 first 1km + ₹17/km' },
+                    { id: 'taxi_ac', label: 'AC Cab', desc: '₹40 first 1km + ₹20/km' }
+                  ].map((v) => (
+                    <button
+                      key={v.id}
+                      type="button"
+                      id={`vehicle-btn-${v.id}`}
+                      onClick={() => setVehicleType(v.id)}
+                      className={`p-2.5 rounded-xl border text-center transition-all ${
+                        vehicleType === v.id
+                          ? 'bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 border-cyan-400 text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.2)]'
+                          : 'bg-black/30 border-white/10 text-slate-400 hover:text-white hover:border-white/20'
+                      }`}
+                    >
+                      <span className="block text-xs font-bold">{v.label}</span>
+                      <span className="text-[10px] opacity-70 block">{v.id === 'auto' ? 'CNG Auto' : 'Taxi'}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Distance & Quoted Fare */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold text-slate-400">
+                      Est. Distance (km)
+                    </label>
+                    {routeStats && (
+                      <span className="text-[10px] text-cyan-400 font-semibold">
+                        Maps: {routeStats.distanceText}
+                      </span>
+                    )}
+                  </div>
+                  <input
+                    type="number"
+                    step="0.1"
+                    id="input-distance-km"
+                    value={distanceKm}
+                    onChange={(e) => setDistanceKm(parseFloat(e.target.value) || 0)}
+                    className="w-full px-3.5 py-2.5 bg-black/40 border border-white/10 rounded-xl text-sm font-mono text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1">
+                    Quoted Fare (₹ INR)
+                  </label>
+                  <input
+                    type="number"
+                    id="input-quoted-fare"
+                    value={quotedFare}
+                    onChange={(e) => setQuotedFare(e.target.value)}
+                    placeholder="e.g. 500"
+                    className="w-full px-3.5 py-2.5 bg-black/40 border border-white/10 rounded-xl text-sm font-mono font-bold text-amber-300 placeholder-slate-600 focus:outline-none focus:border-amber-500"
+                  />
+                </div>
+              </div>
+
+              {/* 3: DAY / NIGHT FEATURE (AUTO-DETECT + MANUAL TOGGLE) */}
+              <div className="p-3.5 rounded-xl bg-black/30 border border-white/10 text-xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    {isNight ? (
+                      <Moon className="w-4 h-4 text-indigo-400 shrink-0" />
+                    ) : (
+                      <Sun className="w-4 h-4 text-amber-400 shrink-0" />
+                    )}
+                    <div>
+                      <span className="font-semibold text-slate-200 block">
+                        {isNight ? 'Night Surcharge Active (+25%)' : 'Day Standard Fare (05:00 – 23:00)'}
+                      </span>
+                      <span className="text-[10px] text-slate-400">
+                        Official Delhi Transport Gazette: 23:00 to 05:00 (+25%)
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    id="btn-toggle-night"
+                    onClick={handleToggleNight}
+                    className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors shrink-0 ${
+                      isNight ? 'bg-indigo-600' : 'bg-slate-700'
+                    }`}
+                    title="Toggle Day / Night Surcharge"
+                  >
+                    <div
+                      className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                        isNight ? 'translate-x-5' : ''
+                      }`}
+                    />
+                  </button>
+                </div>
+                <div className="text-[11px] text-indigo-300/90 pt-1 border-t border-white/5 flex items-center justify-between">
+                  <span>{dayNightNote}</span>
+                  <span className="text-[10px] opacity-75">{isNight ? 'Night Mode' : 'Day Mode'}</span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                id="btn-evaluate-fare"
+                onClick={() => calculateFare()}
+                disabled={loading}
+                className="w-full py-3.5 coder-btn-primary text-white font-bold rounded-xl text-sm shadow-lg shadow-indigo-600/25 transition-all flex items-center justify-center space-x-2"
+              >
+                <span>{loading ? 'Evaluating Delhi Rates...' : 'Calculate Fair Fare Range'}</span>
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Fare Result & Advisory Display */}
-        <div className="lg:col-span-6 flex flex-col justify-between">
-          {fareResult ? (
-            <div className="glass-card p-6 sm:p-8 rounded-3xl space-y-6">
-              <div className="flex items-center justify-between pb-4 border-b border-white/10">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400">Delhi Reference Output</span>
-                  <h3 className="text-xl font-bold font-display text-white">Expected Fare Range</h3>
+        <div className="relative group lg:col-span-6 flex flex-col justify-between">
+          <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 rounded-3xl opacity-20 blur-xl group-hover:opacity-30 transition-all duration-700 pointer-events-none" />
+          <div className="relative rounded-3xl border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] p-6 sm:p-7 shadow-2xl backdrop-blur-xl h-full flex flex-col justify-between">
+            {fareResult ? (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 border-b border-white/10">
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400">Delhi Reference Output</span>
+                    <h3 className="text-xl font-bold font-display text-white">Expected Fare Range</h3>
+                  </div>
+                  <StatusBadge status={fareResult.breakdown.status_label || "Estimated"} />
                 </div>
-                <StatusBadge status={fareResult.breakdown.status_label || "Estimated"} />
+
+                {/* Big Fare Display */}
+                <div className="p-6 rounded-2xl bg-black/40 border border-white/10 text-center">
+                  <span className="text-xs text-slate-400 block mb-1">Official Benchmark</span>
+                  <div className="text-3xl sm:text-4xl font-extrabold font-mono text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-300 to-purple-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.3)]">
+                    {fareResult.breakdown.expected_range}
+                  </div>
+                  <p className="text-xs text-slate-400 mt-2">{fareResult.breakdown.reference_rate}</p>
+                </div>
+
+                {/* Overcharge Warning or Fair Tag */}
+                {fareResult.advisory?.is_overcharge ? (
+                  <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 space-y-2">
+                    <div className="flex items-center space-x-2 font-bold text-sm">
+                      <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
+                      <span>{fareResult.advisory.advisory_status}</span>
+                    </div>
+                    <p className="text-xs text-amber-200/90 leading-relaxed">
+                      {fareResult.advisory.advisory_message}
+                    </p>
+                    <div className="pt-2 flex items-center justify-between text-[11px] font-semibold">
+                      <span>Quoted Fare: ₹{quotedFare}</span>
+                      <span className="text-rose-400">~{fareResult.advisory.discrepancy_percent}% above benchmark</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 flex items-center space-x-3">
+                    <CheckCircle className="w-5 h-5 text-cyan-400 shrink-0" />
+                    <div className="text-xs">
+                      <span className="font-bold block">Within Fair Reference Range</span>
+                      <span className="text-cyan-200/80">Quoted price is in accordance with Delhi Government meter norms.</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Language Fallback Card Button */}
+                <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-between">
+                  <div>
+                    <h4 className="text-xs font-bold text-white flex items-center">
+                      <MessageSquare className="w-4 h-4 mr-1.5 text-indigo-400" />
+                      <span>Language Support (Bhashini & Phrases)</span>
+                    </h4>
+                    <p className="text-[11px] text-slate-300 mt-0.5">
+                      Show politely to driver: 'Bhaiya, meter se chaliye'
+                    </p>
+                  </div>
+                  <button
+                    id="btn-show-phrase-cards"
+                    onClick={() => setIsLangModalOpen(true)}
+                    className="px-3.5 py-2 coder-btn-primary text-white rounded-xl text-xs font-bold transition-all shrink-0"
+                  >
+                    Open Phrases
+                  </button>
+                </div>
+
+                {/* Quick Inline Preloaded Offline Transport Phrase */}
+                <div className="p-3.5 rounded-2xl bg-black/40 border border-indigo-500/30 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase font-bold text-cyan-400">Quick Meter Request Card</span>
+                    <StatusBadge status="Official" />
+                  </div>
+                  <div className="p-2.5 bg-white/5 rounded-xl border border-white/5 space-y-1">
+                    <p className="text-xs text-slate-400">English: "Please turn on the meter."</p>
+                    <p className="text-base font-bold text-cyan-300">"भैया, मीटर चालू कर दीजिए।"</p>
+                    <p className="text-[11px] text-slate-300 italic font-mono">
+                      Say: "Bhai-ya, mee-tur chaa-loo kur dee-jee-ye"
+                    </p>
+                  </div>
+                </div>
               </div>
-
-              {/* Big Fare Display */}
-              <div className="p-6 rounded-2xl bg-surface border border-surface-border text-center">
-                <span className="text-xs text-slate-400 block mb-1">Official Benchmark</span>
-                <div className="text-3xl sm:text-4xl font-extrabold font-mono text-emerald-400">
-                  {fareResult.breakdown.expected_range}
+            ) : (
+              <div className="p-8 flex flex-col items-center justify-center text-center h-full min-h-[350px]">
+                <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-4 shadow-[0_0_20px_rgba(99,102,241,0.15)]">
+                  <Calculator className="w-8 h-8" />
                 </div>
-                <p className="text-xs text-slate-400 mt-2">{fareResult.breakdown.reference_rate}</p>
-              </div>
-
-              {/* Overcharge Warning or Fair Tag (Strict Rule: NEVER AN ACCUSATION!) */}
-              {fareResult.advisory?.is_overcharge ? (
-                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 space-y-2">
-                  <div className="flex items-center space-x-2 font-bold text-sm">
-                    <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
-                    <span>{fareResult.advisory.advisory_status}</span>
-                  </div>
-                  <p className="text-xs text-amber-200/90 leading-relaxed">
-                    {fareResult.advisory.advisory_message}
-                  </p>
-                  <div className="pt-2 flex items-center justify-between text-[11px] font-semibold">
-                    <span>Quoted Fare: ₹{quotedFare}</span>
-                    <span className="text-rose-400">~{fareResult.advisory.discrepancy_percent}% above benchmark</span>
-                  </div>
-                </div>
-              ) : (
-                <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
-                  <div className="text-xs">
-                    <span className="font-bold block">Within Fair Reference Range</span>
-                    <span className="text-emerald-200/80">Quoted price is in accordance with Delhi Government meter norms.</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Language Fallback Card Button (Scope #6) */}
-              <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-between">
-                <div>
-                  <h4 className="text-xs font-bold text-white flex items-center">
-                    <MessageSquare className="w-4 h-4 mr-1.5 text-indigo-400" />
-                    <span>Language Support (Bhashini & Offline Phrase-Cards)</span>
-                  </h4>
-                  <p className="text-[11px] text-slate-300 mt-0.5">
-                    Show politely to driver: 'Bhaiya, meter se chaliye'
-                  </p>
-                </div>
+                <h3 className="text-lg font-bold text-white mb-2">Check Quoted Fare</h3>
+                <p className="text-xs text-slate-400 max-w-sm">
+                  Enter your destination and any quoted price to evaluate whether it's fair or trigger our non-accusatory advice banner.
+                </p>
                 <button
-                  id="btn-show-phrase-cards"
-                  onClick={() => setIsLangModalOpen(true)}
-                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition-all shrink-0"
+                  onClick={loadHeroPreset}
+                  className="mt-6 px-4 py-2 bg-gradient-to-r from-[#6b30e3]/20 to-[#8b5cf6]/20 hover:from-[#6b30e3]/40 hover:to-[#8b5cf6]/40 border border-indigo-500/40 text-indigo-300 hover:text-white rounded-xl text-xs font-bold transition-all shadow-[0_0_15px_rgba(99,102,241,0.2)]"
                 >
-                  Open Bhashini & Phrases
+                  Try "NDLS → Red Fort" Hero Demo →
                 </button>
               </div>
-
-              {/* Quick Inline Preloaded Offline Transport Phrase */}
-              <div className="p-3.5 rounded-2xl bg-surface border border-indigo-500/30 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] uppercase font-bold text-emerald-400">Quick Meter Request Card</span>
-                  <StatusBadge status="Official" />
-                </div>
-                <div className="p-2.5 bg-white/5 rounded-xl border border-white/5 space-y-1">
-                  <p className="text-xs text-slate-400">English: "Please turn on the meter."</p>
-                  <p className="text-base font-bold text-emerald-300">"भैया, मीटर चालू कर दीजिए।"</p>
-                  <p className="text-[11px] text-slate-300 italic font-mono">
-                    Say: "Bhai-ya, mee-tur chaa-loo kur dee-jee-ye"
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="glass-card p-8 rounded-3xl flex flex-col items-center justify-center text-center h-full min-h-[350px]">
-              <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-slate-500 mb-4">
-                <Calculator className="w-8 h-8" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">Check Quoted Fare</h3>
-              <p className="text-xs text-slate-400 max-w-sm">
-                Enter your destination and any quoted price to evaluate whether it's fair or trigger our non-accusatory advice banner.
-              </p>
-              <button
-                onClick={loadHeroPreset}
-                className="mt-6 px-4 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 rounded-xl text-xs font-bold"
-              >
-                Try "NDLS → Red Fort" Hero Demo →
-              </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 

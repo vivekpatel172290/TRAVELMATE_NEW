@@ -6,8 +6,8 @@ export default function StatusBadge({ status = 'Official', className = '' }) {
     switch (status.toLowerCase()) {
       case 'official':
         return {
-          bg: 'status-badge-official bg-emerald-500/10 border-emerald-500/30 text-emerald-400',
-          icon: <ShieldCheck className="w-3.5 h-3.5 mr-1" />,
+          bg: 'status-badge-official bg-cyan-500/15 border-cyan-500/35 text-cyan-300',
+          icon: <ShieldCheck className="w-3.5 h-3.5 mr-1 text-cyan-400" />,
           label: 'Official (Govt / ASI Verified)'
         };
       case 'authorized':

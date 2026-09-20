@@ -75,7 +75,7 @@ export default function Header({
               <span className="text-sm sm:text-lg font-black tracking-tight font-display text-white">
                 TRAVEL<span className="coder-text-gradient">MATE</span>
               </span>
-              <span className="px-1.5 py-0.2 text-[9px] font-extrabold bg-emerald-500/20 text-emerald-300 rounded border border-emerald-500/30 uppercase tracking-widest hidden sm:inline-block">
+              <span className="px-1.5 py-0.2 text-[9px] font-extrabold bg-indigo-500/20 text-indigo-300 rounded border border-indigo-500/30 uppercase tracking-widest hidden sm:inline-block">
                 Delhi
               </span>
             </div>
@@ -116,15 +116,14 @@ export default function Header({
         </nav>
 
         {/* Right Actions: SafePass QR Button + Coder Army Login / Account Section */}
-        {/* Right Actions: SafePass QR Button + Coder Army Login / Account Section */}
         <div className="flex items-center space-x-1.5 sm:space-x-3 shrink-0">
           {/* Quick SafePass QR Button */}
           <button
             onClick={onOpenQR}
             title="View Official SafeVisit QR Pass"
-            className="flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs sm:text-sm font-bold transition-all"
+            className="flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600/30 to-purple-600/30 hover:from-indigo-600/50 hover:to-purple-600/50 border border-indigo-500/40 text-indigo-200 hover:text-white text-xs sm:text-sm font-bold transition-all shadow-[0_0_15px_rgba(99,102,241,0.2)]"
           >
-            <QrCode className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+            <QrCode className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 shrink-0" />
             <span className="font-mono tracking-wider text-xs hidden md:inline">{journey?.journey_code || user?.journey_code || 'TM-DEL-2026-X89K'}</span>
             <span className="md:hidden text-[11px] sm:text-xs font-semibold">Pass</span>
           </button>
@@ -162,7 +161,7 @@ export default function Header({
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#6b30e3]/20 text-[#c4b5fd] font-mono border border-[#6b30e3]/40">
                         {user.journey_code || journey?.journey_code || 'SafePass Active'}
                       </span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30">
                         Online
                       </span>
                     </div>

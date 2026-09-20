@@ -222,7 +222,7 @@ export default function PlaceDetailPage() {
                 <span className="px-3 py-1 rounded-xl bg-black/75 backdrop-blur-md text-xs font-bold text-slate-200 border border-white/15 uppercase tracking-wider shadow-lg">
                   {place.category}
                 </span>
-                <span className="px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-extrabold uppercase shadow-md">
+                <span className="px-2.5 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-extrabold uppercase shadow-md">
                   ASI Verified
                 </span>
               </div>
@@ -235,7 +235,7 @@ export default function PlaceDetailPage() {
                       ? 'bg-rose-950/80 text-rose-300 border-rose-500/40'
                       : place.crowd_data?.estimated_crowd === 'Medium'
                       ? 'bg-amber-950/80 text-amber-300 border-amber-500/40'
-                      : 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40'
+                      : 'bg-cyan-950/80 text-cyan-300 border-cyan-500/40'
                   }`}
                 >
                   <Users className="w-3.5 h-3.5 mr-1.5" />
@@ -262,7 +262,7 @@ export default function PlaceDetailPage() {
               <h1 className="text-2xl sm:text-3xl font-black font-display text-white tracking-tight">
                 {place.name}
               </h1>
-              <p className="text-sm font-semibold text-emerald-400 mt-0.5">
+              <p className="text-sm font-semibold text-cyan-400 mt-0.5">
                 {place.hindi_name}
               </p>
             </div>
@@ -276,7 +276,7 @@ export default function PlaceDetailPage() {
                   <span className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
                     Official Entry Fee
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
+                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-500/30">
                     Zero Counterfeit Guarantee
                   </span>
                 </div>
@@ -296,7 +296,7 @@ export default function PlaceDetailPage() {
                   </div>
                   <div className="flex items-center justify-between text-xs text-slate-400">
                     <span>Children (Under 15):</span>
-                    <span className="font-mono font-semibold text-emerald-400">Free</span>
+                    <span className="font-mono font-semibold text-cyan-400">Free</span>
                   </div>
                 </div>
 
@@ -335,7 +335,7 @@ export default function PlaceDetailPage() {
                     </div>
                   )}
                   {place.crowd_data?.best_time && (
-                    <div className="flex items-center justify-between text-xs text-emerald-300">
+                    <div className="flex items-center justify-between text-xs text-cyan-300">
                       <span>Recommended Slot:</span>
                       <span className="font-semibold">{place.crowd_data.best_time}</span>
                     </div>
@@ -374,7 +374,7 @@ export default function PlaceDetailPage() {
             <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
                 <h3 className="text-sm font-bold text-white flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <CheckCircle2 className="w-4 h-4 text-cyan-400" />
                   <span>Verified Traveler Check-In</span>
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
@@ -385,12 +385,12 @@ export default function PlaceDetailPage() {
               {!isVisited ? (
                 <button
                   onClick={handleCheckIn}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-emerald-600/30 transition-all shrink-0 hover:scale-105 active:scale-95"
+                  className="coder-btn-primary px-5 py-2.5 rounded-xl text-white text-xs sm:text-sm font-bold shadow-lg shadow-indigo-600/30 transition-all shrink-0 hover:scale-105 active:scale-95"
                 >
                   Check In as Visited
                 </button>
               ) : (
-                <span className="px-4 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold shrink-0 flex items-center space-x-1.5">
+                <span className="px-4 py-2 rounded-xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-xs font-bold shrink-0 flex items-center space-x-1.5">
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Checked In with SafePass</span>
                 </span>
@@ -426,11 +426,11 @@ export default function PlaceDetailPage() {
 
                 <div className="flex items-center justify-between">
                   {reviewFeedback ? (
-                    <span className="text-xs text-emerald-400 font-bold">{reviewFeedback}</span>
+                    <span className="text-xs text-cyan-400 font-bold">{reviewFeedback}</span>
                   ) : <span />}
                   <button
                     type="submit"
-                    className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-md"
+                    className="coder-btn-primary px-4 py-2 rounded-xl text-white text-xs font-bold transition-all shadow-md shadow-indigo-600/20"
                   >
                     Submit Review
                   </button>

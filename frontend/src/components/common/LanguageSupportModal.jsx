@@ -188,14 +188,14 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
           >
             <Minimize2 className="w-6 h-6" />
           </button>
-          <span className="text-xs uppercase font-bold text-emerald-400 tracking-widest mb-4">
+          <span className="text-xs uppercase font-bold text-cyan-400 tracking-widest mb-4">
             Show this screen to Driver / Vendor
           </span>
-          <div className="p-8 max-w-xl bg-surface-card border-2 border-emerald-500 rounded-3xl shadow-2xl shadow-emerald-500/20 space-y-6">
+          <div className="p-8 max-w-xl bg-[#141722] border-2 border-indigo-500/50 rounded-3xl shadow-2xl shadow-indigo-500/25 space-y-6">
             <h2 className="text-3xl sm:text-5xl font-black text-white leading-tight font-display">
               {fullscreenPhrase.hindi}
             </h2>
-            <p className="text-lg sm:text-xl font-mono text-emerald-300">
+            <p className="text-lg sm:text-xl font-mono text-indigo-300">
               "{fullscreenPhrase.transliteration}"
             </p>
             <div className="pt-4 border-t border-white/10 text-xs text-slate-300">
@@ -203,7 +203,7 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
             </div>
             <button
               onClick={() => handleSpeak(fullscreenPhrase.hindi)}
-              className="inline-flex items-center space-x-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm transition-all"
+              className="inline-flex items-center space-x-2 px-6 py-2.5 coder-btn-primary text-white font-bold rounded-xl text-sm transition-all"
             >
               <Volume2 className="w-5 h-5" />
               <span>Play Hindi Audio</span>
@@ -257,7 +257,7 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
             </span>
             <button
               onClick={handleOpenFullPage}
-              className="text-[11px] text-emerald-400 hover:underline flex items-center space-x-1"
+              className="text-[11px] text-cyan-400 hover:underline flex items-center space-x-1"
             >
               <span>Try Speech-to-Speech Voice</span>
               <ExternalLink className="w-3 h-3" />
@@ -295,7 +295,7 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
             <button
               onClick={handleBhashiniTranslate}
               disabled={isTranslating || !bhashiniInput.trim()}
-              className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 shrink-0 shadow-md shadow-emerald-600/20 flex items-center space-x-1.5"
+              className="px-4 py-2 coder-btn-primary text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 shrink-0 flex items-center space-x-1.5"
             >
               <Languages className="w-3.5 h-3.5" />
               <span>{isTranslating ? 'Translating...' : 'Translate'}</span>
@@ -306,7 +306,7 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
           <div className="flex items-center justify-between text-[11px] text-slate-400 pt-0.5">
             <span className="flex items-center space-x-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 radar-pulse" />
-              <strong className="text-emerald-300">Digital India Bhashini AI:</strong>
+              <strong className="text-cyan-300">Digital India Bhashini AI:</strong>
               <span>{BHASHINI_CONFIG.USE_MOCK ? 'Contextual Engine (API Key Ready)' : 'Live ULCA Inference Pipeline'}</span>
             </span>
             <span className="font-mono text-[10px] text-slate-500">MeitY NLTM</span>
@@ -316,7 +316,7 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
           {bhashiniResult && (
             <div className="p-3 bg-surface border border-indigo-500/40 rounded-xl space-y-2 animate-in fade-in duration-150">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-bold text-emerald-400">{bhashiniResult.service}</span>
+                <span className="text-[10px] uppercase font-bold text-cyan-400">{bhashiniResult.service}</span>
                 <button
                   onClick={() => setFullscreenPhrase(bhashiniResult)}
                   className="text-[11px] text-indigo-300 hover:text-white font-semibold flex items-center space-x-1"
@@ -326,12 +326,12 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
                 </button>
               </div>
               <div className="text-base font-bold text-white">{bhashiniResult.hindi}</div>
-              <div className="text-xs font-mono text-emerald-300/90">{bhashiniResult.transliteration}</div>
+              <div className="text-xs font-mono text-cyan-300/90">{bhashiniResult.transliteration}</div>
               <div className="flex items-center justify-between pt-1 text-[10px] text-slate-400">
                 <span>Pronunciation: {bhashiniResult.phonetic}</span>
                 <button
                   onClick={() => handleSpeak(bhashiniResult.hindi)}
-                  className="text-emerald-400 hover:underline flex items-center space-x-1"
+                  className="text-cyan-400 hover:underline flex items-center space-x-1"
                 >
                   <Volume2 className="w-3 h-3" />
                   <span>Play Audio</span>
@@ -350,7 +350,7 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
                 onClick={() => setActiveCategory(cat)}
                 className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center space-x-1.5 ${
                   activeCategory === cat
-                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
+                    ? 'bg-[#6b30e3] text-white shadow-md shadow-[#6b30e3]/40'
                     : 'bg-surface-card text-slate-400 hover:text-white border border-surface-border'
                 }`}
               >
@@ -387,7 +387,7 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
                   return (
                     <div
                       key={cardId}
-                      className="p-4 bg-surface-card border border-surface-border rounded-2xl hover:border-emerald-500/40 transition-all space-y-2 flex flex-col justify-between"
+                      className="p-4 bg-surface-card border border-surface-border rounded-2xl hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/10 transition-all space-y-2 flex flex-col justify-between"
                     >
                       <div>
                         <div className="flex items-start justify-between gap-2 mb-1">
@@ -397,12 +397,12 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
                           <button
                             onClick={() => setFullscreenPhrase(phrase)}
                             title="Show in Fullscreen to driver"
-                            className="p-1 text-slate-400 hover:text-emerald-400 rounded transition-colors shrink-0"
+                            className="p-1 text-slate-400 hover:text-cyan-400 rounded transition-colors shrink-0"
                           >
                             <Maximize2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
-                        <div className="text-base font-extrabold text-emerald-300 font-display">
+                        <div className="text-base font-extrabold text-indigo-300 font-display">
                           {phrase.hindi}
                         </div>
                         <div className="text-xs font-mono text-slate-300 mt-0.5">
@@ -420,7 +420,7 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
                         <div className="flex items-center space-x-2">
                           <button
                             onClick={() => handleSpeak(phrase.hindi)}
-                            className="p-1 text-emerald-400 hover:text-emerald-300 transition-colors flex items-center space-x-1"
+                            className="p-1 text-cyan-400 hover:text-cyan-300 transition-colors flex items-center space-x-1"
                           >
                             <Volume2 className="w-3.5 h-3.5" />
                             <span className="text-[10px] font-semibold">Speak</span>
@@ -440,7 +440,7 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
           <span>All phrase cards are stored offline for instant zero-data use during transit.</span>
           <button
             onClick={handleOpenFullPage}
-            className="text-emerald-400 hover:underline font-semibold flex items-center space-x-1"
+            className="text-cyan-400 hover:underline font-semibold flex items-center space-x-1"
           >
             <span>Open Dedicated Phrase Helper</span>
             <ExternalLink className="w-3 h-3" />

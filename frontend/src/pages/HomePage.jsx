@@ -337,9 +337,9 @@ export default function HomePage() {
               {/* Trust Badge Pill */}
               <div className="inline-flex items-center space-x-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md text-xs font-semibold text-slate-300 shadow-sm max-w-full">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                <span className="text-emerald-300 font-bold truncate">Delhi Official Tourist Portal</span>
+                <span className="text-cyan-300 font-bold truncate">Delhi Official Tourist Portal</span>
                 <span className="text-slate-500">•</span>
-                <span className="text-cyan-300 truncate">Safety & Verification Suite</span>
+                <span className="text-indigo-300 truncate">Safety & Verification Suite</span>
               </div>
 
               {/* Main Display Headline */}
@@ -397,7 +397,7 @@ export default function HomePage() {
               {/* Live Trust Badges Strip */}
               <div className="pt-4 sm:pt-6 border-t border-white/[0.08] grid grid-cols-2 gap-2 sm:gap-4 text-xs text-slate-300">
                 <div className="flex items-center space-x-1.5 sm:space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
                   <span className="font-medium text-[11px] sm:text-xs">ASI Ticketing Auth</span>
                 </div>
                 <div className="flex items-center space-x-1.5 sm:space-x-2">
@@ -441,7 +441,7 @@ export default function HomePage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-1.5 text-[9px] sm:text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-1.5 sm:px-2 py-0.5 rounded-md border border-emerald-500/20">
+                  <div className="flex items-center space-x-1.5 text-[9px] sm:text-[10px] font-mono font-bold text-cyan-400 uppercase tracking-widest bg-cyan-500/10 px-1.5 sm:px-2 py-0.5 rounded-md border border-cyan-500/20">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                     <span>LIVE FEED</span>
                   </div>
@@ -469,7 +469,7 @@ export default function HomePage() {
                             className={`w-full h-full object-cover ${item.imagePos || 'object-center'} group-hover:scale-105 transition-transform duration-500`}
                             style={{ minWidth: '100%', minHeight: '100%', objectFit: 'cover' }}
                           />
-                          <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[8px] sm:text-[9px] font-bold text-emerald-300 border border-emerald-500/30 z-10">
+                          <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[8px] sm:text-[9px] font-bold text-cyan-300 border border-cyan-500/30 z-10">
                             ASI
                           </span>
                         </div>
@@ -478,7 +478,7 @@ export default function HomePage() {
                             <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
                               {item.category}
                             </span>
-                            <span className="text-[9px] sm:text-[10px] font-bold text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded shrink-0">
+                            <span className="text-[9px] sm:text-[10px] font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-1.5 py-0.5 rounded shrink-0">
                               Verified
                             </span>
                           </div>
@@ -698,18 +698,18 @@ export default function HomePage() {
               {/* Ambient Multi-Color Glow Backdrop (signature glowing bg like hero animated section) */}
               <div className="absolute -inset-2 rounded-[30px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 group-hover:opacity-65 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
               
-              <div className="relative h-full rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 border-2 border-[#2f323e]/70 hover:border-emerald-400/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl hover:-translate-y-1 overflow-hidden">
+              <div className="relative h-full rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 border-2 border-[#2f323e]/70 hover:border-cyan-400/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-2xl hover:-translate-y-1 overflow-hidden">
                 {/* Internal ambient corner glow */}
-                <div className="absolute -top-12 -right-12 w-36 h-36 bg-emerald-500/20 rounded-full blur-2xl pointer-events-none" />
+                <div className="absolute -top-12 -right-12 w-36 h-36 bg-cyan-500/20 rounded-full blur-2xl pointer-events-none" />
                 <div className="relative z-10">
-                  <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                  <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                     <Navigation className="w-7 h-7" />
                   </div>
                   <div className="flex items-center justify-between mb-2.5">
-                    <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-emerald-300 transition-colors">
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-cyan-300 transition-colors">
                       Safe Track & Corridors
                     </h3>
-                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider">
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
                       Live GPS
                     </span>
                   </div>
@@ -719,7 +719,7 @@ export default function HomePage() {
                 </div>
                 <Link
                   to="/safe-journey"
-                  className="relative z-10 inline-flex items-center text-sm font-bold text-emerald-400 hover:text-emerald-300 group-hover:translate-x-1 transition-all pt-2 border-t border-white/[0.06]"
+                  className="relative z-10 inline-flex items-center text-sm font-bold text-cyan-400 hover:text-cyan-300 group-hover:translate-x-1 transition-all pt-2 border-t border-white/[0.06]"
                 >
                   <span>Track Journey</span>
                   <ArrowRight className="w-4 h-4 ml-1.5" />
@@ -933,7 +933,7 @@ export default function HomePage() {
         <section className="my-16">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div>
-              <span className="text-xs font-extrabold uppercase tracking-widest text-emerald-400 font-display">
+              <span className="text-xs font-extrabold uppercase tracking-widest text-cyan-400 font-display">
                 ASI Verified Directory
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold font-display text-white mt-1">
@@ -945,7 +945,7 @@ export default function HomePage() {
             </div>
             <Link
               to="/home"
-              className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center space-x-1.5 shrink-0"
+              className="text-xs font-bold text-cyan-400 hover:text-cyan-300 flex items-center space-x-1.5 shrink-0"
             >
               <span>View All 10 Authenticated Places</span>
               <ArrowRight className="w-4 h-4" />
@@ -974,7 +974,7 @@ export default function HomePage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#111318] via-transparent to-black/20 pointer-events-none" />
 
                   {/* Badges */}
-                  <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/75 backdrop-blur-md text-emerald-300 border border-emerald-500/30 z-20">
+                  <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/75 backdrop-blur-md text-cyan-300 border border-cyan-500/30 z-20">
                     {m.category}
                   </span>
                   <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 z-20">
@@ -1239,7 +1239,7 @@ export default function HomePage() {
                   className="flex items-center justify-between text-white font-mono bg-white/[0.05] hover:bg-white/[0.1] p-2.5 sm:p-3 rounded-xl border border-white/[0.08] transition-colors group"
                 >
                   <span className="text-slate-200 group-hover:text-white font-sans font-semibold text-sm sm:text-[15px]">Traffic WhatsApp</span>
-                  <span className="text-emerald-400 font-bold font-mono text-sm sm:text-base">8750871493</span>
+                  <span className="text-cyan-400 font-bold font-mono text-sm sm:text-base">8750871493</span>
                 </a>
               </div>
             </div>
@@ -1250,7 +1250,7 @@ export default function HomePage() {
           <hr className="border-0 border-t border-[var(--border-glass)] my-6 sm:my-7" />
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm text-slate-400 text-center sm:text-left">
             <p>© 2026 TravelMate Platform • Official Delhi NCR Tourist Safety Ecosystem. All rights reserved.</p>
-            <div className="flex items-center space-x-2 text-xs sm:text-sm font-medium text-emerald-400">
+            <div className="flex items-center space-x-2 text-xs sm:text-sm font-medium text-cyan-400">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>Delhi Police 112 & ASI Telemetry Active</span>
             </div>

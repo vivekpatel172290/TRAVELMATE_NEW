@@ -164,11 +164,11 @@ function AppLayout() {
                 navigate('/phrase-helper');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="group flex items-center space-x-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-3.5 py-2 rounded-full shadow-lg shadow-emerald-600/30 border border-emerald-400/40 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+              className="group flex items-center space-x-1.5 bg-gradient-to-r from-[#6b30e3] to-[#8b5cf6] hover:from-[#7c3aed] hover:to-[#a78bfa] text-white px-3.5 py-2 rounded-full shadow-lg shadow-indigo-600/30 border border-indigo-400/40 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
               aria-label="Open Bhashini AI Multilingual Translator"
               title="Digital India Bhashini Multilingual AI Translator"
             >
-              <Languages className="w-4 h-4 text-emerald-200 group-hover:scale-110 transition-transform" />
+              <Languages className="w-4 h-4 text-indigo-200 group-hover:scale-110 transition-transform" />
               <span className="text-xs font-bold font-display tracking-wide hidden sm:inline">
                 Bhashini AI
               </span>

@@ -658,7 +658,7 @@ export default function GoogleMapView({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search Delhi monument or area on Google Maps..."
-              className={`w-full pl-9 pr-3 py-2 rounded-xl text-xs focus:outline-none focus:border-emerald-500 shadow-lg transition-colors ${
+              className={`w-full pl-9 pr-3 py-2 rounded-xl text-xs focus:outline-none focus:border-cyan-400 shadow-lg transition-colors ${
                 isDark
                   ? 'bg-surface/90 backdrop-blur-md border border-white/10 text-white placeholder-slate-400'
                   : 'bg-white/95 backdrop-blur-md border border-slate-200 text-slate-900 placeholder-slate-400'
@@ -672,8 +672,8 @@ export default function GoogleMapView({
             title="Track Live GPS Location"
             className={`p-2.5 rounded-xl transition-all shadow-lg shrink-0 flex items-center space-x-1 ${
               isDark
-                ? 'bg-surface/90 hover:bg-emerald-500/20 border border-white/10 hover:border-emerald-500/40 text-emerald-400'
-                : 'bg-white/95 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-400 text-emerald-600'
+                ? 'bg-surface/90 hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-500/40 text-cyan-400'
+                : 'bg-white/95 hover:bg-cyan-50 border border-slate-200 hover:border-cyan-400 text-cyan-600'
             }`}
           >
             <Crosshair className={`w-4 h-4 ${isLocating ? 'animate-spin' : ''}`} />
@@ -920,7 +920,7 @@ export default function GoogleMapView({
           {!hideBottomStatus && (
             <div className="p-3 bg-surface/90 backdrop-blur-md border-t border-white/10 flex items-center justify-between text-xs relative z-10">
               <div className="flex items-center space-x-2 text-slate-300">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <ShieldCheck className="w-4 h-4 text-cyan-400" />
                 <span>{loadError || 'Interactive High-Definition Radar Active (Connect Google Maps in .env for Satellite Imagery)'}</span>
               </div>
               <StatusBadge status="Official" />

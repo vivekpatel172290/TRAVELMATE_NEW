@@ -176,11 +176,11 @@ export default function AdminDashboardPage() {
         {feedbackToast && (
           <div className={`mb-6 p-3 rounded-2xl border text-xs font-semibold flex items-center justify-between transition-all animate-in fade-in slide-in-from-top-2 duration-200 ${
             feedbackToast.type === 'success'
-              ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+              ? 'bg-cyan-500/15 border-cyan-500/30 text-cyan-300'
               : 'bg-amber-500/15 border-amber-500/30 text-amber-300'
           }`}>
             <div className="flex items-center space-x-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
               <span>{feedbackToast.message}</span>
             </div>
             <button
@@ -195,28 +195,40 @@ export default function AdminDashboardPage() {
 
       {/* Overview Stat Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-        <div className="glass-card p-4 rounded-2xl border border-surface-border">
-          <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Active Journeys</span>
-          <div className="text-2xl font-extrabold font-mono text-emerald-400">{stats.activeJourneys}</div>
-          <span className="text-[10px] text-slate-500">Total {stats.totalJourneys} Issued</span>
+        <div className="relative group">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 rounded-2xl opacity-25 group-hover:opacity-45 blur-lg transition-all" />
+          <div className="relative p-4 rounded-2xl border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-xl">
+            <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Active Journeys</span>
+            <div className="text-2xl font-extrabold font-mono text-cyan-400">{stats.activeJourneys}</div>
+            <span className="text-[10px] text-slate-500">Total {stats.totalJourneys} Issued</span>
+          </div>
         </div>
 
-        <div className="glass-card p-4 rounded-2xl border border-surface-border">
-          <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Pending Incidents</span>
-          <div className="text-2xl font-extrabold font-mono text-amber-400">{stats.pendingIncidents}</div>
-          <span className="text-[10px] text-slate-500">Require Human Verification</span>
+        <div className="relative group">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-600 via-orange-600 to-indigo-600 rounded-2xl opacity-20 group-hover:opacity-40 blur-lg transition-all" />
+          <div className="relative p-4 rounded-2xl border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-xl">
+            <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Pending Incidents</span>
+            <div className="text-2xl font-extrabold font-mono text-amber-400">{stats.pendingIncidents}</div>
+            <span className="text-[10px] text-slate-500">Require Human Verification</span>
+          </div>
         </div>
 
-        <div className="glass-card p-4 rounded-2xl border border-surface-border">
-          <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Flagged Fare Disputes</span>
-          <div className="text-2xl font-extrabold font-mono text-rose-400">{stats.flaggedFares}</div>
-          <span className="text-[10px] text-slate-500">Auto Overcharges Logged</span>
+        <div className="relative group">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-rose-600 via-pink-600 to-indigo-600 rounded-2xl opacity-20 group-hover:opacity-40 blur-lg transition-all" />
+          <div className="relative p-4 rounded-2xl border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-xl">
+            <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Flagged Fare Disputes</span>
+            <div className="text-2xl font-extrabold font-mono text-rose-400">{stats.flaggedFares}</div>
+            <span className="text-[10px] text-slate-500">Auto Overcharges Logged</span>
+          </div>
         </div>
 
-        <div className="glass-card p-4 rounded-2xl border border-surface-border">
-          <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Places Freshness</span>
-          <div className="text-2xl font-extrabold font-mono text-cyan-400">{stats.placesCount} Verified</div>
-          <span className="text-[10px] text-slate-500">ASI Delhi Registry</span>
+        <div className="relative group">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-600 via-indigo-600 to-purple-600 rounded-2xl opacity-25 group-hover:opacity-45 blur-lg transition-all" />
+          <div className="relative p-4 rounded-2xl border-2 border-[#2f323e]/70 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] shadow-xl">
+            <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Places Freshness</span>
+            <div className="text-2xl font-extrabold font-mono text-indigo-300">{stats.placesCount} Verified</div>
+            <span className="text-[10px] text-slate-500">ASI Delhi Registry</span>
+          </div>
         </div>
       </div>
 
@@ -264,7 +276,7 @@ export default function AdminDashboardPage() {
                   <span
                     className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase ${
                       inc.status === 'verified_by_human'
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                        ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
                         : inc.status === 'dismissed'
                         ? 'bg-slate-700 text-slate-300'
                         : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
@@ -295,7 +307,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="p-3.5 bg-surface rounded-2xl border border-surface-border space-y-2">
-                  <span className="text-[10px] uppercase font-bold text-emerald-400 block mb-1 flex items-center space-x-1.5">
+                  <span className="text-[10px] uppercase font-bold text-cyan-400 block mb-1 flex items-center space-x-1.5">
                     <Camera className="w-3.5 h-3.5" />
                     <span>RideSafe Linked Evidence</span>
                   </span>
@@ -341,7 +353,7 @@ export default function AdminDashboardPage() {
                     <button
                       id={`btn-verify-incident-${inc.id.slice(0, 8)}`}
                       onClick={() => handleUpdateStatus(inc.id, 'verified_by_human')}
-                      className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center space-x-1 shadow-md shadow-emerald-600/20"
+                      className="px-4 py-1.5 coder-btn-primary text-white rounded-xl text-xs font-bold flex items-center space-x-1"
                     >
                       <Check className="w-3.5 h-3.5" />
                       <span>Verify & Forward to Police Beat</span>
@@ -388,13 +400,13 @@ export default function AdminDashboardPage() {
                       </span>
                       <button
                         onClick={() => handleReverifyPlace(p.id)}
-                        className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-all shadow-sm"
+                        className="px-3 py-1 coder-btn-primary text-white rounded-lg text-xs font-bold transition-all shadow-sm"
                       >
                         Re-verify Now
                       </button>
                     </div>
                   ) : (
-                    <span className="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                    <span className="text-xs text-cyan-400 font-bold bg-cyan-500/10 px-2.5 py-0.5 rounded-full border border-cyan-500/20">
                       Verified Fresh ✓
                     </span>
                   )}
@@ -431,7 +443,7 @@ export default function AdminDashboardPage() {
                 </div>
                 <div className="flex flex-wrap items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-white/5">
                   <span className="text-slate-300">
-                    Vehicle Type: <strong className="text-emerald-400 uppercase">{f.vehicle_type}</strong> • Distance: {f.distance_km} km
+                    Vehicle Type: <strong className="text-cyan-400 uppercase">{f.vehicle_type}</strong> • Distance: {f.distance_km} km
                   </span>
                   <span className="text-slate-500 font-mono">
                     Logged under Journey: {f.journey_code || 'TM-DEL-2026-X89K'}

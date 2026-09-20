@@ -298,17 +298,17 @@ export default function PhraseHelperPage() {
               <Minimize2 className="w-6 h-6" />
             </button>
 
-            <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs uppercase tracking-widest font-bold mb-6 animate-pulse">
-              <Car className="w-4 h-4 mr-1 text-emerald-400" />
+            <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 text-xs uppercase tracking-widest font-bold mb-6 animate-pulse">
+              <Car className="w-4 h-4 mr-1 text-cyan-400" />
               <span>Show this screen to Auto-Rickshaw / Cab Driver</span>
             </div>
 
-            <div className="w-full max-w-3xl bg-[#14161f] border-2 border-emerald-500/80 rounded-3xl p-6 sm:p-12 shadow-2xl shadow-emerald-500/30 space-y-6">
+            <div className="w-full max-w-3xl bg-[#14161f] border-2 border-indigo-500/70 rounded-3xl p-6 sm:p-12 shadow-2xl shadow-indigo-500/30 space-y-6">
               <div className="text-3xl sm:text-5xl lg:text-6xl font-black text-amber-300 leading-tight font-display tracking-wide drop-shadow-md">
                 {fullscreenPhrase.hindi || fullscreenPhrase.translated}
               </div>
 
-              <div className="text-lg sm:text-2xl font-mono text-emerald-300 bg-white/5 py-3 px-4 rounded-2xl border border-white/10">
+              <div className="text-lg sm:text-2xl font-mono text-indigo-300 bg-white/5 py-3 px-4 rounded-2xl border border-white/10">
                 "{fullscreenPhrase.transliteration}"
               </div>
 
@@ -325,7 +325,7 @@ export default function PhraseHelperPage() {
 
                 <button
                   onClick={() => handlePlayAudio(fullscreenPhrase.hindi || fullscreenPhrase.translated, 'hi')}
-                  className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-2xl text-sm transition-all shadow-lg shadow-emerald-600/30"
+                  className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3 coder-btn-primary text-white font-bold rounded-2xl text-sm transition-all shadow-lg"
                 >
                   <Volume2 className="w-5 h-5 text-white" />
                   <span>Play Loud Hindi Audio</span>
@@ -351,9 +351,9 @@ export default function PhraseHelperPage() {
                 {/* Trust / Bhashini Pill */}
                 <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md text-xs font-semibold text-slate-300 shadow-sm">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-emerald-300 font-bold">National Language AI</span>
+                  <span className="text-cyan-300 font-bold">National Language AI</span>
                   <span className="text-slate-500">•</span>
-                  <span className="text-cyan-300 font-bold">Digital India Bhashini Mission</span>
+                  <span className="text-indigo-300 font-bold">Digital India Bhashini Mission</span>
                 </div>
 
                 <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display tracking-tight leading-tight">
@@ -374,7 +374,7 @@ export default function PhraseHelperPage() {
                     <div className="text-xs font-bold text-white">
                       {BHASHINI_CONFIG.USE_MOCK ? 'Bhashini Neural Engine' : 'Live ULCA Inference Pipeline'}
                     </div>
-                    <div className="text-[10px] text-emerald-400">
+                    <div className="text-[10px] text-cyan-400">
                       {BHASHINI_CONFIG.USE_MOCK ? 'Live Translation + Grounded Fallback' : 'Connected to MeitY Cloud'}
                     </div>
                   </div>
@@ -562,7 +562,7 @@ export default function PhraseHelperPage() {
                     type="button"
                     onClick={() => handleTranslate()}
                     disabled={isTranslating || !inputText.trim()}
-                    className="flex-1 inline-flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs rounded-2xl transition-all shadow-lg shadow-emerald-600/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="flex-1 inline-flex items-center justify-center space-x-2 px-6 py-3 coder-btn-primary text-white font-bold text-xs rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {isTranslating ? (
                       <>
@@ -571,7 +571,7 @@ export default function PhraseHelperPage() {
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-4 h-4 text-emerald-200" />
+                        <Sparkles className="w-4 h-4 text-cyan-200" />
                         <span>Translate to Hindi</span>
                       </>
                     )}
@@ -588,14 +588,14 @@ export default function PhraseHelperPage() {
                       <span>Colloquial Hindi Output (For Drivers & Locals)</span>
                     </span>
                     {translationResult && (
-                      <span className="text-[10px] text-emerald-400 font-mono">
+                      <span className="text-[10px] text-cyan-400 font-mono">
                         {Math.round(translationResult.confidence * 100)}% Match
                       </span>
                     )}
                   </div>
 
                   {translationResult ? (
-                    <div className="p-5 sm:p-6 bg-[#0d0f15] border-2 border-emerald-500/40 rounded-2xl space-y-4 animate-in fade-in duration-200 shadow-2xl relative">
+                    <div className="p-5 sm:p-6 bg-[#0d0f15] border-2 border-indigo-500/50 rounded-2xl space-y-4 animate-in fade-in duration-200 shadow-2xl relative">
                       <div className="flex items-start justify-between gap-2">
                         <span className="text-[10px] font-bold text-cyan-300 uppercase tracking-wide bg-cyan-500/10 px-2.5 py-1 rounded-md border border-cyan-500/20">
                           {translationResult.source}
@@ -607,15 +607,15 @@ export default function PhraseHelperPage() {
                             className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/10 transition-colors"
                             title="Copy Hindi text"
                           >
-                            {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                            {copied ? <Check className="w-4 h-4 text-cyan-400" /> : <Copy className="w-4 h-4" />}
                           </button>
                           
                           <button
                             onClick={() => handlePlayAudio(translationResult.hindi || translationResult.translated, targetLang)}
                             className={`p-2 rounded-xl transition-colors ${
                               isPlayingAudio
-                                ? 'text-emerald-300 bg-emerald-500/20 animate-pulse'
-                                : 'text-slate-400 hover:text-emerald-400 hover:bg-white/10'
+                                ? 'text-cyan-300 bg-cyan-500/20 animate-pulse'
+                                : 'text-slate-400 hover:text-cyan-400 hover:bg-white/10'
                             }`}
                             title="Play Hindi Pronunciation Audio"
                           >
@@ -639,7 +639,7 @@ export default function PhraseHelperPage() {
 
                       {/* Hinglish Romanized Transliteration */}
                       {translationResult.transliteration && (
-                        <div className="text-xs sm:text-sm font-mono text-emerald-300 bg-emerald-950/30 p-3 rounded-xl border border-emerald-500/30">
+                        <div className="text-xs sm:text-sm font-mono text-indigo-300 bg-indigo-950/30 p-3 rounded-xl border border-indigo-500/30">
                           "{translationResult.transliteration}"
                         </div>
                       )}
@@ -655,9 +655,9 @@ export default function PhraseHelperPage() {
                       {/* Show to Driver Large Button */}
                       <button
                         onClick={() => setFullscreenPhrase(translationResult)}
-                        className="w-full inline-flex items-center justify-center space-x-2 py-3 px-4 bg-gradient-to-r from-amber-500/20 to-emerald-500/20 hover:from-amber-500/30 hover:to-emerald-500/30 border border-amber-500/40 text-amber-300 hover:text-amber-200 font-bold text-xs rounded-xl transition-all shadow-md"
+                        className="w-full inline-flex items-center justify-center space-x-2 py-3 px-4 bg-gradient-to-r from-indigo-600/30 to-purple-600/30 hover:from-indigo-600/40 hover:to-purple-600/40 border border-indigo-500/40 text-indigo-200 hover:text-white font-bold text-xs rounded-xl transition-all shadow-md"
                       >
-                        <Maximize2 className="w-4 h-4 text-amber-400" />
+                        <Maximize2 className="w-4 h-4 text-indigo-300" />
                         <span>Show Oversized Screen to Auto-Rickshaw / Cab Driver</span>
                       </button>
                     </div>
@@ -689,7 +689,7 @@ export default function PhraseHelperPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-xl sm:text-2xl font-extrabold text-white font-display flex items-center space-x-2">
-                <Sparkles className="w-5 h-5 text-emerald-400" />
+                <Sparkles className="w-5 h-5 text-cyan-400" />
                 <span>Verified Tourist Hindi Phrase Deck</span>
               </h2>
               <p className="text-xs sm:text-sm text-slate-400">
@@ -750,7 +750,7 @@ export default function PhraseHelperPage() {
                         <button
                           onClick={() => handlePlayAudio(phrase.hindi, 'hi')}
                           title="Play Pronunciation Audio"
-                          className="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors cursor-pointer"
+                          className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors cursor-pointer"
                         >
                           <Volume2 className="w-4 h-4" />
                         </button>
@@ -774,7 +774,7 @@ export default function PhraseHelperPage() {
                     </div>
 
                     {/* Transliteration */}
-                    <div className="text-xs font-mono text-emerald-300 bg-emerald-950/20 px-2.5 py-1.5 rounded-lg border border-emerald-500/20">
+                    <div className="text-xs font-mono text-indigo-300 bg-indigo-950/20 px-2.5 py-1.5 rounded-lg border border-indigo-500/20">
                       {phrase.transliteration}
                     </div>
 
