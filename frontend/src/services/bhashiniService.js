@@ -206,26 +206,6 @@ export const PRELOADED_TOURIST_PHRASES = [
     quickTag: 'ASI Verified',
   },
   {
-    id: 'phrase-redfort-06',
-    english: 'Take me to Red Fort main entrance (Lahori Gate).',
-    hindi: 'मुझे लाल किले के मुख्य प्रवेश द्वार (लाहौरी गेट) ले चलिए।',
-    transliteration: 'Mujhe Lal Qila ke mukhya pravesh dwar (Lahori Gate) le chaliye.',
-    phonetic: 'Moo-jhay Laal Kee-la kay mookh-ya pruh-vaysh dwaar lay chuh-lee-ye',
-    category: 'Heritage & Places',
-    context: 'Prevents drivers from dropping you at unofficial commercial souvenir shops.',
-    quickTag: 'Monument',
-  },
-  {
-    id: 'phrase-stop-07',
-    english: 'Please stop here, I want to get off.',
-    hindi: 'कृपया यहाँ रोक दीजिए, मुझे यहाँ उतरना है।',
-    transliteration: 'Kripya yahan rok dijiye, mujhe yahan utarna hai.',
-    phonetic: 'Krip-ya yuh-haan rok dee-jee-ye, moo-jhay yuh-haan oo-tur-nuh hai',
-    category: 'Transport & Meter',
-    context: 'Use when nearing your destination, hotel gate, or metro interchange.',
-    quickTag: 'Drop Point',
-  },
-  {
     id: 'phrase-water-08',
     english: 'Is sealed bottled drinking water available here?',
     hindi: 'क्या यहाँ सीलबंद पीने का पानी उपलब्ध है?',
@@ -235,36 +215,6 @@ export const PRELOADED_TOURIST_PHRASES = [
     context: 'Essential for health and hygiene when dining out or visiting monuments.',
     quickTag: 'Clean Water',
   },
-  {
-    id: 'phrase-spicy-09',
-    english: 'Please make it non-spicy and vegetarian.',
-    hindi: 'कृपया इसे बिना मिर्च और शुद्ध शाकाहारी बनाइए।',
-    transliteration: 'Kripya ise bina mirch aur shuddh shakahari banaiye.',
-    phonetic: 'Krip-ya ee-say bee-naa mirch owr shoodh shaa-kaa-haa-ree buh-naa-ee-ye',
-    category: 'Dining & Health',
-    context: 'Ensure mild seasoning and dietary preference in local restaurants.',
-    quickTag: 'Mild Food',
-  },
-  {
-    id: 'phrase-guide-10',
-    english: 'No thank you, I do not need a guide.',
-    hindi: 'नहीं धन्यवाद, मुझे गाइड की आवश्यकता नहीं है।',
-    transliteration: 'Nahi dhanyavaad, mujhe guide ki aavashyakta nahi hai.',
-    phonetic: 'Nuh-heen dhun-yuh-vaad, moo-jhay guide kee aa-vush-yuk-tuh na-heen hai',
-    category: 'Fair Fare & Shopping',
-    context: 'Polite and assertive refusal for unauthorized touts outside monuments.',
-    quickTag: 'Polite Refusal',
-  },
-  {
-    id: 'phrase-pay-11',
-    english: 'Can I pay using UPI or QR code?',
-    hindi: 'क्या मैं UPI या QR कोड से भुगतान कर सकता हूँ?',
-    transliteration: 'Kya main UPI ya QR code se bhugtaan kar sakta hoon?',
-    phonetic: 'Kya main UPI ya QR code say bhoog-taan kur suk-tuh hoon?',
-    category: 'Fair Fare & Shopping',
-    context: 'Ask auto drivers and shops if you do not carry exact cash change.',
-    quickTag: 'UPI / QR',
-  }
 ];
 
 /**
