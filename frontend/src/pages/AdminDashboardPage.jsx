@@ -87,27 +87,34 @@ export default function AdminDashboardPage() {
       <div className="relative z-10 max-w-6xl mx-auto">
         {/* Dashboard Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-          <div>
-            <div className="inline-flex items-center space-x-2 text-indigo-400 text-xs font-bold uppercase tracking-wider mb-1">
-              <img src="/logo.jpg" alt="TravelMate" className="w-4.5 h-4.5 rounded object-cover ring-1 ring-white/20" />
-              <span>Delhi Police & Ministry of Tourism Control Room</span>
+          <div className="flex items-start sm:items-center gap-3.5">
+            <img
+              src="/logo.jpg"
+              alt="TravelMate"
+              className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl object-cover ring-2 ring-indigo-500/30 shadow-md shadow-indigo-500/20 shrink-0 mt-0.5 sm:mt-0"
+            />
+            <div>
+              <div className="inline-flex items-center space-x-2 text-indigo-400 text-xs font-bold uppercase tracking-wider mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                <span>Delhi Police & Ministry of Tourism Control Room</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-white">
+                TravelMate Admin & <span className="coder-text-gradient">Trust Escrow Portal</span>
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                Human verification authority: Review AI-structured reports, audit monument fees, and inspect fare disputes.
+              </p>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-white">
-              TravelMate Admin & <span className="coder-text-gradient">Trust Escrow Portal</span>
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              Human verification authority: Review AI-structured reports, audit monument fees, and inspect fare disputes.
-            </p>
           </div>
 
-        <button
-          onClick={loadAdminData}
-          className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 rounded-xl text-xs font-bold flex items-center space-x-2 transition-all"
-        >
-          <RefreshCw className="w-3.5 h-3.5" />
-          <span>Refresh Live Queue</span>
-        </button>
-      </div>
+          <button
+            onClick={loadAdminData}
+            className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 rounded-xl text-xs font-bold flex items-center space-x-2 transition-all shrink-0 self-start sm:self-center"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>Refresh Live Queue</span>
+          </button>
+        </div>
 
       {/* Overview Stat Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">

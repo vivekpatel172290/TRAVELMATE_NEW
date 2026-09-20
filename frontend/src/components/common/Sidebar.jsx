@@ -257,7 +257,7 @@ export default function Sidebar({
                               : 'bg-white/[0.05] text-slate-300 group-hover:text-white group-hover:bg-white/[0.1]'
                           }`}
                         >
-                          <Icon className="w-4.5 h-4.5" />
+                          <Icon className="w-4 h-4" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between gap-1.5">

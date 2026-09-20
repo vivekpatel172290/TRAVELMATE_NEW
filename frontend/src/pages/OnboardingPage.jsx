@@ -69,7 +69,7 @@ export default function OnboardingPage() {
           <div className="absolute -right-12 -top-12 w-64 h-64 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10 max-w-2xl">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold mb-4">
-              <img src="/logo.jpg" alt="TravelMate" className="w-4 h-4 rounded object-cover ring-1 ring-white/20" />
+              <img src="/logo.jpg" alt="TravelMate" className="w-4 h-4 rounded object-cover ring-1 ring-white/20 shrink-0" />
               <span>SIH 2026 • Verified Tourist Trust Architecture</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold font-display text-white tracking-tight leading-tight">
