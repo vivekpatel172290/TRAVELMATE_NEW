@@ -190,7 +190,7 @@ export default function DiscoverPage() {
 
       {/* Map View Mode */}
       {viewMode === 'map' && (
-        <div className="mb-8">
+        <div className="mb-8 h-[380px] sm:h-[420px] rounded-2xl overflow-hidden">
           <GoogleMapView
             places={places}
             showRoute={false}

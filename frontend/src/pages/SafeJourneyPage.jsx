@@ -954,7 +954,7 @@ export default function SafeJourneyPage() {
         )}
 
         {/* 3. FULL-WIDTH RADAR MAP CANVAS (POSITIONED DOWN / BELOW CORRIDOR CARDS) */}
-        <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-4 sm:p-6 shadow-2xl backdrop-blur-xl flex flex-col flex-1 min-h-[640px] relative overflow-hidden space-y-3.5">
+        <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-4 sm:p-5 shadow-2xl backdrop-blur-xl flex flex-col relative overflow-hidden space-y-3">
           
           {/* Map Top Status Strip HUD */}
           <div className="flex flex-wrap items-center justify-between gap-3 z-10 pb-3 border-b border-white/[0.06]">
@@ -1013,8 +1013,8 @@ export default function SafeJourneyPage() {
             </div>
           </div>
 
-          {/* Interactive Google Map with Route Overlays (Expands to fill all remaining space) */}
-          <div className="relative w-full min-h-[520px] lg:min-h-[620px] flex-1 rounded-2xl overflow-hidden border border-white/[0.08] shadow-2xl bg-slate-950 flex flex-col">
+          {/* Interactive Google Map with Route Overlays (Sized to fit viewport without scrolling) */}
+          <div className="relative w-full h-[340px] sm:h-[370px] lg:h-[390px] rounded-2xl overflow-hidden border border-white/[0.08] shadow-2xl bg-slate-950 flex flex-col">
             <GoogleMapView
               showRoute={true}
               simulatedDeviation={simulatedDeviation}
@@ -1033,7 +1033,7 @@ export default function SafeJourneyPage() {
           </div>
 
           {/* Map Telemetry Footer */}
-          <div className="mt-4 pt-3.5 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-300">
+          <div className="mt-3 pt-3 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-slate-300">
             <div className="flex items-center space-x-2">
               <Info className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>Multi-route safety layer powered by Police beat records & real-time street lighting telemetry.</span>

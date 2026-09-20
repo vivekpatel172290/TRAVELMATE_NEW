@@ -83,7 +83,8 @@ export default function GoogleMapView({
   allowAlternatives = true,
   hideSearch = false,
   hideRouteSelector = false,
-  hideBottomStatus = false
+  hideBottomStatus = false,
+  className = ''
 }) {
   const { isDark } = useTheme();
   const mapContainerRef = useRef(null);
@@ -643,9 +644,9 @@ export default function GoogleMapView({
   };
 
   return (
-    <div className={`relative w-full h-full min-h-[460px] rounded-2xl overflow-hidden border flex flex-col flex-1 transition-colors ${
+    <div className={`relative w-full h-full min-h-[260px] rounded-2xl overflow-hidden border flex flex-col flex-1 transition-colors ${
       isDark ? 'bg-slate-950 border-white/10' : 'bg-slate-100 border-slate-200 shadow-sm'
-    }`}>
+    } ${className}`}>
       {/* Top Search & Controls Overlay (Hidden when controlled externally) */}
       {!hideSearch && (
         <div className="absolute top-3 left-3 right-3 z-10 flex items-center gap-2">
@@ -724,7 +725,7 @@ export default function GoogleMapView({
       {/* Actual Google Map Canvas Container */}
       <div
         ref={mapContainerRef}
-        className="w-full h-full min-h-[460px] lg:min-h-[560px] flex-1"
+        className="w-full h-full flex-1"
       />
 
       {/* High-Contrast Expansive Vector Map Fallback (Fills 100% of available space) */}
@@ -733,7 +734,7 @@ export default function GoogleMapView({
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293720_1px,transparent_1px),linear-gradient(to_bottom,#1f293720_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
 
           {/* Full-Bleed High-Definition Delhi Radar Schematic */}
-          <svg className="w-full h-full min-h-[460px] lg:min-h-[560px] relative z-0 flex-1" viewBox="0 0 1100 520" preserveAspectRatio="none">
+          <svg className="w-full h-full relative z-0 flex-1" viewBox="0 0 1100 520" preserveAspectRatio="none">
             <defs>
               <linearGradient id="yamunaWater" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#0284c7" stopOpacity="0.4" />
