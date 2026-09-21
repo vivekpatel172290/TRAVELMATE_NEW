@@ -965,12 +965,12 @@ export default function SafeJourneyPage() {
           
           {/* Left / Primary Column: Radar Map Canvas (lg:col-span-7 xl:col-span-8) */}
           <div className="lg:col-span-7 xl:col-span-8 flex flex-col">
-            <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-5 sm:p-6 shadow-2xl backdrop-blur-xl flex flex-col h-full relative overflow-hidden space-y-4">
+            <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-4 sm:p-5 shadow-2xl backdrop-blur-xl flex flex-col h-full relative overflow-hidden space-y-3">
               
               {/* Map Top Status Strip HUD */}
-              <div className="flex flex-wrap items-center justify-between gap-3 z-10 pb-3 border-b border-white/[0.06]">
-                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                  <div className="flex items-center space-x-2.5 bg-black/60 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10 text-xs shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-2.5 z-10 pb-2.5 border-b border-white/[0.06]">
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex items-center space-x-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-xs shadow-sm">
                     <span className={`w-2.5 h-2.5 rounded-full ${pickupMode === 'manual' ? 'bg-blue-400 ring-2 ring-blue-400/30' : 'bg-emerald-400 radar-pulse'}`} />
                     <span className="text-slate-200 font-mono font-bold text-xs sm:text-sm" id="label-live-gps-coords">
                       {pickupMode === 'manual'
@@ -986,10 +986,10 @@ export default function SafeJourneyPage() {
                   </div>
 
                   {/* Active Route Indicator Pill */}
-                  <div className="hidden sm:flex items-center space-x-1.5 px-3 py-2 rounded-xl border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 text-xs font-medium transition-all">
+                  <div className="hidden sm:flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 text-xs font-medium transition-all">
                     <Navigation className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                     <span>Selected:</span>
-                    <strong className="text-white font-bold truncate max-w-[200px]">
+                    <strong className="text-white font-bold truncate max-w-[170px]">
                       {activeSelectedRoute?.summary || `Route ${selectedRouteIndex + 1}`}
                     </strong>
                     {activeSelectedRoute?.distanceText && (
@@ -999,11 +999,11 @@ export default function SafeJourneyPage() {
                 </div>
 
                 {/* Map Action: Deviation Simulation */}
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 shrink-0">
                   <button
                     id="btn-simulate-deviation"
                     onClick={() => setSimulatedDeviation(!simulatedDeviation)}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all cursor-pointer ${
                       simulatedDeviation
                         ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-md ring-1 ring-amber-400/30'
                         : 'bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 border border-white/10'
@@ -1016,7 +1016,7 @@ export default function SafeJourneyPage() {
               </div>
 
               {/* Interactive Google Map with Route Overlays */}
-              <div className="relative w-full h-[480px] sm:h-[520px] lg:h-[560px] rounded-2xl overflow-hidden border border-white/[0.08] shadow-2xl bg-slate-950 flex flex-col flex-1">
+              <div className="relative w-full h-[370px] sm:h-[400px] lg:h-[430px] rounded-2xl overflow-hidden border border-white/[0.08] shadow-2xl bg-slate-950 flex flex-col flex-1">
                 <GoogleMapView
                   showRoute={true}
                   simulatedDeviation={simulatedDeviation}
@@ -1036,7 +1036,7 @@ export default function SafeJourneyPage() {
               </div>
 
               {/* Map Telemetry Footer */}
-              <div className="mt-2.5 pt-2.5 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-300">
+              <div className="mt-2 pt-2 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-300">
                 <div className="flex items-center space-x-2">
                   <Info className="w-4 h-4 text-cyan-400 shrink-0" />
                   <span className="text-[11px]">Multi-route safety layer powered by Police beats & street lighting telemetry.</span>
@@ -1053,7 +1053,7 @@ export default function SafeJourneyPage() {
 
           {/* Right Column: Active Journey Monitor (lg:col-span-5 xl:col-span-4) */}
           <div className="lg:col-span-5 xl:col-span-4 flex flex-col">
-            <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-4 sm:p-5 shadow-2xl backdrop-blur-xl relative overflow-hidden flex flex-col justify-between h-full space-y-3.5">
+            <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-4 sm:p-5 shadow-2xl backdrop-blur-xl relative overflow-hidden flex flex-col justify-between h-full space-y-3">
               
               {/* Ambient Glowing Gradient Orbs */}
               <div className="absolute -top-16 -right-16 w-36 h-36 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
@@ -1079,7 +1079,7 @@ export default function SafeJourneyPage() {
               </div>
 
               {/* Real-Time Telemetry Breakdown Box */}
-              <div className="p-3.5 rounded-2xl bg-black/40 border border-white/[0.06] space-y-2 text-xs relative z-10 backdrop-blur-sm">
+              <div className="p-3 rounded-2xl bg-black/40 border border-white/[0.06] space-y-1.5 text-xs relative z-10 backdrop-blur-sm">
                 <div className="flex justify-between items-center">
                   <span className="text-slate-400 font-medium">Journey Pass:</span>
                   <span className="font-mono font-bold text-white bg-white/5 px-2 py-0.5 rounded-lg border border-white/10 text-[11px]">
