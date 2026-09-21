@@ -791,8 +791,15 @@ export default function PhraseHelperPage() {
           
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-md shadow-cyan-500/25 shrink-0">
-                <Globe className="w-4 h-4" />
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#1c2032] to-[#0a0d16] border border-cyan-500/40 p-1.5 flex items-center justify-center shadow-md shadow-cyan-500/25 shrink-0 overflow-hidden">
+                <img
+                  src="/bhashini-logo.png"
+                  alt="Bhashini"
+                  className="w-full h-full object-contain filter drop-shadow-[0_0_4px_rgba(6,182,212,0.5)]"
+                  onError={(e) => {
+                    e.currentTarget.src = '/bhashini-logo.svg';
+                  }}
+                />
               </div>
               <div>
                 <div className="flex items-center space-x-2">

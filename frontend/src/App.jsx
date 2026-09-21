@@ -160,18 +160,36 @@ function AppLayout() {
               tabIndex={-1}
             />
 
-            {/* 2. Digital India Bhashini Multilingual Translator Icon Button */}
+            {/* 2. Digital India Bhashini Multilingual Translator Icon Button with Official Logo */}
             <button
               id="btn-floating-bhashini-translate"
               onClick={() => {
                 navigate('/phrase-helper');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="group flex items-center justify-center bg-gradient-to-r from-[#6b30e3] to-[#8b5cf6] hover:from-[#7c3aed] hover:to-[#a78bfa] text-white w-9 h-9 sm:w-10 sm:h-10 rounded-full shadow-lg shadow-indigo-600/30 border border-indigo-400/40 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+              className="group relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
               aria-label="Open Bhashini AI Multilingual Translator"
               title="Digital India Bhashini Multilingual AI Translator"
             >
-              <Languages className="w-4 h-4 text-white group-hover:scale-110 transition-transform" />
+              {/* Glowing Ambient Aura Behind Bhashini Logo */}
+              <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-600 via-cyan-500 to-teal-400 opacity-40 group-hover:opacity-90 blur-md transition-all duration-300 pointer-events-none" />
+
+              {/* Hardware Glass Frame */}
+              <div className="relative w-full h-full rounded-full bg-gradient-to-br from-[#1c2032] via-[#121624] to-[#0a0d16] border-2 border-cyan-500/40 group-hover:border-cyan-300 flex items-center justify-center p-1.5 shadow-lg shadow-black/70 overflow-hidden transition-all duration-200">
+                {/* Subtle Inner Gradient Accents */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/15 via-cyan-400/10 to-teal-400/15 pointer-events-none" />
+                <div className="absolute inset-1 rounded-full bg-white/[0.03] pointer-events-none" />
+
+                {/* Official Bhashini Logo Image */}
+                <img
+                  src="/bhashini-logo.png"
+                  alt="Bhashini AI"
+                  className="w-full h-full object-contain relative z-10 group-hover:scale-115 transition-transform duration-300 filter drop-shadow-[0_0_5px_rgba(6,182,212,0.45)]"
+                  onError={(e) => {
+                    e.currentTarget.src = '/bhashini-logo.svg';
+                  }}
+                />
+              </div>
             </button>
           </div>
         </div>
