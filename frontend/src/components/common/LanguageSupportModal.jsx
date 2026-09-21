@@ -40,6 +40,7 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
   const [bhashiniResult, setBhashiniResult] = useState(null);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [translateError, setTranslateError] = useState(null);
   const recognitionRef = useRef(null);
 
   if (!isOpen) return null;
@@ -73,6 +74,7 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
 
   const executeTranslation = async (textToTranslate, autoSpeak = false) => {
     if (!textToTranslate || !textToTranslate.trim()) return;
+    setTranslateError(null);
     setIsTranslating(true);
     try {
       const res = await translateText({ text: textToTranslate, sourceLang: 'en', targetLang: 'hi' });
@@ -82,6 +84,7 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
         transliteration: res.transliteration,
         phonetic: res.phonetic,
         service: res.source,
+        isLiveBhashini: res.isLiveBhashini,
         confidence: `${Math.round(res.confidence * 100)}% Contextual Match`,
       });
       if (autoSpeak && res.hindi) {
@@ -89,6 +92,7 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
       }
     } catch (err) {
       console.error('Translation error:', err);
+      setTranslateError(err.message || 'Translation failed.');
     } finally {
       setIsTranslating(false);
     }
@@ -304,18 +308,38 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
           {/* Digital India Bhashini Status Banner */}
           <div className="flex items-center justify-between text-[11px] text-slate-400 pt-0.5">
             <span className="flex items-center space-x-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 radar-pulse" />
+              <span className={`w-2 h-2 rounded-full ${bhashiniResult?.isLiveBhashini ? 'bg-emerald-400 animate-pulse' : 'bg-cyan-400'}`} />
               <strong className="text-cyan-300">Digital India Bhashini AI:</strong>
-              <span>{BHASHINI_CONFIG.USE_MOCK ? 'Contextual Engine (API Key Ready)' : 'Live ULCA Inference Pipeline'}</span>
+              <span>{bhashiniResult ? bhashiniResult.service : 'Bhashini ULCA / Neural Pipeline'}</span>
             </span>
             <span className="font-mono text-[10px] text-slate-500">MeitY NLTM</span>
           </div>
+
+          {/* Dismissible Error Banner */}
+          {translateError && (
+            <div className="p-3 bg-rose-500/15 border border-rose-500/30 rounded-xl text-xs text-rose-200 flex items-center justify-between animate-in fade-in">
+              <span>{translateError}</span>
+              <button
+                type="button"
+                onClick={() => setTranslateError(null)}
+                className="text-xs font-bold text-rose-400 hover:text-rose-200 ml-3 underline cursor-pointer"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
 
           {/* Bhashini Output Card */}
           {bhashiniResult && (
             <div className="p-3 bg-surface border border-indigo-500/40 rounded-xl space-y-2 animate-in fade-in duration-150">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-bold text-cyan-400">{bhashiniResult.service}</span>
+                <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded border ${
+                  bhashiniResult.isLiveBhashini
+                    ? 'text-emerald-300 bg-emerald-500/10 border-emerald-500/30'
+                    : 'text-amber-300 bg-amber-500/10 border-amber-500/20'
+                }`}>
+                  {bhashiniResult.service}
+                </span>
                 <button
                   onClick={() => setFullscreenPhrase(bhashiniResult)}
                   className="text-[11px] text-indigo-300 hover:text-white font-semibold flex items-center space-x-1"

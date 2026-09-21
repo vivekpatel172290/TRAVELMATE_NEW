@@ -118,6 +118,8 @@ export default function PhraseHelperPage() {
   const activeStreamRef = useRef(null);
   const recognitionRef = useRef(null);
   const activeSpeakerRef = useRef(null);
+  const speechRecRef = useRef(null);
+  const speechRecTranscriptRef = useRef('');
 
   // API Key Settings Modal States
   const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
@@ -176,6 +178,7 @@ export default function PhraseHelperPage() {
     const query = (textToTranslate || '').trim();
     if (!query) return;
 
+    setMicErrorMessage(null);
     stopAudio();
     setIsTranslating(true);
     try {
@@ -189,6 +192,7 @@ export default function PhraseHelperPage() {
       handlePlayAudio(result.translated || result.hindi, tgt === 'auto' ? 'hi' : tgt, 'direct-result', result.ttsAudio);
     } catch (err) {
       console.error('Translation error:', err);
+      setMicErrorMessage(err.message || 'Translation failed. Please try again.');
     } finally {
       setIsTranslating(false);
     }
@@ -202,6 +206,10 @@ export default function PhraseHelperPage() {
     if (isListeningDirect) {
       if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
         try { mediaRecorderRef.current.stop(); } catch (_) {}
+      }
+      if (speechRecRef.current) {
+        try { speechRecRef.current.stop(); } catch (_) {}
+        speechRecRef.current = null;
       }
       setIsListeningDirect(false);
       return;
@@ -218,6 +226,26 @@ export default function PhraseHelperPage() {
       setIsListeningDirect(true);
       audioChunksRef.current = [];
 
+      // Start parallel browser SpeechRecognition as a fallback if Bhashini ASR is unavailable
+      speechRecTranscriptRef.current = '';
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        try {
+          const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+          const rec = new SpeechRec();
+          rec.lang = (sourceLang === 'hi' || sourceLang === 'hi-IN') ? 'hi-IN' : 'en-IN';
+          rec.interimResults = false;
+          rec.onresult = (e) => {
+            const transcript = e.results?.[0]?.[0]?.transcript;
+            if (transcript) {
+              speechRecTranscriptRef.current = transcript;
+            }
+          };
+          rec.onerror = () => {};
+          rec.start();
+          speechRecRef.current = rec;
+        } catch (_) {}
+      }
+
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
 
@@ -232,10 +260,16 @@ export default function PhraseHelperPage() {
         stream.getTracks().forEach((track) => track.stop());
         activeStreamRef.current = null;
 
+        if (speechRecRef.current) {
+          try { speechRecRef.current.stop(); } catch (_) {}
+          speechRecRef.current = null;
+        }
+
         if (audioChunksRef.current.length === 0) return;
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
 
         setIsTranslating(true);
+        setMicErrorMessage(null);
         try {
           const res = await translateAudio({
             audioBlob,
@@ -247,7 +281,28 @@ export default function PhraseHelperPage() {
           setTranslationResult(res);
           handlePlayAudio(res.translated, targetLang === 'auto' ? 'hi' : targetLang, 'direct-result', res.ttsAudio);
         } catch (err) {
-          console.error('Direct audio translation error:', err);
+          console.warn('Direct audio translation pipeline failed, checking speech fallback:', err.message);
+
+          // Fallback to browser SpeechRecognition transcript if captured
+          if (speechRecTranscriptRef.current && speechRecTranscriptRef.current.trim()) {
+            try {
+              const fallbackText = speechRecTranscriptRef.current.trim();
+              setInputText(fallbackText);
+              const fallbackRes = await translateText({
+                text: fallbackText,
+                sourceLang: sourceLang === 'auto' ? 'en' : sourceLang,
+                targetLang: targetLang === 'auto' ? 'hi' : targetLang,
+                computeTTS: true,
+              });
+              setTranslationResult(fallbackRes);
+              handlePlayAudio(fallbackRes.translated, targetLang === 'auto' ? 'hi' : targetLang, 'direct-result', fallbackRes.ttsAudio);
+              return;
+            } catch (fallbackErr) {
+              console.error('Speech recognition fallback error:', fallbackErr);
+            }
+          }
+
+          setMicErrorMessage(err.message || 'Voice translation could not be completed.');
         } finally {
           setIsTranslating(false);
         }
@@ -257,7 +312,7 @@ export default function PhraseHelperPage() {
     } catch (err) {
       console.warn('Direct mic start error:', err);
       setIsListeningDirect(false);
-      setMicErrorMessage('Microphone access denied. Please grant microphone permissions.');
+      setMicErrorMessage('Microphone access denied. Please grant microphone permissions in your browser.');
     }
   };
 
@@ -275,6 +330,10 @@ export default function PhraseHelperPage() {
           console.warn('Error stopping mediaRecorder:', err);
         }
       }
+      if (speechRecRef.current) {
+        try { speechRecRef.current.stop(); } catch (_) {}
+        speechRecRef.current = null;
+      }
       return;
     }
 
@@ -291,6 +350,33 @@ export default function PhraseHelperPage() {
       setActiveSpeaker(speakerType);
       activeSpeakerRef.current = speakerType;
       audioChunksRef.current = [];
+
+      const sL = speakerType === 'tourist'
+        ? (sourceLang === 'auto' ? 'en' : sourceLang)
+        : (targetLang === 'auto' ? 'hi' : targetLang);
+      const tL = speakerType === 'tourist'
+        ? (targetLang === 'auto' ? 'hi' : targetLang)
+        : (sourceLang === 'auto' ? 'en' : sourceLang);
+
+      // Start parallel SpeechRecognition fallback listener
+      speechRecTranscriptRef.current = '';
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        try {
+          const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+          const rec = new SpeechRec();
+          rec.lang = (sL === 'hi' || sL === 'hi-IN') ? 'hi-IN' : 'en-IN';
+          rec.interimResults = false;
+          rec.onresult = (e) => {
+            const transcript = e.results?.[0]?.[0]?.transcript;
+            if (transcript) {
+              speechRecTranscriptRef.current = transcript;
+            }
+          };
+          rec.onerror = () => {};
+          rec.start();
+          speechRecRef.current = rec;
+        } catch (_) {}
+      }
 
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
@@ -311,13 +397,13 @@ export default function PhraseHelperPage() {
         stream.getTracks().forEach((track) => track.stop());
         activeStreamRef.current = null;
 
+        if (speechRecRef.current) {
+          try { speechRecRef.current.stop(); } catch (_) {}
+          speechRecRef.current = null;
+        }
+
+        if (audioChunksRef.current.length === 0) return;
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        const sL = speakerType === 'tourist'
-          ? (sourceLang === 'auto' ? 'en' : sourceLang)
-          : (targetLang === 'auto' ? 'hi' : targetLang);
-        const tL = speakerType === 'tourist'
-          ? (targetLang === 'auto' ? 'hi' : targetLang)
-          : (sourceLang === 'auto' ? 'en' : sourceLang);
 
         try {
           const res = await translateAudio({
@@ -344,7 +430,39 @@ export default function PhraseHelperPage() {
           // Automatically play translation voice so the other person hears it!
           handlePlayAudio(newMsg.translated, tL, newMsg.id, newMsg.ttsAudio);
         } catch (err) {
-          console.error('[Live Conversation] Audio translation failed:', err);
+          console.warn('[Live Conversation] Audio translation pipeline failed, checking speech fallback:', err.message);
+
+          // Fallback to browser speech transcript if available
+          if (speechRecTranscriptRef.current && speechRecTranscriptRef.current.trim()) {
+            try {
+              const fallbackText = speechRecTranscriptRef.current.trim();
+              const fallbackRes = await translateText({
+                text: fallbackText,
+                sourceLang: sL,
+                targetLang: tL,
+                computeTTS: true,
+              });
+
+              const newMsg = {
+                id: `voice-${Date.now()}`,
+                speaker: speakerType,
+                original: fallbackText,
+                translated: fallbackRes.translated,
+                transliteration: fallbackRes.transliteration,
+                phonetic: fallbackRes.phonetic,
+                ttsAudio: fallbackRes.ttsAudio,
+                sLang: sL,
+                tLang: tL,
+              };
+
+              setConvoMessages((prev) => [...prev, newMsg]);
+              handlePlayAudio(newMsg.translated, tL, newMsg.id, newMsg.ttsAudio);
+              return;
+            } catch (fallbackErr) {
+              console.error('Speech recognition fallback error in convo:', fallbackErr);
+            }
+          }
+
           setMicErrorMessage(err.message || 'Voice translation could not be completed. You can also type below.');
         } finally {
           setTranslatingSpeaker(null);
@@ -1403,6 +1521,23 @@ export default function PhraseHelperPage() {
             </div>
           </div>
 
+          {/* Dismissible Error Banner in Cockpit */}
+          {micErrorMessage && (
+            <div className="mb-4 bg-rose-500/15 border border-rose-500/30 rounded-2xl p-4 text-rose-200 text-xs flex items-center justify-between animate-in fade-in">
+              <div className="flex items-center space-x-2.5">
+                <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0" />
+                <span>{micErrorMessage}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMicErrorMessage(null)}
+                className="text-xs font-bold text-rose-400 hover:text-rose-200 ml-3 underline cursor-pointer"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
+
           {/* Two-Column Grid: Input & Output */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Input Column */}
@@ -1489,9 +1624,13 @@ export default function PhraseHelperPage() {
               {translationResult ? (
                 <div className="p-5 bg-[#0d0f15] border border-cyan-500/40 rounded-2xl space-y-4 animate-in fade-in duration-200">
                   <div className="flex items-start justify-between gap-2">
-                    <span className="text-[10px] font-bold text-cyan-300 uppercase tracking-wide bg-cyan-500/10 px-2.5 py-1 rounded-md border border-cyan-500/20 flex items-center space-x-1">
-                      <Sparkles className="w-3 h-3 text-cyan-400" />
-                      <span>{translationResult.source || 'Digital India Bhashini'}</span>
+                    <span className={`text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-md border flex items-center space-x-1.5 ${
+                      translationResult.isLiveBhashini
+                        ? 'text-emerald-300 bg-emerald-500/15 border-emerald-500/30'
+                        : 'text-amber-300 bg-amber-500/10 border-amber-500/25'
+                    }`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${translationResult.isLiveBhashini ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+                      <span>{translationResult.source}</span>
                     </span>
 
                     <div className="flex items-center space-x-1">

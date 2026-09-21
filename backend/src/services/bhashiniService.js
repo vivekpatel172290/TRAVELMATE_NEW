@@ -6,14 +6,17 @@
  * 
  * Supports:
  * - Official Bhashini ULCA / Dhruva Inference Pipeline integration
- * - Real-time NMT translation across Indian languages & international languages
- * - Romanized Devanagari-to-Hinglish transliteration & Syllable-spaced phonetics
- * - Multi-tier resilient fallback (Neural Engine + Offline Curated Dictionary)
+ * - Two-step pipeline architecture: Config (getModelsPipeline) + Compute (callbackUrl)
+ * - In-memory configuration caching (30-min TTL) per language pair
+ * - Task chaining: ASR -> Translation -> TTS for voice, Translation -> TTS for text
+ * - Accurate Devanagari Romanization & Syllable-spaced phonetics
+ * - Multi-tier resilient fallback (Google Translate -> MyMemory -> Curated Dictionary)
+ * - Honest source and status labelling (isLiveBhashini: true only on real ULCA success)
  */
 
 const config = require('../config/env');
 
-const BHASHINI_PIPELINE_ENDPOINT = process.env.BHASHINI_PIPELINE_ENDPOINT || 'https://dhruva-api.bhashini.gov.in/services/inference/pipeline';
+const BHASHINI_CONFIG_ENDPOINT = 'https://meity-auth.ulcacontrib.org/ulca/apis/v0/model/getModelsPipeline';
 
 /**
  * Official Bhashini supported Indian and international languages
@@ -33,8 +36,12 @@ const SUPPORTED_LANGUAGES = [
   { code: 'or', name: 'Odia (ଓଡ଼ିଆ)', flag: '🇮🇳', nativeName: 'ଓଡ଼ିଆ', isIndian: true, speechLang: 'or-IN' },
   { code: 'ur', name: 'Urdu (اردو)', flag: '🇮🇳', nativeName: 'اردو', isIndian: true, speechLang: 'ur-IN' },
   { code: 'as', name: 'Assamese (অসমীয়া)', flag: '🇮🇳', nativeName: 'অসমীয়া', isIndian: true, speechLang: 'as-IN' },
+  { code: 'ne', name: 'Nepali (नेपाली)', flag: '🇳🇵', nativeName: 'नेपाली', isIndian: true, speechLang: 'ne-NP' },
+  { code: 'bho', name: 'Bhojpuri (भोजपुरी)', flag: '🇮🇳', nativeName: 'भोजपुरी', isIndian: true, speechLang: 'hi-IN' },
+  { code: 'sa', name: 'Sanskrit (संस्कृतम्)', flag: '🇮🇳', nativeName: 'संस्कृतम्', isIndian: true, speechLang: 'hi-IN' },
+  { code: 'sd', name: 'Sindhi (سنڌي)', flag: '🇮🇳', nativeName: 'سنڌي', isIndian: true, speechLang: 'ur-IN' },
   
-  // Major International Tourist Languages
+  // Major International Tourist Languages (Handled via neural fallback)
   { code: 'es', name: 'Español (Spanish)', flag: '🇪🇸', nativeName: 'Español', isIndian: false, speechLang: 'es-ES' },
   { code: 'fr', name: 'Français (French)', flag: '🇫🇷', nativeName: 'Français', isIndian: false, speechLang: 'fr-FR' },
   { code: 'de', name: 'Deutsch (German)', flag: '🇩🇪', nativeName: 'Deutsch', isIndian: false, speechLang: 'de-DE' },
@@ -46,11 +53,38 @@ const SUPPORTED_LANGUAGES = [
   { code: 'zh-CN', name: '中文 (Chinese)', flag: '🇨🇳', nativeName: '简体中文', isIndian: false, speechLang: 'zh-CN' }
 ];
 
+// Set of languages recognized by Bhashini ULCA
+const BHASHINI_LANGUAGES = new Set([
+  'hi', 'en', 'bn', 'ta', 'te', 'mr', 'gu', 'kn', 'ml', 'pa', 'or', 'ur', 'as',
+  'ne', 'bho', 'brx', 'doi', 'gom', 'ks', 'mai', 'mni', 'sa', 'sat', 'sd'
+]);
+
+function isBhashiniLanguage(lang) {
+  if (!lang) return false;
+  const base = lang.toLowerCase().split('-')[0];
+  return BHASHINI_LANGUAGES.has(base);
+}
+
+function normalizeLangCode(lang) {
+  if (!lang) return 'en';
+  const clean = lang.trim();
+  if (clean.toLowerCase() === 'zh' || clean.toLowerCase() === 'zh-cn') return 'zh-CN';
+  return clean.toLowerCase();
+}
+
+/**
+ * Check if a string contains Devanagari script characters
+ */
+function isDevanagari(text) {
+  return /[\u0900-\u097F]/.test(text || '');
+}
+
 /**
  * High-accuracy Devanagari to Romanized Hinglish Transliteration
  */
 function devanagariToRoman(text) {
   if (!text || typeof text !== 'string') return '';
+  if (!isDevanagari(text)) return '';
   
   const vowels = {
     'अ':'a','आ':'aa','इ':'i','ई':'ee','उ':'u','ऊ':'oo','ऋ':'ri','ए':'e','ऐ':'ai','ओ':'o','औ':'au',
@@ -104,8 +138,9 @@ function devanagariToRoman(text) {
  * Syllable-spaced phonetic pronunciation guide for foreign tourists
  */
 function devanagariToPhonetic(text) {
+  if (!text || !isDevanagari(text)) return '';
   const roman = devanagariToRoman(text);
-  if (!roman) return 'Listen to audio for pronunciation';
+  if (!roman) return '';
 
   return roman
     .split(' ')
@@ -185,122 +220,326 @@ const CURATED_TOURIST_PHRASES = [
   }
 ];
 
+// =============================================================================
+// IN-MEMORY PIPELINE CONFIG CACHE (30-minute TTL)
+// =============================================================================
+const pipelineConfigCache = new Map();
+const CONFIG_CACHE_TTL_MS = 30 * 60 * 1000;
+
+function clearConfigCache() {
+  pipelineConfigCache.clear();
+}
+
 /**
- * Execute translation with Bhashini Dhruva Pipeline with resilient fallbacks
+ * Fetch or retrieve cached Bhashini Dhruva Pipeline Configuration (Step 1)
  */
-async function executeTranslation({ text, audioContent, sourceLang = 'en', targetLang = 'hi', apiKey, userId, inferenceApiKey, computeTTS = true }) {
-  const cleanText = (text || '').trim();
-  if (!cleanText && !audioContent) {
-    throw new Error('Input text or audioContent is required for translation.');
+async function getDhruvaPipelineConfig({
+  sourceLang,
+  targetLang,
+  hasAudio,
+  computeTTS,
+  userId,
+  apiKey,
+  pipelineId
+}) {
+  const cacheKey = `${userId}_${sourceLang}_${targetLang}_${hasAudio ? 'voice' : 'text'}_${computeTTS ? 'tts' : 'notts'}`;
+  const cached = pipelineConfigCache.get(cacheKey);
+
+  if (cached && (Date.now() - cached.cachedAt < CONFIG_CACHE_TTL_MS)) {
+    return cached;
   }
 
-  const effectiveApiKey = apiKey || process.env.BHASHINI_API_KEY || '';
-  const effectiveUserId = userId || process.env.BHASHINI_USER_ID || '';
-  const effectiveInferenceKey = inferenceApiKey || process.env.BHASHINI_INFERENCE_API_KEY || effectiveApiKey;
+  // Construct requested pipeline tasks
+  const pipelineTasks = [];
 
-  // ---------------------------------------------------------------------------
-  // 1. PRIMARY OFFICIAL DIGITAL INDIA BHASHINI ENGINE (MeitY ULCA / Dhruva)
-  // ---------------------------------------------------------------------------
+  if (hasAudio) {
+    pipelineTasks.push({
+      taskType: 'asr',
+      config: {
+        language: { sourceLanguage: sourceLang }
+      }
+    });
+  }
+
+  pipelineTasks.push({
+    taskType: 'translation',
+    config: {
+      language: {
+        sourceLanguage: sourceLang,
+        targetLanguage: targetLang
+      }
+    }
+  });
+
+  if (computeTTS) {
+    pipelineTasks.push({
+      taskType: 'tts',
+      config: {
+        language: { sourceLanguage: targetLang }
+      }
+    });
+  }
+
+  const effectivePipelineId = pipelineId || config.BHASHINI_PIPELINE_ID || '64392f96daac500b55c543cd';
+
   try {
-    const startTime = Date.now();
-    const bhashiniRes = await fetch('https://travelmate-r.ai.studio/api/translate', {
+    const configRes = await fetch(BHASHINI_CONFIG_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'userID': userId,
+        'ulcaApiKey': apiKey
       },
       body: JSON.stringify({
-        text: cleanText,
-        audioContent,
-        sourceLang,
-        targetLang,
-        computeTTS: Boolean(computeTTS),
+        pipelineTasks,
+        pipelineRequestConfig: {
+          pipelineId: effectivePipelineId
+        }
       }),
-      signal: AbortSignal.timeout(14000),
+      signal: AbortSignal.timeout(5000)
     });
 
-    if (bhashiniRes.ok) {
-      const liveData = await bhashiniRes.json();
-      if (liveData && liveData.success && liveData.translatedText) {
-        const translatedOutput = liveData.translatedText;
-        const sourceSpoken = liveData.sourceText || cleanText;
-        const latencyMs = Date.now() - startTime;
-        const transliteration = targetLang === 'hi' ? devanagariToRoman(translatedOutput) : devanagariToRoman(sourceSpoken);
-        const phonetic = targetLang === 'hi' ? devanagariToPhonetic(translatedOutput) : devanagariToPhonetic(sourceSpoken);
+    if (!configRes.ok) {
+      const errText = await configRes.text();
+      console.error(`[Bhashini Config Error] HTTP ${configRes.status}: ${errText}`);
+      return null;
+    }
 
-        return {
-          original: sourceSpoken,
-          translated: translatedOutput,
-          hindi: targetLang === 'hi' ? translatedOutput : sourceSpoken,
-          english: targetLang === 'en' ? translatedOutput : sourceSpoken,
-          ttsAudio: liveData.ttsAudio || null,
-          transliteration,
-          phonetic,
-          sourceLang,
-          targetLang,
-          source: liveData.engine || 'Digital India Bhashini (Official ULCA Engine)',
-          isLiveBhashini: true,
-          confidence: 0.99,
-          latencyMs,
-          timestamp: new Date().toISOString()
-        };
+    const configData = await configRes.json();
+    const endpoint = configData?.pipelineInferenceAPIEndPoint;
+    const responseConfigs = configData?.pipelineResponseConfig || [];
+
+    if (!endpoint?.callbackUrl || !endpoint?.inferenceApiKey) {
+      console.error('[Bhashini Config Error] Missing inference endpoint or key in config response');
+      return null;
+    }
+
+    const serviceIds = {};
+    for (const item of responseConfigs) {
+      const sId = item.config?.[0]?.serviceId;
+      if (sId && item.taskType) {
+        serviceIds[item.taskType] = sId;
       }
     }
+
+    // Verify required service IDs
+    if (!serviceIds.translation || (hasAudio && !serviceIds.asr)) {
+      console.error('[Bhashini Config Error] Required service ID missing for task sequence:', serviceIds);
+      return null;
+    }
+
+    const result = {
+      callbackUrl: endpoint.callbackUrl,
+      inferenceApiKey: endpoint.inferenceApiKey, // { name: string, value: string }
+      serviceIds,
+      cachedAt: Date.now()
+    };
+
+    pipelineConfigCache.set(cacheKey, result);
+    return result;
   } catch (err) {
-    console.warn('[Bhashini] Primary live pipeline exception, falling back to direct ULCA/neural:', err.message);
+    console.error(`[Bhashini Config Exception] ${err.name === 'TimeoutError' ? 'Request timed out (5s)' : err.message}`);
+    return null;
+  }
+}
+
+/**
+ * Execute Bhashini Dhruva Pipeline Compute Call (Step 2)
+ */
+async function executeDhruvaCompute({
+  text,
+  audioContent,
+  sourceLang,
+  targetLang,
+  computeTTS,
+  pipelineConfig
+}) {
+  const hasAudio = Boolean(audioContent);
+  const tasks = [];
+
+  if (hasAudio) {
+    tasks.push({
+      taskType: 'asr',
+      config: {
+        serviceId: pipelineConfig.serviceIds.asr,
+        language: { sourceLanguage: sourceLang },
+        audioFormat: 'wav',
+        samplingRate: 16000
+      }
+    });
   }
 
+  tasks.push({
+    taskType: 'translation',
+    config: {
+      serviceId: pipelineConfig.serviceIds.translation,
+      language: {
+        sourceLanguage: sourceLang,
+        targetLanguage: targetLang
+      }
+    }
+  });
+
+  if (computeTTS && pipelineConfig.serviceIds.tts) {
+    tasks.push({
+      taskType: 'tts',
+      config: {
+        serviceId: pipelineConfig.serviceIds.tts,
+        language: { sourceLanguage: targetLang },
+        gender: 'female'
+      }
+    });
+  }
+
+  const inputData = hasAudio
+    ? { audio: [{ audioContent: audioContent }] }
+    : { input: [{ source: text }] };
+
+  const computeHeaders = {
+    'Content-Type': 'application/json',
+    [pipelineConfig.inferenceApiKey.name]: pipelineConfig.inferenceApiKey.value
+  };
+
+  try {
+    const computeRes = await fetch(pipelineConfig.callbackUrl, {
+      method: 'POST',
+      headers: computeHeaders,
+      body: JSON.stringify({
+        pipelineTasks: tasks,
+        inputData
+      }),
+      signal: AbortSignal.timeout(10000)
+    });
+
+    if (!computeRes.ok) {
+      const errText = await computeRes.text();
+      console.error(`[Bhashini Compute Error] HTTP ${computeRes.status}: ${errText}`);
+      return null;
+    }
+
+    const computeData = await computeRes.json();
+    const pipelineResponse = computeData?.pipelineResponse || [];
+
+    let recognizedText = '';
+    let translatedText = '';
+    let ttsAudio = null;
+
+    for (const item of pipelineResponse) {
+      if (item.taskType === 'asr') {
+        recognizedText = item.output?.[0]?.source || '';
+      } else if (item.taskType === 'translation') {
+        translatedText = item.output?.[0]?.target || '';
+        if (!recognizedText && item.output?.[0]?.source) {
+          recognizedText = item.output[0].source;
+        }
+      } else if (item.taskType === 'tts') {
+        ttsAudio = item.audio?.[0]?.audioContent || item.output?.[0]?.audioContent || null;
+      }
+    }
+
+    if (hasAudio && (!recognizedText || !recognizedText.trim())) {
+      console.warn('[Bhashini ASR] ASR returned empty transcription');
+      return { asrFailed: true };
+    }
+
+    if (!translatedText) {
+      console.warn('[Bhashini Translation] Compute returned empty translated text');
+      return null;
+    }
+
+    return {
+      recognizedText: recognizedText || text,
+      translatedText,
+      ttsAudio
+    };
+  } catch (err) {
+    console.error(`[Bhashini Compute Exception] ${err.name === 'TimeoutError' ? 'Compute timed out (10s)' : err.message}`);
+    return null;
+  }
+}
+
+/**
+ * Execute translation with Bhashini Dhruva Pipeline and multi-tier resilient fallbacks
+ */
+async function executeTranslation({
+  text,
+  audioContent,
+  sourceLang = 'en',
+  targetLang = 'hi',
+  apiKey,
+  userId,
+  inferenceApiKey,
+  computeTTS = true
+}) {
+  const cleanText = (text || '').trim();
+  const hasAudio = Boolean(audioContent);
+
+  if (!cleanText && !hasAudio) {
+    throw new Error('Input text or audioContent is required for translation.');
+  }
+
+  // Normalize language codes
+  const sLang = normalizeLangCode(sourceLang);
+  const tLang = normalizeLangCode(targetLang);
+
+  // Server credentials take precedence over client-provided credentials
+  const effectiveUserId = config.BHASHINI_USER_ID || userId || '';
+  const effectiveApiKey = config.BHASHINI_API_KEY || apiKey || '';
+  const hasBhashiniCreds = Boolean(effectiveUserId && effectiveApiKey);
+
+  // Check if language pair is supported by Bhashini (Indian languages + English)
+  const canUseBhashini = hasBhashiniCreds && isBhashiniLanguage(sLang) && isBhashiniLanguage(tLang);
+
   // ---------------------------------------------------------------------------
-  // 2. DIRECT CUSTOM BHASHINI ULCA PIPELINE (When custom key is provided)
+  // 1. PRIMARY OFFICIAL DIGITAL INDIA BHASHINI DHRUVA PIPELINE
   // ---------------------------------------------------------------------------
-  if (effectiveApiKey && effectiveUserId && cleanText) {
+  if (canUseBhashini) {
     try {
       const startTime = Date.now();
-      const bhashiniRes = await fetch(BHASHINI_PIPELINE_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': effectiveApiKey,
-          'ulcaApiKey': effectiveInferenceKey,
-          'userID': effectiveUserId,
-        },
-        body: JSON.stringify({
-          pipelineTasks: [
-            {
-              taskType: 'translation',
-              config: {
-                language: {
-                  sourceLanguage: sourceLang,
-                  targetLanguage: targetLang,
-                },
-              },
-            },
-          ],
-          inputData: {
-            input: [{ source: cleanText }],
-          },
-        }),
-        signal: AbortSignal.timeout(6000),
+      const pipelineConfig = await getDhruvaPipelineConfig({
+        sourceLang: sLang,
+        targetLang: tLang,
+        hasAudio,
+        computeTTS: Boolean(computeTTS),
+        userId: effectiveUserId,
+        apiKey: effectiveApiKey,
+        pipelineId: config.BHASHINI_PIPELINE_ID
       });
 
-      if (bhashiniRes.ok) {
-        const liveData = await bhashiniRes.json();
-        const translatedOutput = liveData?.pipelineResponse?.[0]?.output?.[0]?.target;
-        if (translatedOutput) {
+      if (pipelineConfig) {
+        const computeResult = await executeDhruvaCompute({
+          text: cleanText,
+          audioContent,
+          sourceLang: sLang,
+          targetLang: tLang,
+          computeTTS: Boolean(computeTTS),
+          pipelineConfig
+        });
+
+        if (computeResult) {
+          if (computeResult.asrFailed) {
+            throw new Error('Voice input could not be transcribed. Please speak clearly or type your phrase.');
+          }
+
           const latencyMs = Date.now() - startTime;
-          const transliteration = targetLang === 'hi' ? devanagariToRoman(translatedOutput) : translatedOutput;
-          const phonetic = targetLang === 'hi' ? devanagariToPhonetic(translatedOutput) : translatedOutput;
+          const translatedOutput = computeResult.translatedText;
+          const originalOutput = computeResult.recognizedText || cleanText;
+
+          const isDev = isDevanagari(translatedOutput);
+          const transliteration = isDev ? devanagariToRoman(translatedOutput) : '';
+          const phonetic = isDev ? devanagariToPhonetic(translatedOutput) : '';
 
           return {
-            original: cleanText,
+            original: originalOutput,
             translated: translatedOutput,
-            hindi: targetLang === 'hi' ? translatedOutput : cleanText,
-            english: targetLang === 'en' ? translatedOutput : cleanText,
-            ttsAudio: null,
+            hindi: tLang === 'hi' ? translatedOutput : (sLang === 'hi' ? originalOutput : ''),
+            english: tLang === 'en' ? translatedOutput : (sLang === 'en' ? originalOutput : ''),
+            ttsAudio: computeResult.ttsAudio || null,
             transliteration,
             phonetic,
-            sourceLang,
-            targetLang,
-            source: 'Digital India Bhashini (Custom Key ULCA)',
+            sourceLang: sLang,
+            targetLang: tLang,
+            source: 'Digital India Bhashini (Official ULCA Engine)',
             isLiveBhashini: true,
             confidence: 0.99,
             latencyMs,
@@ -309,45 +548,53 @@ async function executeTranslation({ text, audioContent, sourceLang = 'en', targe
         }
       }
     } catch (err) {
-      console.warn('[Bhashini] Custom ULCA call exception:', err.message);
+      if (err.message.includes('Voice input could not be transcribed')) {
+        throw err;
+      }
+      console.warn('[Bhashini] Official Dhruva pipeline unavailable, switching to fallback:', err.message);
     }
   }
 
+  // If input was audio-only and Bhashini ASR failed or was not available:
+  if (hasAudio && !cleanText) {
+    throw new Error('Voice speech recognition was unavailable for this audio. Please use microphone with browser speech recognition or type your phrase.');
+  }
+
   // ---------------------------------------------------------------------------
-  // 3. HIGH-ACCURACY NEURAL TRANSLATION PIPELINE (Google GTX + MyMemory)
+  // 2. TIER 1 FALLBACK: GOOGLE TRANSLATE (GTX)
   // ---------------------------------------------------------------------------
   if (cleanText) {
     try {
       const startTime = Date.now();
-      const gtxUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(sourceLang)}&tl=${encodeURIComponent(targetLang)}&dt=t&q=${encodeURIComponent(cleanText)}`;
+      const gtxUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(sLang)}&tl=${encodeURIComponent(tLang)}&dt=t&q=${encodeURIComponent(cleanText)}`;
       const neuralRes = await fetch(gtxUrl, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-          'Accept': '*/*',
+          'Accept': '*/*'
         },
-        signal: AbortSignal.timeout(5000),
+        signal: AbortSignal.timeout(5000)
       });
       
       if (neuralRes.ok) {
         const data = await neuralRes.json();
         const rawTranslated = data?.[0]?.map(item => item[0]).join('') || '';
-        if (rawTranslated) {
+        if (rawTranslated && rawTranslated.trim()) {
           const latencyMs = Date.now() - startTime;
-          const hindiText = targetLang === 'hi' ? rawTranslated : cleanText;
-          const transliteration = hindiText ? devanagariToRoman(hindiText) : '';
-          const phonetic = hindiText ? devanagariToPhonetic(hindiText) : '';
+          const isDev = isDevanagari(rawTranslated);
+          const transliteration = isDev ? devanagariToRoman(rawTranslated) : '';
+          const phonetic = isDev ? devanagariToPhonetic(rawTranslated) : '';
 
           return {
             original: cleanText,
             translated: rawTranslated,
-            hindi: targetLang === 'hi' ? rawTranslated : cleanText,
-            english: targetLang === 'en' ? rawTranslated : cleanText,
+            hindi: tLang === 'hi' ? rawTranslated : (sLang === 'hi' ? cleanText : ''),
+            english: tLang === 'en' ? rawTranslated : (sLang === 'en' ? cleanText : ''),
             ttsAudio: null,
             transliteration,
             phonetic,
-            sourceLang,
-            targetLang,
-            source: 'Bhashini Neural Engine',
+            sourceLang: sLang,
+            targetLang: tLang,
+            source: 'Google Translate (fallback)',
             isLiveBhashini: false,
             confidence: 0.98,
             latencyMs,
@@ -356,88 +603,95 @@ async function executeTranslation({ text, audioContent, sourceLang = 'en', targe
         }
       }
     } catch (neuralErr) {
-      console.warn('[Bhashini] Google GTX error, checking MyMemory fallback:', neuralErr.message);
+      console.warn('[Bhashini Fallback] Google Translate error:', neuralErr.message);
     }
 
-    // 3b. MyMemory Neural Fallback (Guaranteed to return translated Hindi/English)
+    // -------------------------------------------------------------------------
+    // 3. TIER 2 FALLBACK: MYMEMORY TRANSLATED NET
+    // -------------------------------------------------------------------------
     try {
       const startTime = Date.now();
-      const mmUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=${encodeURIComponent(sourceLang)}|${encodeURIComponent(targetLang)}`;
-      const mmRes = await fetch(mmUrl, { signal: AbortSignal.timeout(6000) });
+      const mmUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=${encodeURIComponent(sLang)}|${encodeURIComponent(tLang)}`;
+      const mmRes = await fetch(mmUrl, { signal: AbortSignal.timeout(5000) });
       if (mmRes.ok) {
         const mmData = await mmRes.json();
         const rawTranslated = mmData?.responseData?.translatedText;
         if (rawTranslated && rawTranslated.trim() && !rawTranslated.includes('MYMEMORY WARNING')) {
           const latencyMs = Date.now() - startTime;
-          const hindiText = targetLang === 'hi' ? rawTranslated : cleanText;
-          const transliteration = hindiText ? devanagariToRoman(hindiText) : '';
-          const phonetic = hindiText ? devanagariToPhonetic(hindiText) : '';
+          const isDev = isDevanagari(rawTranslated);
+          const transliteration = isDev ? devanagariToRoman(rawTranslated) : '';
+          const phonetic = isDev ? devanagariToPhonetic(rawTranslated) : '';
 
           return {
             original: cleanText,
             translated: rawTranslated,
-            hindi: targetLang === 'hi' ? rawTranslated : cleanText,
-            english: targetLang === 'en' ? rawTranslated : cleanText,
+            hindi: tLang === 'hi' ? rawTranslated : (sLang === 'hi' ? cleanText : ''),
+            english: tLang === 'en' ? rawTranslated : (sLang === 'en' ? cleanText : ''),
             ttsAudio: null,
             transliteration,
             phonetic,
-            sourceLang,
-            targetLang,
-            source: 'Digital India Bhashini Neural Proxy',
+            sourceLang: sLang,
+            targetLang: tLang,
+            source: 'MyMemory (fallback)',
             isLiveBhashini: false,
-            confidence: 0.98,
+            confidence: 0.95,
             latencyMs,
             timestamp: new Date().toISOString()
           };
         }
       }
     } catch (mmErr) {
-      console.warn('[Bhashini] MyMemory fallback error:', mmErr.message);
+      console.warn('[Bhashini Fallback] MyMemory error:', mmErr.message);
     }
-  }
 
-  // ---------------------------------------------------------------------------
-  // 4. CURATED TOURIST DICTIONARY GROUNDING (Offline Safe)
-  // ---------------------------------------------------------------------------
-  if (cleanText) {
+    // -------------------------------------------------------------------------
+    // 4. TIER 3 FALLBACK: CURATED TOURIST DICTIONARY
+    // -------------------------------------------------------------------------
     const lower = cleanText.toLowerCase();
     for (const item of CURATED_TOURIST_PHRASES) {
       if (item.keywords.some(kw => lower.includes(kw))) {
+        const isTargetHindi = tLang === 'hi';
+        const translated = isTargetHindi ? item.hindi : item.english;
+        const isDev = isDevanagari(translated);
+
         return {
           original: cleanText,
-          translated: targetLang === 'hi' ? item.hindi : item.english,
+          translated,
           hindi: item.hindi,
           english: item.english,
           ttsAudio: null,
-          transliteration: item.transliteration,
-          phonetic: item.phonetic,
-          sourceLang,
-          targetLang,
-          source: 'Digital India Bhashini (Curated Delhi Grounding)',
+          transliteration: isDev ? item.transliteration : '',
+          phonetic: isDev ? item.phonetic : '',
+          sourceLang: sLang,
+          targetLang: tLang,
+          source: 'Curated Phrase Dictionary (offline)',
           isLiveBhashini: false,
           confidence: 0.96,
-          latencyMs: 10,
+          latencyMs: 5,
           timestamp: new Date().toISOString()
         };
       }
     }
   }
 
-  // Final fallback
+  // ---------------------------------------------------------------------------
+  // 5. TIER 4 FINAL SAFE RETURN
+  // ---------------------------------------------------------------------------
+  const isDev = isDevanagari(cleanText);
   return {
-    original: cleanText || 'Voice input',
-    translated: cleanText || 'Voice input',
-    hindi: cleanText || '',
-    english: cleanText || '',
+    original: cleanText,
+    translated: cleanText,
+    hindi: tLang === 'hi' ? cleanText : '',
+    english: tLang === 'en' ? cleanText : '',
     ttsAudio: null,
-    transliteration: devanagariToRoman(cleanText),
-    phonetic: devanagariToPhonetic(cleanText),
-    sourceLang,
-    targetLang,
-    source: 'Digital India Bhashini',
+    transliteration: isDev ? devanagariToRoman(cleanText) : '',
+    phonetic: isDev ? devanagariToPhonetic(cleanText) : '',
+    sourceLang: sLang,
+    targetLang: tLang,
+    source: 'Local Grounding (fallback)',
     isLiveBhashini: false,
-    confidence: 0.90,
-    latencyMs: 5,
+    confidence: 0.85,
+    latencyMs: 1,
     timestamp: new Date().toISOString()
   };
 }
@@ -447,4 +701,5 @@ module.exports = {
   devanagariToRoman,
   devanagariToPhonetic,
   executeTranslation,
+  clearConfigCache
 };

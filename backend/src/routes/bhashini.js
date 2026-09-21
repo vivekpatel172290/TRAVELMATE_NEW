@@ -6,23 +6,56 @@
 
 const express = require('express');
 const router = express.Router();
+const config = require('../config/env');
 const { SUPPORTED_LANGUAGES, executeTranslation } = require('../services/bhashiniService');
 
 /**
  * GET /api/bhashini/status
- * Returns health and configuration status of the Bhashini service
+ * Returns health, credentials presence, and configuration status of Bhashini service.
+ * With ?test=1, executes a live translation test (Hello en -> hi).
  */
-router.get('/status', (req, res) => {
-  const hasEnvKey = Boolean(process.env.BHASHINI_API_KEY && process.env.BHASHINI_USER_ID);
-  res.json({
+router.get('/status', async (req, res) => {
+  const hasEnvCredentials = Boolean(config.BHASHINI_USER_ID && config.BHASHINI_API_KEY);
+  const statusData = {
     success: true,
     service: 'Digital India Bhashini (National Language Translation Mission)',
     status: 'active',
-    hasEnvCredentials: hasEnvKey,
-    pipelineEndpoint: process.env.BHASHINI_PIPELINE_ENDPOINT || 'https://dhruva-api.bhashini.gov.in/services/inference/pipeline',
+    hasEnvCredentials,
+    pipelineId: config.BHASHINI_PIPELINE_ID || '64392f96daac500b55c543cd',
     supportedLanguagesCount: SUPPORTED_LANGUAGES.length,
     timestamp: new Date().toISOString()
-  });
+  };
+
+  if (req.query.test === '1' || req.query.test === 'true') {
+    const startTime = Date.now();
+    try {
+      const testResult = await executeTranslation({
+        text: 'Hello',
+        sourceLang: 'en',
+        targetLang: 'hi',
+        computeTTS: false
+      });
+      statusData.test = {
+        success: Boolean(testResult?.translated),
+        translated: testResult.translated,
+        source: testResult.source,
+        isLiveBhashini: Boolean(testResult.isLiveBhashini),
+        latencyMs: testResult.latencyMs || (Date.now() - startTime),
+        error: null
+      };
+    } catch (err) {
+      statusData.test = {
+        success: false,
+        translated: null,
+        source: null,
+        isLiveBhashini: false,
+        latencyMs: Date.now() - startTime,
+        error: err.message
+      };
+    }
+  }
+
+  res.json(statusData);
 });
 
 /**
@@ -40,8 +73,8 @@ router.get('/languages', (req, res) => {
 
 /**
  * POST /api/bhashini/translate or POST /api/translate
- * Translates input text between source and target language
- * Body: { text, sourceLang, targetLang, apiKey, userId, inferenceApiKey }
+ * Translates input text or speech audio between source and target language
+ * Body: { text, audioContent, sourceLang, targetLang, apiKey, userId, inferenceApiKey, computeTTS }
  */
 const handleTranslationRequest = async (req, res, next) => {
   try {
@@ -73,13 +106,15 @@ const handleTranslationRequest = async (req, res, next) => {
       ttsAudio: result.ttsAudio
     });
   } catch (err) {
-    next(err);
+    res.status(500).json({
+      success: false,
+      error: err.message || 'Translation failed'
+    });
   }
 };
 
 router.post('/translate', handleTranslationRequest);
 router.post('/', handleTranslationRequest);
-
 
 /**
  * POST /api/bhashini/verify-key
@@ -108,9 +143,11 @@ router.post('/verify-key', async (req, res) => {
 
     res.json({
       success: true,
-      verified: true,
+      verified: Boolean(testResult.isLiveBhashini),
       isCustomKey: true,
-      message: '✅ Bhashini API Key connected successfully! TravelMate translation engine is live.',
+      message: testResult.isLiveBhashini
+        ? '✅ Bhashini API Key connected successfully! TravelMate translation engine is live.'
+        : '⚠️ Key could not connect to live Bhashini ULCA. Using reliable fallback engine.',
       sampleTranslation: testResult.translated,
       source: testResult.source || 'Digital India Bhashini Engine',
       latencyMs: testResult.latencyMs || 250
