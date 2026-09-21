@@ -170,10 +170,14 @@ export default function MyJourneyPage() {
         </div>
 
         {/* Active Journey Overview Glass Card */}
-        <div className="relative rounded-3xl p-6 sm:p-8 bg-[#0e111a]/95 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden group">
-          {/* Ambient Corner Accent */}
-          <div className="absolute -right-16 -top-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500" />
-          <div className="absolute -left-16 -bottom-16 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative group">
+          {/* Ambient Glowing Multi-Color Aura Backdrop */}
+          <div className="absolute -inset-1.5 sm:-inset-2 rounded-[32px] bg-gradient-to-r from-purple-600/30 via-indigo-600/30 to-cyan-500/30 opacity-40 group-hover:opacity-85 blur-2xl pointer-events-none transition-all duration-500 animate-pulse" />
+
+          <div className="relative rounded-3xl p-6 sm:p-8 bg-[#0e111a]/95 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden">
+            {/* Ambient Corner Accent */}
+            <div className="absolute -right-16 -top-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500" />
+            <div className="absolute -left-16 -bottom-16 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 space-y-6">
             {/* Trip Info & Quick Nav Links */}
@@ -291,6 +295,7 @@ export default function MyJourneyPage() {
             </div>
           </div>
         </div>
+      </div>
 
         {/* Tabbed Navigation Bar */}
         <div className="flex items-center space-x-2 border-b border-white/[0.08] pb-1">
@@ -353,49 +358,52 @@ export default function MyJourneyPage() {
                       {getTimelineIcon(evt.type)}
                     </div>
 
-                    {/* Timeline Event Card */}
-                    <div className="p-5 sm:p-6 rounded-2xl bg-[#0e111a]/95 backdrop-blur-xl border border-white/10 hover:border-cyan-500/30 transition-all duration-300 shadow-xl space-y-2.5">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <div className="flex items-center space-x-2.5">
-                          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/[0.06] text-slate-300 border border-white/10">
-                            {evt.module || 'TravelMate Core'}
-                          </span>
-                          <span className="text-sm font-bold text-white">
-                            {evt.title}
-                          </span>
+                    {/* Timeline Event Card with Glowing Aura */}
+                    <div className="relative group/card flex-1">
+                      <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-cyan-600/25 via-indigo-600/25 to-purple-600/20 opacity-0 group-hover/card:opacity-80 blur-xl pointer-events-none transition-all duration-300" />
+                      <div className="relative p-5 sm:p-6 rounded-2xl bg-[#0e111a]/95 backdrop-blur-xl border border-white/10 group-hover/card:border-cyan-500/50 transition-all duration-300 shadow-xl space-y-2.5">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <div className="flex items-center space-x-2.5">
+                            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/[0.06] text-slate-300 border border-white/10">
+                              {evt.module || 'TravelMate Core'}
+                            </span>
+                            <span className="text-sm font-bold text-white">
+                              {evt.title}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center space-x-2 text-xs text-slate-400">
+                            <Clock className="w-3.5 h-3.5 text-slate-500" />
+                            <span>
+                              {new Date(evt.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                            <span>•</span>
+                            <span>
+                              {new Date(evt.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </span>
+                          </div>
                         </div>
 
-                        <div className="flex items-center space-x-2 text-xs text-slate-400">
-                          <Clock className="w-3.5 h-3.5 text-slate-500" />
-                          <span>
-                            {new Date(evt.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                          {evt.description}
+                        </p>
+
+                        <div className="pt-3 flex items-center justify-between border-t border-white/[0.06] text-xs">
+                          <span className="text-[11px] text-emerald-400 font-semibold flex items-center space-x-1">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>{evt.status || 'Verified on Device'}</span>
                           </span>
-                          <span>•</span>
-                          <span>
-                            {new Date(evt.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </span>
+
+                          {evt.actionPath && (
+                            <Link
+                              to={evt.actionPath}
+                              className="inline-flex items-center space-x-1.5 text-cyan-400 hover:text-cyan-300 font-bold hover:underline transition-colors"
+                            >
+                              <span>{evt.actionLabel || 'Open Tool'}</span>
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </Link>
+                          )}
                         </div>
-                      </div>
-
-                      <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                        {evt.description}
-                      </p>
-
-                      <div className="pt-3 flex items-center justify-between border-t border-white/[0.06] text-xs">
-                        <span className="text-[11px] text-emerald-400 font-semibold flex items-center space-x-1">
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span>{evt.status || 'Verified on Device'}</span>
-                        </span>
-
-                        {evt.actionPath && (
-                          <Link
-                            to={evt.actionPath}
-                            className="inline-flex items-center space-x-1.5 text-cyan-400 hover:text-cyan-300 font-bold hover:underline transition-colors"
-                          >
-                            <span>{evt.actionLabel || 'Open Tool'}</span>
-                            <ArrowRight className="w-3.5 h-3.5" />
-                          </Link>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -454,23 +462,26 @@ export default function MyJourneyPage() {
                     {records.fareChecks.map((fare, idx) => (
                       <div
                         key={fare.id || idx}
-                        className="p-5 rounded-2xl bg-[#0e111a]/90 border border-white/10 hover:border-amber-500/30 transition-all space-y-2 shadow-lg"
+                        className="relative group/rec"
                       >
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-white flex items-center space-x-1.5">
-                            <Car className="w-3.5 h-3.5 text-amber-400" />
-                            <span>{fare.mode || 'Auto-Rickshaw'}</span>
-                          </span>
-                          <span className="text-sm font-extrabold text-emerald-400 font-mono">
-                            ₹{fare.fare}
-                          </span>
+                        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-indigo-500/20 opacity-0 group-hover/rec:opacity-80 blur-xl pointer-events-none transition-all duration-300" />
+                        <div className="relative p-5 rounded-2xl bg-[#0e111a]/90 border border-white/10 group-hover/rec:border-amber-500/40 transition-all space-y-2 shadow-lg">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-white flex items-center space-x-1.5">
+                              <Car className="w-3.5 h-3.5 text-amber-400" />
+                              <span>{fare.mode || 'Auto-Rickshaw'}</span>
+                            </span>
+                            <span className="text-sm font-extrabold text-emerald-400 font-mono">
+                              ₹{fare.fare}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-300">
+                            {fare.from} ➔ {fare.to} ({fare.distance} km)
+                          </p>
+                          <p className="text-[10px] text-slate-500">
+                            {new Date(fare.timestamp).toLocaleString()}
+                          </p>
                         </div>
-                        <p className="text-xs text-slate-300">
-                          {fare.from} ➔ {fare.to} ({fare.distance} km)
-                        </p>
-                        <p className="text-[10px] text-slate-500">
-                          {new Date(fare.timestamp).toLocaleString()}
-                        </p>
                       </div>
                     ))}
                   </div>
@@ -501,22 +512,25 @@ export default function MyJourneyPage() {
                     {records.evidenceList.map((ev, idx) => (
                       <div
                         key={ev.id || idx}
-                        className="p-5 rounded-2xl bg-[#0e111a]/90 border border-white/10 hover:border-teal-500/30 transition-all space-y-2 shadow-lg"
+                        className="relative group/ev"
                       >
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold font-mono text-cyan-300 bg-cyan-500/10 px-2.5 py-1 rounded-md border border-cyan-500/30">
-                            {ev.plateNumber}
-                          </span>
-                          <span className="text-[11px] text-slate-400 font-medium">
-                            {ev.vehicleType || 'Commercial Vehicle'}
-                          </span>
+                        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-teal-500/20 via-cyan-500/20 to-indigo-500/20 opacity-0 group-hover/ev:opacity-80 blur-xl pointer-events-none transition-all duration-300" />
+                        <div className="relative p-5 rounded-2xl bg-[#0e111a]/90 border border-white/10 group-hover/ev:border-teal-500/40 transition-all space-y-2 shadow-lg">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold font-mono text-cyan-300 bg-cyan-500/10 px-2.5 py-1 rounded-md border border-cyan-500/30">
+                              {ev.plateNumber}
+                            </span>
+                            <span className="text-[11px] text-slate-400 font-medium">
+                              {ev.vehicleType || 'Commercial Vehicle'}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-300">
+                            {ev.location || 'Logged in transit'}
+                          </p>
+                          <p className="text-[10px] text-slate-500">
+                            {new Date(ev.timestamp).toLocaleString()}
+                          </p>
                         </div>
-                        <p className="text-xs text-slate-300">
-                          {ev.location || 'Logged in transit'}
-                        </p>
-                        <p className="text-[10px] text-slate-500">
-                          {new Date(ev.timestamp).toLocaleString()}
-                        </p>
                       </div>
                     ))}
                   </div>
@@ -547,19 +561,22 @@ export default function MyJourneyPage() {
                     {records.visitedPlaces.map((pl, idx) => (
                       <div
                         key={pl.id || idx}
-                        className="p-5 rounded-2xl bg-[#0e111a]/90 border border-white/10 hover:border-cyan-500/30 transition-all space-y-2 shadow-lg"
+                        className="relative group/pl"
                       >
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-white">
-                            {pl.name}
-                          </span>
-                          <span className="text-[10px] font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
-                            Verified Check-in
-                          </span>
+                        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-cyan-500/25 via-blue-500/20 to-indigo-500/20 opacity-0 group-hover/pl:opacity-80 blur-xl pointer-events-none transition-all duration-300" />
+                        <div className="relative p-5 rounded-2xl bg-[#0e111a]/90 border border-white/10 group-hover/pl:border-cyan-500/40 transition-all space-y-2 shadow-lg">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-white">
+                              {pl.name}
+                            </span>
+                            <span className="text-[10px] font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
+                              Verified Check-in
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-400">
+                            {pl.category || 'Historical ASI Monument'}
+                          </p>
                         </div>
-                        <p className="text-xs text-slate-400">
-                          {pl.category || 'Historical ASI Monument'}
-                        </p>
                       </div>
                     ))}
                   </div>
@@ -590,22 +607,25 @@ export default function MyJourneyPage() {
                     {records.reports.map((rep, idx) => (
                       <div
                         key={rep.id || idx}
-                        className="p-5 rounded-2xl bg-[#0e111a]/90 border border-white/10 hover:border-rose-500/30 transition-all space-y-2 shadow-lg"
+                        className="relative group/rep"
                       >
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-white">
-                            {rep.title || 'Official Assistance Request'}
-                          </span>
-                          <span className="text-[10px] font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
-                            Active Dispatch
-                          </span>
+                        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-rose-500/25 via-red-500/20 to-purple-500/20 opacity-0 group-hover/rep:opacity-80 blur-xl pointer-events-none transition-all duration-300" />
+                        <div className="relative p-5 rounded-2xl bg-[#0e111a]/90 border border-white/10 group-hover/rep:border-rose-500/40 transition-all space-y-2 shadow-lg">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-white">
+                              {rep.title || 'Official Assistance Request'}
+                            </span>
+                            <span className="text-[10px] font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
+                              Active Dispatch
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-300">
+                            {rep.description}
+                          </p>
+                          <p className="text-[10px] text-slate-500">
+                            {new Date(rep.timestamp).toLocaleString()}
+                          </p>
                         </div>
-                        <p className="text-xs text-slate-300">
-                          {rep.description}
-                        </p>
-                        <p className="text-[10px] text-slate-500">
-                          {new Date(rep.timestamp).toLocaleString()}
-                        </p>
                       </div>
                     ))}
                   </div>
@@ -640,58 +660,67 @@ export default function MyJourneyPage() {
               {allJourneys.map((jrn) => {
                 const isActive = jrn.id === activeJourneyId;
                 return (
-                  <div
-                    key={jrn.id}
-                    className={`p-6 rounded-3xl border transition-all duration-300 relative overflow-hidden ${
-                      isActive
-                        ? 'bg-gradient-to-br from-[#121624] to-[#0c0e14] border-cyan-500/50 shadow-2xl shadow-cyan-950/40 ring-1 ring-cyan-400/30'
-                        : 'bg-[#0e111a]/95 border-white/10 hover:border-white/20'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="font-mono text-xs font-bold text-cyan-300 bg-cyan-500/10 px-2.5 py-1 rounded-full border border-cyan-500/30">
-                        {jrn.id}
-                      </span>
-                      <span
-                        className={`text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full ${
-                          jrn.status === 'active'
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                            : 'bg-slate-800 text-slate-300 border border-slate-700'
-                        }`}
-                      >
-                        {jrn.status}
-                      </span>
-                    </div>
-
-                    <h4 className="text-base font-bold text-white mb-1">
-                      {jrn.title}
-                    </h4>
-                    <p className="text-xs text-slate-400 flex items-center space-x-1.5 mb-4">
-                      <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                      <span>{jrn.destination}</span>
-                    </p>
-
-                    <div className="flex items-center justify-between pt-4 border-t border-white/[0.08] text-xs">
-                      <span className="text-slate-400">
-                        {jrn.startDate} – {jrn.endDate}
-                      </span>
-
-                      {isActive ? (
-                        <span className="text-emerald-400 font-bold flex items-center space-x-1.5 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">
-                          <Check className="w-3.5 h-3.5" />
-                          <span>Active Now</span>
+                  <div key={jrn.id} className="relative group/jrn">
+                    {/* Glowing Aura Backdrop */}
+                    <div
+                      className={`absolute -inset-1.5 rounded-[28px] ${
+                        isActive
+                          ? 'bg-gradient-to-r from-cyan-500/35 via-indigo-500/30 to-purple-500/35 opacity-75 blur-xl'
+                          : 'bg-gradient-to-r from-indigo-500/15 to-cyan-500/15 opacity-0 group-hover/jrn:opacity-65 blur-xl'
+                      } pointer-events-none transition-all duration-300`}
+                    />
+                    <div
+                      className={`relative p-6 rounded-3xl border transition-all duration-300 overflow-hidden ${
+                        isActive
+                          ? 'bg-gradient-to-br from-[#121624] to-[#0c0e14] border-cyan-500/50 shadow-2xl shadow-cyan-950/40 ring-1 ring-cyan-400/30'
+                          : 'bg-[#0e111a]/95 border-white/10 group-hover/jrn:border-cyan-500/30'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="font-mono text-xs font-bold text-cyan-300 bg-cyan-500/10 px-2.5 py-1 rounded-full border border-cyan-500/30">
+                          {jrn.id}
                         </span>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            switchJourney(jrn.id);
-                            setActiveTab('timeline');
-                          }}
-                          className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-bold transition-all shadow-md shadow-indigo-600/30"
+                        <span
+                          className={`text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full ${
+                            jrn.status === 'active'
+                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                              : 'bg-slate-800 text-slate-300 border border-slate-700'
+                          }`}
                         >
-                          Switch to this Journey
-                        </button>
-                      )}
+                          {jrn.status}
+                        </span>
+                      </div>
+
+                      <h4 className="text-base font-bold text-white mb-1">
+                        {jrn.title}
+                      </h4>
+                      <p className="text-xs text-slate-400 flex items-center space-x-1.5 mb-4">
+                        <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                        <span>{jrn.destination}</span>
+                      </p>
+
+                      <div className="flex items-center justify-between pt-4 border-t border-white/[0.08] text-xs">
+                        <span className="text-slate-400">
+                          {jrn.startDate} – {jrn.endDate}
+                        </span>
+
+                        {isActive ? (
+                          <span className="text-emerald-400 font-bold flex items-center space-x-1.5 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">
+                            <Check className="w-3.5 h-3.5" />
+                            <span>Active Now</span>
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              switchJourney(jrn.id);
+                              setActiveTab('timeline');
+                            }}
+                            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-bold transition-all shadow-md shadow-indigo-600/30 active:scale-95"
+                          >
+                            Switch to this Journey
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
@@ -703,7 +732,10 @@ export default function MyJourneyPage() {
         {/* CREATE NEW JOURNEY MODAL */}
         {isCreateModalOpen && (
           <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-            <div className="bg-[#0e111a] border border-white/20 max-w-md w-full rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            <div className="relative max-w-md w-full">
+              {/* Glowing Aura Behind Modal */}
+              <div className="absolute -inset-2 rounded-[32px] bg-gradient-to-r from-purple-600/35 via-indigo-600/35 to-cyan-500/35 blur-2xl opacity-65 pointer-events-none animate-pulse" />
+              <div className="relative bg-[#0e111a] border border-white/20 w-full rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
               <div className="flex items-center justify-between pb-3 border-b border-white/10">
                 <div className="flex items-center space-x-2">
                   <div className="p-2 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
@@ -811,6 +843,7 @@ export default function MyJourneyPage() {
               </form>
             </div>
           </div>
+        </div>
         )}
 
         {/* QR MODAL */}
