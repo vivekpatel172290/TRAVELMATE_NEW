@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { QrCode, Menu, X, LogIn, LogOut, User, Shield, ChevronDown } from 'lucide-react';
+import { QrCode, Menu, X, LogIn, LogOut, User, Shield, ChevronDown, Compass } from 'lucide-react';
 import { useTraveler } from '../../context/TravelerContext';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -167,6 +167,14 @@ export default function Header({
                     </div>
                   </div>
                   <div className="py-1">
+                    <Link
+                      to="/my-journey"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center space-x-2.5 px-4 py-2 text-xs text-slate-300 hover:text-white hover:bg-white/[0.06] transition-colors"
+                    >
+                      <Compass className="w-4 h-4 text-cyan-400" />
+                      <span>My Journey Chain</span>
+                    </Link>
                     <Link
                       to="/safe-pass"
                       onClick={() => setUserMenuOpen(false)}

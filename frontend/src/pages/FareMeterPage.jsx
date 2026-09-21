@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calculator, AlertTriangle, CheckCircle, Navigation, Info, MessageSquare, Volume2, ShieldCheck, Crosshair, MapPin, Moon, Sun, ExternalLink } from 'lucide-react';
 import { api } from '../services/api';
 import { useTraveler } from '../context/TravelerContext';
+import { useJourney } from '../context/JourneyContext';
 import StatusBadge from '../components/common/StatusBadge';
 import LanguageSupportModal from '../components/common/LanguageSupportModal';
 import GoogleMapView from '../components/maps/GoogleMapView';
@@ -28,6 +29,7 @@ const DELHI_LANDMARK_COORDS = {
 
 export default function FareMeterPage() {
   const { journey } = useTraveler();
+  const { addFareCheck } = useJourney();
 
   const [origin, setOrigin] = useState('New Delhi Railway Station (NDLS)');
   const [destination, setDestination] = useState('Red Fort (Lal Qila)');
@@ -119,6 +121,15 @@ export default function FareMeterPage() {
       });
       if (res.success) {
         setFareResult(res.data);
+        if (addFareCheck) {
+          addFareCheck({
+            from: origin,
+            to: destination,
+            distance: dist,
+            fare: res.data?.estimated_fare || Math.round(dist * 12.5),
+            mode: vType === 'taxi' ? 'Delhi Cab (Taxi)' : 'Auto-Rickshaw'
+          });
+        }
       }
     } catch (e) {
       console.error(e);

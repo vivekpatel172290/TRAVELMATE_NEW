@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Camera, ShieldCheck, CheckCircle2, AlertTriangle, Lock, Eye, Trash2, Car, Upload } from 'lucide-react';
 import { useTraveler } from '../context/TravelerContext';
+import { useJourney } from '../context/JourneyContext';
 import { api } from '../services/api';
 import StatusBadge from '../components/common/StatusBadge';
 
 export default function EvidenceVaultPage() {
   const { journey } = useTraveler();
+  const { addEvidence } = useJourney();
 
   const [evidenceList, setEvidenceList] = useState([]);
   const [vehicleType, setVehicleType] = useState('auto');
@@ -56,6 +58,13 @@ export default function EvidenceVaultPage() {
 
       if (res.success) {
         setEvidenceList([res.data, ...evidenceList]);
+        if (addEvidence) {
+          addEvidence({
+            plateNumber: confirmedPlateInput.trim(),
+            vehicleType: vehicleType === 'taxi' ? 'Delhi Cab (Taxi)' : 'Auto-Rickshaw',
+            location: 'New Delhi Railway Station Exit'
+          });
+        }
         setOcrCandidate(null);
         setSaveSuccessMsg(`Vehicle ${confirmedPlateInput} confirmed & securely saved in RideSafe Vault.`);
         setTimeout(() => setSaveSuccessMsg(''), 4000);

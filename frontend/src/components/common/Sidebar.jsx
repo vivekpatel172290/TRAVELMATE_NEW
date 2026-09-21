@@ -15,7 +15,8 @@ import {
   User,
   LogIn,
   LogOut,
-  Shield
+  Shield,
+  Compass
 } from 'lucide-react';
 import { useTraveler } from '../../context/TravelerContext';
 import { useAuth } from '../../context/AuthContext';
@@ -44,6 +45,15 @@ export default function Sidebar({
           icon: Home,
           exact: true,
           description: 'Home portal & verified stream'
+        },
+        {
+          to: '/my-journey',
+          label: 'My Journey',
+          shortLabel: 'Journey',
+          badge: 'Smart Chain',
+          badgeColor: 'cyan',
+          icon: Compass,
+          description: 'Unified timeline & connected records'
         },
         {
           to: '/safe-pass',
@@ -192,6 +202,7 @@ export default function Sidebar({
                     ? location.pathname === item.to
                     : (item.to === '/home' && (location.pathname === '/home' || location.pathname === '/discover'))
                       || (item.to === '/safe-pass' && (location.pathname === '/safe-pass' || location.pathname === '/onboarding'))
+                      || (item.to === '/my-journey' && (location.pathname === '/my-journey' || location.pathname === '/journey' || location.pathname === '/journey-chain'))
                       || (item.to === '/phrase-helper' && (location.pathname === '/phrase-helper' || location.pathname === '/language'))
                       || (location.pathname.startsWith(item.to) && (item.to !== '/' || location.pathname === '/'));
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { TravelerProvider } from './context/TravelerContext';
+import { JourneyProvider } from './context/JourneyContext';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Header from './components/common/Header';
@@ -12,6 +13,7 @@ import LanguageSupportModal from './components/common/LanguageSupportModal';
 
 // Pages
 import HomePage from './pages/HomePage';
+import MyJourneyPage from './pages/MyJourneyPage';
 import OnboardingPage from './pages/OnboardingPage';
 import AuthPage from './pages/AuthPage';
 import DiscoverPage from './pages/DiscoverPage';
@@ -116,6 +118,9 @@ function AppLayout() {
               <Route path="/vault" element={<EvidenceVaultPage />} />
               <Route path="/incident" element={<IncidentReportPage />} />
               <Route path="/emergency" element={<IncidentReportPage />} />
+              <Route path="/my-journey" element={<MyJourneyPage />} />
+              <Route path="/journey" element={<MyJourneyPage />} />
+              <Route path="/journey-chain" element={<MyJourneyPage />} />
               <Route path="/admin" element={<AdminDashboardPage />} />
             </Routes>
           </main>
@@ -218,11 +223,13 @@ export default function App() {
   return (
     <ThemeProvider>
       <TravelerProvider>
-        <AuthProvider>
-          <BrowserRouter>
-            <AppLayout />
-          </BrowserRouter>
-        </AuthProvider>
+        <JourneyProvider>
+          <AuthProvider>
+            <BrowserRouter>
+              <AppLayout />
+            </BrowserRouter>
+          </AuthProvider>
+        </JourneyProvider>
       </TravelerProvider>
     </ThemeProvider>
   );
