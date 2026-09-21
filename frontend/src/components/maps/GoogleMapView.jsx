@@ -769,7 +769,7 @@ export default function GoogleMapView({
   };
 
   return (
-    <div className={`relative w-full h-full min-h-[260px] rounded-2xl overflow-hidden border flex flex-col flex-1 transition-colors ${
+    <div className={`relative w-full h-full min-h-[460px] sm:min-h-[500px] lg:min-h-[540px] rounded-2xl overflow-hidden border flex flex-col flex-1 transition-colors ${
       isDark ? 'bg-slate-950 border-white/10' : 'bg-slate-100 border-slate-200 shadow-sm'
     } ${className}`}>
       {/* Top Search & Controls Overlay (Search + GPS + Exit) */}
@@ -868,7 +868,7 @@ export default function GoogleMapView({
       {/* Actual Google Map Canvas Container */}
       <div
         ref={mapContainerRef}
-        className="w-full h-full flex-1"
+        className="w-full h-full min-h-[440px] sm:min-h-[480px] lg:min-h-[520px] flex-1"
       />
 
       {/* High-Contrast Expansive Vector Map Fallback (Fills 100% of available space) */}

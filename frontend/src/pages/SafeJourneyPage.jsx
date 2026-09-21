@@ -129,60 +129,6 @@ export default function SafeJourneyPage() {
   const [availableRoutes, setAvailableRoutes] = useState(INITIAL_CORRIDORS);
   const [selectedRouteIndex, setSelectedRouteIndex] = useState(0);
 
-  // Fullscreen Map & Route Exit States
-  const [isMapFullscreen, setIsMapFullscreen] = useState(false);
-  const [isBrowserFullscreen, setIsBrowserFullscreen] = useState(false);
-  const [routeExited, setRouteExited] = useState(false);
-
-  // Keyboard shortcut listener (Escape key to exit fullscreen)
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        if (isMapFullscreen) setIsMapFullscreen(false);
-        if (document.fullscreenElement) {
-          if (document.exitFullscreen) document.exitFullscreen();
-          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-        }
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isMapFullscreen]);
-
-  // Sync with browser native fullscreen changes (e.g. when Google Maps native button is clicked)
-  useEffect(() => {
-    const handleFsChange = () => {
-      setIsBrowserFullscreen(!!document.fullscreenElement);
-    };
-    document.addEventListener('fullscreenchange', handleFsChange);
-    document.addEventListener('webkitfullscreenchange', handleFsChange);
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFsChange);
-      document.removeEventListener('webkitfullscreenchange', handleFsChange);
-    };
-  }, []);
-
-  const handleExitBrowserFullscreen = () => {
-    if (document.fullscreenElement) {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      }
-    }
-    setIsBrowserFullscreen(false);
-    setIsMapFullscreen(false);
-  };
-
-  const handleExitRoute = () => {
-    setRouteExited(true);
-    setSimulatedDeviation(false);
-  };
-
-  const handleResumeRoute = () => {
-    setRouteExited(false);
-  };
-
   // 1. Continuous Live Geolocation Watcher
   useEffect(() => {
     if (!navigator.geolocation) return;
@@ -741,7 +687,7 @@ export default function SafeJourneyPage() {
             </div>
 
             {/* Responsive 3-column Corridor Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5 relative z-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-7 relative z-10">
               {availableRoutes.map((route, idx) => {
                 const isSelected = selectedRouteIndex === idx;
                 const isOptimal = route.safetyLevel === 'High' || idx === 0;
@@ -752,12 +698,12 @@ export default function SafeJourneyPage() {
                     key={route.id || idx}
                     id={`card-route-option-${idx}`}
                     onClick={() => setSelectedRouteIndex(idx)}
-                    className={`p-4 sm:p-5 rounded-2xl border flex flex-col justify-between cursor-pointer transition-all duration-200 relative group ${
+                    className={`p-5 sm:p-6 rounded-2xl border flex flex-col justify-between cursor-pointer transition-all duration-200 relative group shadow-lg ${
                       isSelected
                         ? isOptimal
-                          ? 'bg-gradient-to-br from-indigo-950/40 via-purple-950/20 to-[#14161c] border-indigo-500/70 ring-2 ring-indigo-500/50 shadow-xl shadow-indigo-500/20'
-                          : 'bg-cyan-500/15 border-cyan-500/70 ring-2 ring-cyan-500/50 shadow-xl shadow-cyan-500/10'
-                        : 'bg-[#151922]/80 hover:bg-[#1c2230] border-white/[0.08] hover:border-white/20 opacity-90 hover:opacity-100 shadow-md'
+                          ? 'bg-gradient-to-br from-indigo-950/50 via-purple-950/30 to-[#14161c] border-indigo-500/80 ring-2 ring-indigo-500/50 shadow-xl shadow-indigo-500/25'
+                          : 'bg-cyan-500/20 border-cyan-500/80 ring-2 ring-cyan-500/50 shadow-xl shadow-cyan-500/15'
+                        : 'bg-[#151922]/90 hover:bg-[#1c2230] border-white/[0.1] hover:border-white/25 opacity-90 hover:opacity-100'
                     }`}
                   >
                     <div>
@@ -1019,12 +965,12 @@ export default function SafeJourneyPage() {
           
           {/* Left / Primary Column: Radar Map Canvas (lg:col-span-7 xl:col-span-8) */}
           <div className="lg:col-span-7 xl:col-span-8 flex flex-col">
-            <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-4 sm:p-5 shadow-2xl backdrop-blur-xl flex flex-col h-full relative overflow-hidden space-y-3">
+            <div className="coder-card bg-[#111318]/90 border border-white/[0.08] rounded-3xl p-5 sm:p-6 shadow-2xl backdrop-blur-xl flex flex-col h-full relative overflow-hidden space-y-4">
               
               {/* Map Top Status Strip HUD */}
               <div className="flex flex-wrap items-center justify-between gap-3 z-10 pb-3 border-b border-white/[0.06]">
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                  <div className="flex items-center space-x-2.5 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/10 text-xs shadow-sm">
+                  <div className="flex items-center space-x-2.5 bg-black/60 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10 text-xs shadow-sm">
                     <span className={`w-2.5 h-2.5 rounded-full ${pickupMode === 'manual' ? 'bg-blue-400 ring-2 ring-blue-400/30' : 'bg-emerald-400 radar-pulse'}`} />
                     <span className="text-slate-200 font-mono font-bold text-xs sm:text-sm" id="label-live-gps-coords">
                       {pickupMode === 'manual'
@@ -1040,28 +986,24 @@ export default function SafeJourneyPage() {
                   </div>
 
                   {/* Active Route Indicator Pill */}
-                  <div className={`hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all ${
-                    routeExited
-                      ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
-                      : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'
-                  }`}>
-                    <Navigation className={`w-3.5 h-3.5 ${routeExited ? 'text-amber-400' : 'text-cyan-400'} shrink-0`} />
-                    <span>Status:</span>
-                    <strong className="text-white font-bold truncate max-w-[180px]">
-                      {routeExited ? 'Route Paused / Standby' : (activeSelectedRoute?.summary || `Route ${selectedRouteIndex + 1}`)}
+                  <div className="hidden sm:flex items-center space-x-1.5 px-3 py-2 rounded-xl border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 text-xs font-medium transition-all">
+                    <Navigation className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                    <span>Selected:</span>
+                    <strong className="text-white font-bold truncate max-w-[200px]">
+                      {activeSelectedRoute?.summary || `Route ${selectedRouteIndex + 1}`}
                     </strong>
-                    {!routeExited && activeSelectedRoute?.distanceText && (
+                    {activeSelectedRoute?.distanceText && (
                       <span className="text-cyan-400 font-mono">({activeSelectedRoute.distanceText} • {activeSelectedRoute.durationText})</span>
                     )}
                   </div>
                 </div>
 
-                {/* Map Actions: Deviation Simulation, Exit Route & Fullscreen */}
+                {/* Map Action: Deviation Simulation */}
                 <div className="flex items-center space-x-2">
                   <button
                     id="btn-simulate-deviation"
                     onClick={() => setSimulatedDeviation(!simulatedDeviation)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all ${
+                    className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all cursor-pointer ${
                       simulatedDeviation
                         ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-md ring-1 ring-amber-400/30'
                         : 'bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 border border-white/10'
@@ -1070,65 +1012,14 @@ export default function SafeJourneyPage() {
                     <RotateCcw className="w-3.5 h-3.5" />
                     <span>{simulatedDeviation ? 'Reset Corridor' : 'Simulate Deviation (>500m)'}</span>
                   </button>
-
-                  {/* Exit Route / Resume Route Action Button */}
-                  {routeExited ? (
-                    <button
-                      id="btn-resume-route"
-                      onClick={handleResumeRoute}
-                      className="px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 transition-all shadow-sm"
-                      title="Resume Route Navigation"
-                    >
-                      <Play className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Resume Route</span>
-                    </button>
-                  ) : (
-                    <button
-                      id="btn-exit-route"
-                      onClick={handleExitRoute}
-                      className="px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 hover:text-rose-200 border border-rose-500/30 transition-all shadow-sm"
-                      title="Exit Route Navigation"
-                    >
-                      <X className="w-3.5 h-3.5 text-rose-400" />
-                      <span>Exit Route</span>
-                    </button>
-                  )}
-
-                  {/* Expand / Fullscreen Map Button */}
-                  <button
-                    id="btn-fullscreen-map"
-                    onClick={() => setIsMapFullscreen(true)}
-                    className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 transition-all shadow-sm"
-                    title="Expand Map to Fullscreen"
-                  >
-                    <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
-                    <span className="hidden sm:inline">Fullscreen</span>
-                  </button>
                 </div>
               </div>
 
               {/* Interactive Google Map with Route Overlays */}
-              <div className="relative w-full h-[360px] sm:h-[390px] lg:h-[430px] rounded-2xl overflow-hidden border border-white/[0.08] shadow-2xl bg-slate-950 flex flex-col flex-1">
-                {/* On-Map Quick Floating Fullscreen Button */}
-                <div className="absolute top-3 right-3 z-30 flex items-center space-x-2 pointer-events-auto">
-                  {routeExited && (
-                    <span className="text-[11px] px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md text-amber-300 border border-amber-500/30 font-medium">
-                      Route Paused
-                    </span>
-                  )}
-                  <button
-                    onClick={() => setIsMapFullscreen(true)}
-                    className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-black/80 hover:bg-[#151928] text-cyan-300 hover:text-white border border-cyan-400/40 hover:border-cyan-300 shadow-xl backdrop-blur-md flex items-center space-x-1.5 font-bold text-xs transition-all hover:scale-105 active:scale-95 cursor-pointer"
-                    title="Expand Map Fullscreen"
-                  >
-                    <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
-                    <span className="hidden sm:inline">Expand Map</span>
-                  </button>
-                </div>
-
+              <div className="relative w-full h-[480px] sm:h-[520px] lg:h-[560px] rounded-2xl overflow-hidden border border-white/[0.08] shadow-2xl bg-slate-950 flex flex-col flex-1">
                 <GoogleMapView
-                  showRoute={!routeExited}
-                  simulatedDeviation={simulatedDeviation && !routeExited}
+                  showRoute={true}
+                  simulatedDeviation={simulatedDeviation}
                   liveTracking={true}
                   onLocationUpdate={(coords) => setLiveGps(coords)}
                   origin={currentOrigin}
@@ -1140,7 +1031,6 @@ export default function SafeJourneyPage() {
                   onExit={() => {
                     setSimulatedDeviation(false);
                     setSelectedRouteIndex(0);
-                    setRouteExited(false);
                   }}
                 />
               </div>
@@ -1327,100 +1217,6 @@ export default function SafeJourneyPage() {
         </div>
 
       </div>
-
-      {/* ===================================================================== */}
-      {/* 4. EXPANDED / FULLSCREEN MAP VIEW MODAL WITH HIGH-VISIBILITY EXIT BUTTON */}
-      {/* ===================================================================== */}
-      {isMapFullscreen && (
-        <div className="fixed inset-0 z-[9999] bg-[#0a0c10] flex flex-col animate-in fade-in duration-200">
-          {/* Fullscreen Map Header with High-Contrast Exit Fullscreen Button */}
-          <div className="px-4 py-3 bg-[#111318]/95 border-b border-white/10 flex items-center justify-between gap-4 backdrop-blur-xl z-20">
-            <div className="flex items-center space-x-3 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center border border-cyan-500/30 shrink-0">
-                <Navigation className="w-4 h-4 text-cyan-300" />
-              </div>
-              <div className="min-w-0">
-                <h3 className="text-sm font-bold text-white flex items-center space-x-2">
-                  <span>Safe Route Live Cockpit</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono">
-                    FULLSCREEN
-                  </span>
-                </h3>
-                <p className="text-[11px] text-slate-400 truncate">
-                  {currentOrigin.name} → {destinationCoords.name}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2 shrink-0">
-              <button
-                id="btn-fullscreen-simulate-deviation"
-                onClick={() => setSimulatedDeviation(!simulatedDeviation)}
-                className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all ${
-                  simulatedDeviation
-                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                    : 'bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10'
-                }`}
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">{simulatedDeviation ? 'Reset' : 'Simulate Deviation'}</span>
-              </button>
-
-              {/* Ultra-Visible Exit Fullscreen Button */}
-              <button
-                id="btn-exit-map-fullscreen"
-                onClick={() => setIsMapFullscreen(false)}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-extrabold text-xs sm:text-sm flex items-center space-x-2 shadow-xl shadow-rose-600/30 border border-rose-400/50 hover:scale-[1.03] active:scale-95 transition-all cursor-pointer ring-2 ring-rose-500/40"
-                title="Exit Fullscreen (Esc)"
-              >
-                <Minimize2 className="w-4 h-4 text-white" />
-                <span>Exit Fullscreen</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/30 text-rose-200 font-mono">ESC</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Fullscreen Map Canvas */}
-          <div className="relative w-full flex-1 overflow-hidden">
-            <GoogleMapView
-              showRoute={!routeExited}
-              simulatedDeviation={simulatedDeviation && !routeExited}
-              liveTracking={true}
-              onLocationUpdate={(coords) => setLiveGps(coords)}
-              origin={currentOrigin}
-              destination={destinationCoords}
-              selectedRouteIndex={selectedRouteIndex}
-              onRoutesFound={handleRoutesCalculated}
-              onRouteSelect={(idx) => setSelectedRouteIndex(idx)}
-              allowAlternatives={true}
-              onExit={() => {
-                setIsMapFullscreen(false);
-                setSimulatedDeviation(false);
-                setSelectedRouteIndex(0);
-                setRouteExited(false);
-              }}
-              hideSearch={false}
-              hideRouteSelector={false}
-              hideBottomStatus={false}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Floating Exit Button for Browser / Google Maps Native Fullscreen Mode */}
-      {isBrowserFullscreen && !isMapFullscreen && (
-        <div className="fixed top-4 right-4 z-[2147483647] animate-in fade-in">
-          <button
-            onClick={handleExitBrowserFullscreen}
-            className="px-4 py-2.5 rounded-2xl bg-black/95 hover:bg-black text-white border-2 border-cyan-400 shadow-2xl shadow-cyan-500/60 backdrop-blur-xl flex items-center space-x-2 font-extrabold text-sm hover:scale-105 active:scale-95 transition-all cursor-pointer ring-2 ring-cyan-400/50"
-            title="Exit Fullscreen"
-          >
-            <X className="w-4 h-4 text-cyan-300" />
-            <span>Exit Fullscreen</span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/20 text-slate-300 font-mono">ESC</span>
-          </button>
-        </div>
-      )}
     </div>
   );
 }
