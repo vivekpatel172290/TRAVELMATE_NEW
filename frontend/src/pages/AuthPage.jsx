@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
   Shield,
@@ -15,9 +15,31 @@ import {
   ArrowRight,
   Sparkles,
   Zap,
-  Info
+  Info,
+  Key,
+  ExternalLink,
+  Check
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+
+// Safe JWT parser for Google Identity Services (GSI) ID Tokens
+const parseGoogleJwt = (token) => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      window
+        .atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    console.error('Failed to parse Google JWT credential:', e);
+    return null;
+  }
+};
 
 const COUNTRIES = [
   { name: 'United Kingdom', flag: '🇬🇧', code: '+44' },
@@ -45,6 +67,114 @@ export default function AuthPage({ defaultMode = 'login' }) {
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [googleModalOpen, setGoogleModalOpen] = useState(false);
+
+  // Google OAuth Client ID resolution: env variable -> localStorage -> blank
+  const envGoogleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+  const [googleClientId, setGoogleClientId] = useState(() => {
+    return envGoogleClientId || localStorage.getItem('tm_google_client_id') || '';
+  });
+  const [clientIdInput, setClientIdInput] = useState('');
+  const [clientIdSaved, setClientIdSaved] = useState(false);
+  const googleBtnRef = useRef(null);
+
+  // Google Identity Services Credential Handler (Real Google OAuth response)
+  const handleGoogleCredentialResponse = async (response) => {
+    if (!response?.credential) {
+      setError('Google Sign-In credential token not received. Please try again.');
+      return;
+    }
+    const payload = parseGoogleJwt(response.credential);
+    if (!payload || !payload.email) {
+      setError('Failed to extract Google account information from token.');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    try {
+      const res = await googleLogin({
+        email: payload.email,
+        name: payload.name || payload.given_name || payload.email.split('@')[0],
+        avatar_url: payload.picture || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(payload.name || payload.email)}`,
+        google_id: payload.sub,
+        nationality: 'International'
+      });
+      setGoogleModalOpen(false);
+      setSuccessMsg(`Signed in with Google as ${res.user?.name || payload.name}! SafePass active.`);
+      setTimeout(() => navigate(redirectPath), 800);
+    } catch (err) {
+      setError(err.message || 'Google authentication failed on backend.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initialize official Google Identity Services (GSI) when Google Client ID is configured
+  useEffect(() => {
+    if (!googleClientId) return;
+
+    let checkTimer = null;
+    const initGsi = () => {
+      if (window.google?.accounts?.id) {
+        try {
+          window.google.accounts.id.initialize({
+            client_id: googleClientId,
+            callback: handleGoogleCredentialResponse,
+            auto_select: false,
+            cancel_on_tap_outside: true
+          });
+
+          if (googleBtnRef.current) {
+            googleBtnRef.current.innerHTML = '';
+            window.google.accounts.id.renderButton(googleBtnRef.current, {
+              theme: 'filled_black',
+              size: 'large',
+              shape: 'pill',
+              text: mode === 'signup' ? 'signup_with' : 'signin_with',
+              width: 320,
+              logo_alignment: 'left'
+            });
+          }
+        } catch (e) {
+          console.warn('Google GSI initialization notice:', e);
+        }
+      }
+    };
+
+    if (window.google?.accounts?.id) {
+      initGsi();
+    } else {
+      checkTimer = setInterval(() => {
+        if (window.google?.accounts?.id) {
+          clearInterval(checkTimer);
+          initGsi();
+        }
+      }, 250);
+    }
+
+    return () => {
+      if (checkTimer) clearInterval(checkTimer);
+    };
+  }, [googleClientId, mode]);
+
+  const handleSaveClientId = (e) => {
+    e.preventDefault();
+    const cleanId = clientIdInput.trim();
+    if (!cleanId) return;
+    localStorage.setItem('tm_google_client_id', cleanId);
+    setGoogleClientId(cleanId);
+    setClientIdSaved(true);
+    setTimeout(() => {
+      setClientIdSaved(false);
+      setGoogleModalOpen(false);
+    }, 1200);
+  };
+
+  const handleClearClientId = () => {
+    localStorage.removeItem('tm_google_client_id');
+    setGoogleClientId('');
+    setClientIdInput('');
+  };
 
   // Form State
   const [formData, setFormData] = useState({
@@ -106,7 +236,7 @@ export default function AuthPage({ defaultMode = 'login' }) {
     }
   };
 
-  // Google Sign-In Trigger
+  // Google Sign-In Trigger (used for demo profiles or simulated fallback)
   const handleGoogleSignIn = async (simulatedAccount = null) => {
     setError('');
     setLoading(true);
@@ -223,44 +353,67 @@ export default function AuthPage({ defaultMode = 'login' }) {
               </div>
             )}
 
-            {/* Google Sign-In Primary Button */}
+            {/* Google Sign-In Section */}
             <div className="mb-6">
-              <button
-                type="button"
-                id="btn-google-signin"
-                disabled={loading}
-                onClick={() => setGoogleModalOpen(true)}
-                className="w-full relative group/btn overflow-hidden rounded-2xl p-[1px] focus:outline-none transition-transform active:scale-[0.99]"
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-purple-500 via-indigo-500 to-cyan-400 opacity-60 group-hover/btn:opacity-100 transition-opacity blur-sm" />
-                <div className="relative flex items-center justify-center space-x-3 w-full py-3 px-4 rounded-2xl bg-[#11141f] hover:bg-[#151928] border border-white/15 text-white transition-all">
-                  {/* Official Google Color SVG */}
-                  <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <path
-                      fill="#4285F4"
-                      d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.66-5.17 3.66-9.12z"
-                    />
-                    <path
-                      fill="#34A853"
-                      d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.13C3.26 21.36 7.35 24 12 24z"
-                    />
-                    <path
-                      fill="#FBBC05"
-                      d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.58H1.24C.45 8.15 0 9.99 0 12s.45 3.85 1.24 5.42l4.04-3.13z"
-                    />
-                    <path
-                      fill="#EA4335"
-                      d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.26 2.64 1.24 6.58l4.04 3.13c.95-2.83 3.6-4.96 6.72-4.96z"
-                    />
-                  </svg>
-                  <span className="text-xs sm:text-sm font-bold font-display tracking-wide">
-                    {mode === 'signup' ? 'Sign up with Google' : 'Continue with Google'}
-                  </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-extrabold border border-cyan-500/30 hidden sm:inline">
-                    INSTANT
-                  </span>
+              {googleClientId ? (
+                <div className="flex flex-col items-center space-y-2">
+                  <div
+                    ref={googleBtnRef}
+                    id="google-signin-btn-container"
+                    className="w-full flex justify-center min-h-[44px]"
+                  />
+                  <div className="flex items-center justify-between w-full px-1 text-[11px] text-slate-400">
+                    <span className="flex items-center text-emerald-400 font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse" />
+                      Google Identity Services Active
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setGoogleModalOpen(true)}
+                      className="text-cyan-400 hover:text-cyan-300 transition-colors underline decoration-dashed"
+                    >
+                      OAuth Setup / Demo
+                    </button>
+                  </div>
                 </div>
-              </button>
+              ) : (
+                <button
+                  type="button"
+                  id="btn-google-signin"
+                  disabled={loading}
+                  onClick={() => setGoogleModalOpen(true)}
+                  className="w-full relative group/btn overflow-hidden rounded-2xl p-[1px] focus:outline-none transition-transform active:scale-[0.99]"
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-purple-500 via-indigo-500 to-cyan-400 opacity-60 group-hover/btn:opacity-100 transition-opacity blur-sm" />
+                  <div className="relative flex items-center justify-center space-x-3 w-full py-3 px-4 rounded-2xl bg-[#11141f] hover:bg-[#151928] border border-white/15 text-white transition-all">
+                    {/* Official Google Color SVG */}
+                    <svg className="w-5 h-5" viewBox="0 0 24 24">
+                      <path
+                        fill="#4285F4"
+                        d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.66-5.17 3.66-9.12z"
+                      />
+                      <path
+                        fill="#34A853"
+                        d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.13C3.26 21.36 7.35 24 12 24z"
+                      />
+                      <path
+                        fill="#FBBC05"
+                        d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.58H1.24C.45 8.15 0 9.99 0 12s.45 3.85 1.24 5.42l4.04-3.13z"
+                      />
+                      <path
+                        fill="#EA4335"
+                        d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.26 2.64 1.24 6.58l4.04 3.13c.95-2.83 3.6-4.96 6.72-4.96z"
+                      />
+                    </svg>
+                    <span className="text-xs sm:text-sm font-bold font-display tracking-wide">
+                      {mode === 'signup' ? 'Sign up with Google' : 'Continue with Google'}
+                    </span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-extrabold border border-cyan-500/30">
+                      OAUTH SETUP
+                    </span>
+                  </div>
+                </button>
+              )}
             </div>
 
             {/* Modern Divider */}
@@ -484,118 +637,204 @@ export default function AuthPage({ defaultMode = 'login' }) {
       </div>
 
       {/* Interactive Google OAuth Account Chooser Modal */}
+      {/* Google OAuth Configuration & Sign-In Modal */}
       {googleModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-          <div className="relative w-full max-w-md bg-[#121520] border border-white/20 rounded-3xl p-6 shadow-2xl">
-            {/* Google Header */}
-            <div className="flex items-center space-x-3 pb-4 border-b border-white/10">
-              <svg className="w-6 h-6" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.66-5.17 3.66-9.12z" />
-                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.13C3.26 21.36 7.35 24 12 24z" />
-                <path fill="#FBBC05" d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.58H1.24C.45 8.15 0 9.99 0 12s.45 3.85 1.24 5.42l4.04-3.13z" />
-                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.26 2.64 1.24 6.58l4.04 3.13c.95-2.83 3.6-4.96 6.72-4.96z" />
-              </svg>
-              <div>
-                <h3 className="text-sm font-bold text-white">Sign in with Google</h3>
-                <p className="text-xs text-slate-400">to continue to TravelMate Delhi</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in overflow-y-auto">
+          <div className="relative w-full max-w-lg bg-[#111420] border border-white/20 rounded-3xl p-6 sm:p-7 shadow-2xl my-8">
+            {/* Header */}
+            <div className="flex items-start justify-between pb-4 border-b border-white/10">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-white/10 p-2 flex items-center justify-center border border-white/15">
+                  <svg className="w-6 h-6" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.66-5.17 3.66-9.12z" />
+                    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.13C3.26 21.36 7.35 24 12 24z" />
+                    <path fill="#FBBC05" d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.58H1.24C.45 8.15 0 9.99 0 12s.45 3.85 1.24 5.42l4.04-3.13z" />
+                    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.26 2.64 1.24 6.58l4.04 3.13c.95-2.83 3.6-4.96 6.72-4.96z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center space-x-2">
+                    <span>Google Sign-In & OAuth</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono border border-cyan-500/30">
+                      GSI SDK
+                    </span>
+                  </h3>
+                  <p className="text-xs text-slate-400">Official Google Identity Services Integration</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setGoogleModalOpen(false)}
+                className="p-1 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Why Google Sign-In needs a Client ID explanation */}
+            <div className="my-4 p-3.5 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 text-xs text-slate-300 space-y-1.5">
+              <div className="flex items-center space-x-2 text-indigo-300 font-bold">
+                <Info className="w-4 h-4 shrink-0 text-cyan-400" />
+                <span>Why doesn&apos;t Google popup automatically on other domains?</span>
+              </div>
+              <p className="text-[11.5px] leading-relaxed text-slate-300">
+                To prevent phishing, Google strictly requires every website to register an <strong>OAuth 2.0 Client ID</strong> in the Google Cloud Console. Once provided, clicking &quot;Continue with Google&quot; immediately opens the authentic Google Account selector popup.
+              </p>
+            </div>
+
+            {/* Section 1: Connect Real Google Client ID */}
+            <div className="p-4 rounded-2xl bg-[#161a28] border border-white/10 mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-white flex items-center space-x-1.5">
+                  <Key className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Connect Google OAuth Client ID</span>
+                </span>
+                {googleClientId && (
+                  <span className="text-[10px] text-emerald-400 font-semibold flex items-center">
+                    <Check className="w-3 h-3 mr-0.5" /> Connected
+                  </span>
+                )}
+              </div>
+
+              {googleClientId ? (
+                <div className="space-y-2">
+                  <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-mono break-all flex items-center justify-between">
+                    <span className="truncate mr-2">{googleClientId}</span>
+                    <button
+                      type="button"
+                      onClick={handleClearClientId}
+                      className="shrink-0 text-[10px] text-rose-400 hover:text-rose-300 underline font-sans"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-slate-400">
+                    Real Google Sign-In is active! Close this dialog and click the official Google button to sign in with your real Google account.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleSaveClientId} className="space-y-2.5">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={clientIdInput}
+                      onChange={(e) => setClientIdInput(e.target.value)}
+                      placeholder="Paste your Google Client ID (e.g. 12345...apps.googleusercontent.com)"
+                      className="w-full px-3 py-2 rounded-xl bg-[#0f121c] border border-white/15 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 font-mono"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <a
+                      href="https://console.cloud.google.com/apis/credentials"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 underline"
+                    >
+                      <span>Get free Client ID from Google Cloud</span>
+                      <ExternalLink className="w-3 h-3 ml-0.5" />
+                    </a>
+                    <button
+                      type="submit"
+                      disabled={!clientIdInput.trim()}
+                      className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-white font-bold text-xs disabled:opacity-40 hover:opacity-90 transition-all flex items-center space-x-1"
+                    >
+                      {clientIdSaved ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-emerald-300" />
+                          <span>Saved!</span>
+                        </>
+                      ) : (
+                        <span>Activate Client ID</span>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+
+            {/* Section 2: 1-Click Demo Tourist Login */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-slate-300 flex items-center space-x-1.5">
+                  <Zap className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Or Test Instantly With Pre-Verified Profiles:</span>
+                </span>
+                <span className="text-[10px] text-slate-500">PostgreSQL sync</span>
+              </div>
+
+              <div className="space-y-2">
+                {/* Profile 1 */}
+                <button
+                  type="button"
+                  onClick={() => handleGoogleSignIn({
+                    name: 'Elena Rostova',
+                    email: 'elena.rostova@gmail.com',
+                    avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
+                    google_id: 'google_1082374928374928374',
+                    nationality: 'France'
+                  })}
+                  className="w-full flex items-center space-x-3 p-2.5 rounded-2xl bg-[#171c2c] hover:bg-[#1e253b] border border-white/10 hover:border-cyan-400/40 transition-all text-left group"
+                >
+                  <img
+                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+                    alt="Elena"
+                    className="w-8 h-8 rounded-full object-cover ring-1 ring-white/20"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-1.5">
+                      <span className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">
+                        Elena Rostova 🇫🇷
+                      </span>
+                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-mono">
+                        France
+                      </span>
+                    </div>
+                    <p className="text-[10.5px] text-slate-400 truncate">elena.rostova@gmail.com</p>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all" />
+                </button>
+
+                {/* Profile 2 */}
+                <button
+                  type="button"
+                  onClick={() => handleGoogleSignIn({
+                    name: 'Michael Chen',
+                    email: 'm.chen.travels@gmail.com',
+                    avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
+                    google_id: 'google_2948201948201948201',
+                    nationality: 'Canada'
+                  })}
+                  className="w-full flex items-center space-x-3 p-2.5 rounded-2xl bg-[#171c2c] hover:bg-[#1e253b] border border-white/10 hover:border-cyan-400/40 transition-all text-left group"
+                >
+                  <img
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80"
+                    alt="Michael"
+                    className="w-8 h-8 rounded-full object-cover ring-1 ring-white/20"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-1.5">
+                      <span className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">
+                        Michael Chen 🇨🇦
+                      </span>
+                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 font-mono">
+                        Canada
+                      </span>
+                    </div>
+                    <p className="text-[10.5px] text-slate-400 truncate">m.chen.travels@gmail.com</p>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all" />
+                </button>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300 my-4">
-              Choose a tourist account to sign in and securely register in the PostgreSQL database:
-            </p>
-
-            <div className="space-y-2">
-              {/* Profile 1 */}
-              <button
-                type="button"
-                onClick={() => handleGoogleSignIn({
-                  name: 'Elena Rostova',
-                  email: 'elena.rostova@gmail.com',
-                  avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
-                  google_id: 'google_1082374928374928374',
-                  nationality: 'France'
-                })}
-                className="w-full flex items-center space-x-3 p-3 rounded-2xl bg-[#171c2c] hover:bg-[#1e253b] border border-white/10 hover:border-cyan-400/40 transition-all text-left group"
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
-                  alt="Elena"
-                  className="w-10 h-10 rounded-full object-cover ring-1 ring-white/20"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-1.5">
-                    <span className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">
-                      Elena Rostova 🇫🇷
-                    </span>
-                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-mono">
-                      France
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-400 truncate">elena.rostova@gmail.com</p>
-                </div>
-              </button>
-
-              {/* Profile 2 */}
-              <button
-                type="button"
-                onClick={() => handleGoogleSignIn({
-                  name: 'Michael Chen',
-                  email: 'm.chen.travels@gmail.com',
-                  avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
-                  google_id: 'google_2948201948201948201',
-                  nationality: 'Canada'
-                })}
-                className="w-full flex items-center space-x-3 p-3 rounded-2xl bg-[#171c2c] hover:bg-[#1e253b] border border-white/10 hover:border-cyan-400/40 transition-all text-left group"
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80"
-                  alt="Michael"
-                  className="w-10 h-10 rounded-full object-cover ring-1 ring-white/20"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-1.5">
-                    <span className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">
-                      Michael Chen 🇨🇦
-                    </span>
-                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 font-mono">
-                      Canada
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-400 truncate">m.chen.travels@gmail.com</p>
-                </div>
-              </button>
-
-              {/* Custom Google Account Input */}
-              <button
-                type="button"
-                onClick={() => {
-                  const customName = prompt('Enter your Google Display Name:', 'Traveler Guest');
-                  const customEmail = prompt('Enter your Google Email:', 'guest.tourist@gmail.com');
-                  if (customEmail && customName) {
-                    handleGoogleSignIn({
-                      name: customName,
-                      email: customEmail,
-                      avatar_url: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(customName)}`,
-                      google_id: `google_${Date.now()}`,
-                      nationality: 'International'
-                    });
-                  }
-                }}
-                className="w-full py-2.5 px-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-dashed border-white/20 text-xs font-semibold text-slate-300 hover:text-white flex items-center justify-center space-x-2 transition-all"
-              >
-                <User className="w-3.5 h-3.5" />
-                <span>Use another Google account</span>
-              </button>
-            </div>
-
-            <div className="mt-5 flex justify-end">
+            {/* Footer Close */}
+            <div className="mt-5 pt-3 border-t border-white/10 flex justify-end">
               <button
                 type="button"
                 onClick={() => setGoogleModalOpen(false)}
                 className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
               >
-                Cancel
+                Close
               </button>
             </div>
           </div>
