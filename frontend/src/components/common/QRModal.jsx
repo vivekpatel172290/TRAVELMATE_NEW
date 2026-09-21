@@ -30,8 +30,11 @@ export default function QRModal({ isOpen, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
       <div className="relative w-full max-w-sm">
-        <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 rounded-3xl opacity-30 blur-xl pointer-events-none" />
-        <div className="relative w-full bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] border-2 border-[#2f323e]/70 rounded-3xl p-6 text-center shadow-2xl animate-in zoom-in-95 duration-150">
+        <div className="absolute -inset-3 bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 rounded-[34px] opacity-65 blur-2xl pointer-events-none aura-pulse" />
+        <div className="absolute -inset-1 bg-gradient-to-r from-cyan-400 via-indigo-500 to-purple-500 rounded-3xl opacity-50 blur-md pointer-events-none" />
+        <div className="relative w-full bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] border-2 border-[#2f323e]/80 rounded-3xl p-6 text-center shadow-2xl animate-in zoom-in-95 duration-150 overflow-hidden">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent pointer-events-none" />
+          <div className="absolute -top-10 -right-10 w-28 h-28 bg-cyan-500/20 rounded-full blur-2xl pointer-events-none" />
           <button
             onClick={onClose}
             className="absolute right-4 top-4 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors"
