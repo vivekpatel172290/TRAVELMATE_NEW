@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
-import { MapPin, Navigation, Compass, AlertCircle, Search, Crosshair, ExternalLink, ShieldCheck } from 'lucide-react';
+import { MapPin, Navigation, Compass, AlertCircle, Search, Crosshair, ExternalLink, ShieldCheck, ArrowLeft, X } from 'lucide-react';
 import { api } from '../../services/api';
 import { useTheme } from '../../context/ThemeContext';
 import StatusBadge from '../common/StatusBadge';
@@ -81,6 +82,8 @@ export default function GoogleMapView({
   onRoutesFound = null,
   onRouteSelect = null,
   allowAlternatives = true,
+  onExit = null,
+  onClose = null,
   hideSearch = false,
   hideRouteSelector = false,
   hideBottomStatus = false,
@@ -99,6 +102,37 @@ export default function GoogleMapView({
   const [userLocation, setUserLocation] = useState(null);
   const [activeMarkerInfo, setActiveMarkerInfo] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isStreetViewActive, setIsStreetViewActive] = useState(false);
+
+  // Synchronize Fullscreen State with Document Native Fullscreen
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!(document.fullscreenElement || document.webkitFullscreenElement));
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
+  // Monitor Google Street View Panorama visibility
+  useEffect(() => {
+    if (!mapInstance || !mapInstance.getStreetView) return;
+    const panorama = mapInstance.getStreetView();
+    if (!panorama || !panorama.addListener) return;
+    const listener = panorama.addListener('visible_changed', () => {
+      const isVisible = !!(panorama.getVisible && panorama.getVisible());
+      setIsStreetViewActive(isVisible);
+    });
+    return () => {
+      if (window.google?.maps?.event?.removeListener && listener) {
+        window.google.maps.event.removeListener(listener);
+      }
+    };
+  }, [mapInstance]);
 
   // Synchronize Google Maps tile styling whenever light/dark theme toggles
   useEffect(() => {
@@ -153,9 +187,21 @@ export default function GoogleMapView({
           styles: isDark ? DARK_MAP_STYLE : [],
           disableDefaultUI: false,
           zoomControl: true,
-          mapTypeControl: true, // Enables Satellite / Map tiles toggle
+          zoomControlOptions: {
+            position: google.maps.ControlPosition.RIGHT_BOTTOM
+          },
+          mapTypeControl: true,
+          mapTypeControlOptions: {
+            position: google.maps.ControlPosition.TOP_RIGHT
+          },
           streetViewControl: true,
-          fullscreenControl: true
+          streetViewControlOptions: {
+            position: google.maps.ControlPosition.RIGHT_BOTTOM
+          },
+          fullscreenControl: true,
+          fullscreenControlOptions: {
+            position: google.maps.ControlPosition.RIGHT_BOTTOM
+          }
         });
 
         setMapInstance(map);
@@ -643,22 +689,101 @@ export default function GoogleMapView({
     );
   };
 
+  const handleExit = (e) => {
+    if (e) {
+      if (typeof e.preventDefault === 'function') e.preventDefault();
+      if (typeof e.stopPropagation === 'function') e.stopPropagation();
+    }
+    console.log('[GoogleMapView] Exit clicked. Active StreetView:', isStreetViewActive, 'Fullscreen:', isFullscreen);
+
+    let exitedStreetView = false;
+    // 1. Programmatically dismiss Street View panorama
+    if (mapInstance && typeof mapInstance.getStreetView === 'function') {
+      const panorama = mapInstance.getStreetView();
+      if (panorama && typeof panorama.getVisible === 'function' && panorama.getVisible()) {
+        panorama.setVisible(false);
+        setIsStreetViewActive(false);
+        exitedStreetView = true;
+        console.log('[GoogleMapView] Exited Street View via panorama.setVisible(false)');
+      }
+    }
+    // 2. Click native Google Maps Street View close button in DOM
+    if (mapContainerRef.current) {
+      const nativeCloseBtn = mapContainerRef.current.querySelector(
+        'button[aria-label*="Exit"], button[title*="Exit"], button[aria-label*="Street View"], button[title*="Back to"], .gm-sv-close'
+      );
+      if (nativeCloseBtn) {
+        try {
+          nativeCloseBtn.click();
+          exitedStreetView = true;
+          setIsStreetViewActive(false);
+          console.log('[GoogleMapView] Clicked native Street View close button in DOM');
+        } catch (ce) {
+          console.warn('[GoogleMapView] Native close button click failed:', ce);
+        }
+      }
+    }
+    if (exitedStreetView) return;
+
+    // 3. Exit Native Fullscreen
+    const doc = document;
+    if (doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement) {
+      try {
+        if (doc.exitFullscreen) doc.exitFullscreen().catch(() => {});
+        else if (doc.webkitExitFullscreen) doc.webkitExitFullscreen();
+        else if (doc.mozCancelFullScreen) doc.mozCancelFullScreen();
+        else if (doc.msExitFullscreen) doc.msExitFullscreen();
+      } catch (err) {
+        console.warn('[GoogleMapView] Fullscreen exit error:', err);
+      }
+      setIsFullscreen(false);
+      return;
+    }
+
+    // 4. Trigger explicit onExit callback
+    if (typeof onExit === 'function') {
+      onExit();
+      return;
+    }
+
+    // 5. Trigger explicit onClose callback
+    if (typeof onClose === 'function') {
+      onClose();
+      return;
+    }
+
+    // 6. Reset view bounds to origin & destination
+    setActiveMarkerInfo(null);
+    setSearchQuery('');
+    if (mapInstance && googleMapsApi) {
+      if (origin && destination && origin.lat && destination.lat) {
+        const bounds = new googleMapsApi.maps.LatLngBounds();
+        bounds.extend(new googleMapsApi.maps.LatLng(origin.lat, origin.lng));
+        bounds.extend(new googleMapsApi.maps.LatLng(destination.lat, destination.lng));
+        mapInstance.fitBounds(bounds, { top: 60, right: 60, bottom: 60, left: 60 });
+      } else {
+        mapInstance.setCenter({ lat: 28.6139, lng: 77.2090 });
+        mapInstance.setZoom(12.5);
+      }
+    }
+  };
+
   return (
     <div className={`relative w-full h-full min-h-[260px] rounded-2xl overflow-hidden border flex flex-col flex-1 transition-colors ${
       isDark ? 'bg-slate-950 border-white/10' : 'bg-slate-100 border-slate-200 shadow-sm'
     } ${className}`}>
-      {/* Top Search & Controls Overlay (Hidden when controlled externally) */}
+      {/* Top Search & Controls Overlay (Search + GPS + Exit) */}
       {!hideSearch && (
-        <div className="absolute top-3 left-3 right-3 z-10 flex items-center gap-2">
-          <div className="relative flex-1">
+        <div className="absolute top-3 left-3 z-30 pointer-events-auto flex items-center gap-2 max-w-[95%]">
+          <div className="relative w-44 sm:w-60 md:w-64 shrink">
             <Search className={`absolute left-3 top-2.5 w-4 h-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`} />
             <input
               ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search Delhi monument or area on Google Maps..."
-              className={`w-full pl-9 pr-3 py-2 rounded-xl text-xs focus:outline-none focus:border-cyan-400 shadow-lg transition-colors ${
+              placeholder="Search monument..."
+              className={`w-full pl-9 pr-3 py-2 rounded-xl text-xs focus:outline-none focus:border-emerald-500 shadow-lg transition-colors truncate ${
                 isDark
                   ? 'bg-surface/90 backdrop-blur-md border border-white/10 text-white placeholder-slate-400'
                   : 'bg-white/95 backdrop-blur-md border border-slate-200 text-slate-900 placeholder-slate-400'
@@ -668,22 +793,40 @@ export default function GoogleMapView({
 
           <button
             type="button"
+            id="btn-google-map-gps"
             onClick={handleTrackCurrentLocation}
             title="Track Live GPS Location"
-            className={`p-2.5 rounded-xl transition-all shadow-lg shrink-0 flex items-center space-x-1 ${
+            className={`px-2.5 py-2 rounded-xl transition-all shadow-lg shrink-0 flex items-center space-x-1 cursor-pointer active:scale-95 ${
               isDark
-                ? 'bg-surface/90 hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-500/40 text-cyan-400'
-                : 'bg-white/95 hover:bg-cyan-50 border border-slate-200 hover:border-cyan-400 text-cyan-600'
+                ? 'bg-surface/90 hover:bg-emerald-500/20 border border-white/10 hover:border-emerald-500/40 text-emerald-400'
+                : 'bg-white/95 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-400 text-emerald-600'
             }`}
           >
             <Crosshair className={`w-4 h-4 ${isLocating ? 'animate-spin' : ''}`} />
             <span className="text-[11px] font-semibold hidden sm:inline">GPS</span>
           </button>
+
+          <button
+            type="button"
+            id="btn-google-map-exit"
+            onClick={handleExit}
+            title={isStreetViewActive ? 'Exit 360° Street View (Return to Road Map)' : 'Exit Map / Fullscreen'}
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-lg shrink-0 flex items-center space-x-1.5 cursor-pointer active:scale-95 ${
+              isStreetViewActive
+                ? 'bg-rose-600 hover:bg-rose-700 text-white border border-rose-400 shadow-rose-900/40 ring-2 ring-rose-500/50 animate-pulse'
+                : isDark
+                ? 'bg-surface/90 hover:bg-rose-500/20 border border-white/10 hover:border-rose-500/40 text-rose-400 hover:text-rose-300'
+                : 'bg-white/95 hover:bg-rose-50 border border-slate-200 hover:border-rose-400 text-rose-600'
+            }`}
+          >
+            <ArrowLeft className="w-4 h-4 shrink-0" />
+            <span>{isStreetViewActive ? 'Exit 360°' : 'Exit'}</span>
+          </button>
         </div>
       )}
 
       {/* Interactive Multi-Route Corridor Selector Overlay on Map (Hidden when controlled externally) */}
-      {!hideRouteSelector && showRoute && mapRoutes.length > 1 && (
+      {!hideRouteSelector && showRoute && mapRoutes.length > 1 && !isStreetViewActive && (
         <div className="absolute top-14 left-3 right-3 z-10 flex items-center space-x-2 bg-surface/95 backdrop-blur-md p-1.5 rounded-xl border border-surface-border shadow-xl overflow-x-auto no-scrollbar">
           <span className="text-[10px] uppercase font-bold text-slate-400 px-1 shrink-0 hidden sm:inline">
             Alternative Corridors:
@@ -935,9 +1078,27 @@ export default function GoogleMapView({
           <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
           <div>
             <span className="font-bold text-amber-300 block">Soft Corridor Deviation Detected (&gt;500m)</span>
-            <span>Vehicle veered into unauthorized shortcut. Verification active with Delhi Police 24/7 Traffic Control.</span>
+            <span>Route diverted towards Chawri interior. Non-accusatory reminder: check route or ask driver politely.</span>
           </div>
         </div>
+      )}
+
+      {/* Fullscreen Floating Exit Button for HTML5 / Google Maps Native Fullscreen Mode */}
+      {isFullscreen && typeof document !== 'undefined' && createPortal(
+        <div className="fixed top-4 right-4 z-[2147483647] animate-in fade-in flex items-center space-x-2 pointer-events-auto">
+          <button
+            type="button"
+            id="btn-fullscreen-exit-portal"
+            onClick={handleExit}
+            className="px-4 py-2.5 rounded-xl bg-rose-600/95 hover:bg-rose-600 text-white font-bold text-xs shadow-2xl backdrop-blur-md border border-rose-400 flex items-center space-x-2 transition-all hover:scale-105 active:scale-95 cursor-pointer ring-2 ring-rose-500/50"
+            title="Exit Fullscreen (ESC)"
+          >
+            <ArrowLeft className="w-4 h-4 shrink-0" />
+            <span>Exit Fullscreen</span>
+            <span className="text-[10px] bg-black/40 px-1.5 py-0.5 rounded font-mono text-rose-200">ESC</span>
+          </button>
+        </div>,
+        document.fullscreenElement || document.body
       )}
     </div>
   );

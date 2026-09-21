@@ -1028,13 +1028,13 @@ export default function SafeJourneyPage() {
                     <span className={`w-2.5 h-2.5 rounded-full ${pickupMode === 'manual' ? 'bg-blue-400 ring-2 ring-blue-400/30' : 'bg-emerald-400 radar-pulse'}`} />
                     <span className="text-slate-200 font-mono font-bold text-xs sm:text-sm" id="label-live-gps-coords">
                       {pickupMode === 'manual'
-                        ? `Pickup: ${currentOrigin.name}`
+                        ? `Pickup: ${currentOrigin.name} (${currentOrigin.lat}, ${currentOrigin.lng})`
                         : liveGps
                           ? `GPS Lat: ${liveGps.lat}, Lng: ${liveGps.lng} (±${liveGps.accuracy}m)`
                           : 'Acquiring Real-Time Live GPS Fix...'}
                     </span>
                     <span className="text-slate-600">•</span>
-                    <span className={pickupMode === 'manual' ? 'text-blue-400 font-bold' : 'text-cyan-400 font-bold'}>
+                    <span className={pickupMode === 'manual' ? 'text-blue-400 font-bold' : 'text-emerald-400 font-bold'}>
                       {pickupMode === 'manual' ? 'Manual Origin Mode' : 'Live GPS Monitored'}
                     </span>
                   </div>
@@ -1137,9 +1137,11 @@ export default function SafeJourneyPage() {
                   onRoutesFound={handleRoutesCalculated}
                   onRouteSelect={(idx) => setSelectedRouteIndex(idx)}
                   allowAlternatives={true}
-                  hideSearch={true}
-                  hideRouteSelector={true}
-                  hideBottomStatus={true}
+                  onExit={() => {
+                    setSimulatedDeviation(false);
+                    setSelectedRouteIndex(0);
+                    setRouteExited(false);
+                  }}
                 />
               </div>
 
@@ -1391,6 +1393,12 @@ export default function SafeJourneyPage() {
               onRoutesFound={handleRoutesCalculated}
               onRouteSelect={(idx) => setSelectedRouteIndex(idx)}
               allowAlternatives={true}
+              onExit={() => {
+                setIsMapFullscreen(false);
+                setSimulatedDeviation(false);
+                setSelectedRouteIndex(0);
+                setRouteExited(false);
+              }}
               hideSearch={false}
               hideRouteSelector={false}
               hideBottomStatus={false}
