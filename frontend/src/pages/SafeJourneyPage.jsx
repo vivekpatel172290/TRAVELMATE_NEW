@@ -1172,43 +1172,20 @@ export default function SafeJourneyPage() {
                 </p>
               </div>
 
-              {/* Quick Action Dial & Exit Route Buttons */}
-              <div className="grid grid-cols-3 gap-2 pt-1 relative z-10">
-                <button
-                  type="button"
-                  id="btn-monitor-exit-route"
-                  onClick={routeExited ? handleResumeRoute : handleExitRoute}
-                  className={`py-2.5 px-2 rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 transition-all shadow-sm ${
-                    routeExited
-                      ? 'bg-emerald-600/90 hover:bg-emerald-600 text-white'
-                      : 'bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 hover:text-white border border-rose-500/40'
-                  }`}
-                  title={routeExited ? 'Resume Route Tracking' : 'Exit Active Safe Route'}
-                >
-                  {routeExited ? (
-                    <>
-                      <Play className="w-3.5 h-3.5 text-emerald-300" />
-                      <span>Resume</span>
-                    </>
-                  ) : (
-                    <>
-                      <X className="w-3.5 h-3.5 text-rose-400" />
-                      <span>Exit Route</span>
-                    </>
-                  )}
-                </button>
+              {/* Emergency Quick Action Dials */}
+              <div className="grid grid-cols-2 gap-3 pt-1 relative z-10">
                 <a
                   href="tel:112"
-                  className="py-2.5 px-2 rounded-xl bg-red-600/90 hover:bg-red-600 text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-lg shadow-red-600/25 transition-all"
+                  className="py-2.5 px-3 rounded-xl bg-red-600/90 hover:bg-red-600 text-white font-bold text-xs flex items-center justify-center space-x-2 shadow-lg shadow-red-600/25 hover:shadow-red-600/40 hover:scale-[1.02] active:scale-95 transition-all"
                 >
-                  <PhoneCall className="w-3.5 h-3.5 text-white animate-pulse" />
+                  <PhoneCall className="w-4 h-4 text-white animate-pulse" />
                   <span>112 SOS</span>
                 </a>
                 <a
                   href="tel:1363"
-                  className="py-2.5 px-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-lg shadow-indigo-600/25 transition-all"
+                  className="py-2.5 px-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/25 hover:shadow-indigo-600/40 hover:scale-[1.02] active:scale-95 transition-all"
                 >
-                  <PhoneCall className="w-3.5 h-3.5 text-white" />
+                  <PhoneCall className="w-4 h-4 text-white" />
                   <span>1363 Help</span>
                 </a>
               </div>
