@@ -65,6 +65,15 @@ export default function Sidebar({
           description: 'Digital 7-day QR identity'
         },
         {
+          to: '/user-portal',
+          label: 'User Portal',
+          shortLabel: 'Portal',
+          badge: 'Live Data',
+          badgeColor: 'emerald',
+          icon: User,
+          description: 'Profile, database & credentials'
+        },
+        {
           to: '/phrase-helper',
           label: 'Bhashini Translator',
           shortLabel: 'Bhashini',

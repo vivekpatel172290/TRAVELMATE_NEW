@@ -25,6 +25,7 @@ import AdminDashboardPage from './pages/AdminDashboardPage';
 import TripPlannerPage from './pages/TripPlannerPage';
 import PhraseHelperPage from './pages/PhraseHelperPage';
 import PlaceDetailPage from './pages/PlaceDetailPage';
+import UserPortalPage from './pages/UserPortalPage';
 import { Bot, Languages, Mic } from 'lucide-react';
 
 function AppLayout() {
@@ -121,6 +122,11 @@ function AppLayout() {
               <Route path="/my-journey" element={<MyJourneyPage />} />
               <Route path="/journey" element={<MyJourneyPage />} />
               <Route path="/journey-chain" element={<MyJourneyPage />} />
+              <Route path="/user-portal" element={<UserPortalPage />} />
+              <Route path="/portal" element={<UserPortalPage />} />
+              <Route path="/profile" element={<UserPortalPage />} />
+              <Route path="/database" element={<UserPortalPage defaultTab="database" />} />
+              <Route path="/database-explorer" element={<UserPortalPage defaultTab="database" />} />
               <Route path="/admin" element={<AdminDashboardPage />} />
             </Routes>
           </main>

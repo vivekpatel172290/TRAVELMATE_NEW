@@ -20,5 +20,8 @@ router.post('/places/:id/reverify', adminController.reverifyPlace);
 // GET /api/admin/fares - List all logged fare overcharge disputes
 router.get('/fares', adminController.getFlaggedFares);
 
+// GET /api/admin/database - Live Database Explorer & Credentials Inspector
+router.get('/database', adminController.getDatabaseRecords);
+
 module.exports = router;
 

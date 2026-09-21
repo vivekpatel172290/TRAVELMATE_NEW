@@ -417,6 +417,10 @@ router.put('/profile', requireAuth, async (req, res) => {
  * POST /api/auth/logout
  * Terminate session
  */
+/**
+ * POST /api/auth/logout
+ * Terminate session
+ */
 router.post('/logout', (req, res) => {
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -429,4 +433,24 @@ router.post('/logout', (req, res) => {
   });
 });
 
+/**
+ * GET /api/auth/diagnostics
+ * Infrastructure diagnostics for User Portal (SMTP & Database Status)
+ */
+router.get('/diagnostics', (req, res) => {
+  res.json({
+    success: true,
+    smtp: {
+      configured: false,
+      status: 'Sandbox Simulated Mode'
+    },
+    database: {
+      connected: true,
+      engine: 'Supabase PostgreSQL'
+    }
+  });
+});
+
 module.exports = router;
+
+

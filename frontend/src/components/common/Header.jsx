@@ -32,7 +32,8 @@ export default function Header({
     { to: '/', label: 'Home', exact: true },
     { to: '/home', label: 'Verified Places' },
     { to: '/safe-journey', label: 'Safe Route' },
-    { to: '/safe-pass', label: 'SafeVisit Pass' }
+    { to: '/safe-pass', label: 'SafeVisit Pass' },
+    { to: '/user-portal', label: 'User Portal' }
   ];
 
   return (
@@ -53,7 +54,7 @@ export default function Header({
             }}
             aria-label="Toggle Navigation Guide"
             title="Toggle Guide Sidebar"
-            className="p-1.5 sm:p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors"
+            className="p-1.5 sm:p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors cursor-pointer"
           >
             {isMobileNavOpen ? (
               <X className="w-5 h-5 text-indigo-400 md:hidden" />
@@ -79,25 +80,26 @@ export default function Header({
           </Link>
         </div>
 
-        {/* Center: Top Navigation Links (Equally Spaced & Centered) */}
+        {/* Center: Top Navigation Links (Equally Spaced & Centered across 5 Destinations) */}
         <nav
-          className="hidden md:flex items-center justify-center flex-1 max-w-xl lg:max-w-2xl mx-auto px-2"
+          className="hidden md:flex items-center justify-center flex-1 max-w-2xl lg:max-w-3xl mx-auto px-2"
           aria-label="Quick Top Navigation"
         >
-          <div className="grid grid-cols-4 gap-2 lg:gap-3 p-1.5 w-full bg-[#121622]/90 border border-white/[0.08] rounded-2xl shadow-xl shadow-black/30 backdrop-blur-md">
+          <div className="grid grid-cols-5 gap-1.5 lg:gap-2.5 p-1.5 w-full bg-[#121622]/90 border border-white/[0.08] rounded-2xl shadow-xl shadow-black/30 backdrop-blur-md">
             {topNavLinks.map((item) => {
               const isActive = item.exact
                 ? location.pathname === item.to
                 : (item.to === '/home' && (location.pathname === '/home' || location.pathname === '/discover' || location.pathname.startsWith('/place')))
                   || (item.to === '/safe-pass' && (location.pathname === '/safe-pass' || location.pathname === '/onboarding'))
                   || (item.to === '/safe-journey' && location.pathname === '/safe-journey')
+                  || (item.to === '/user-portal' && (location.pathname === '/user-portal' || location.pathname === '/portal' || location.pathname === '/profile' || location.pathname === '/database'))
                   || (location.pathname.startsWith(item.to) && (item.to !== '/' || location.pathname === '/'));
 
               return (
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`px-3 py-2 rounded-xl text-xs sm:text-[13px] font-bold flex items-center justify-center text-center transition-all duration-200 whitespace-nowrap overflow-hidden text-ellipsis ${
+                  className={`px-2.5 sm:px-3 py-2 rounded-xl text-xs sm:text-[13px] font-bold flex items-center justify-center text-center transition-all duration-200 whitespace-nowrap overflow-hidden text-ellipsis ${
                     isActive
                       ? 'bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 text-white shadow-md shadow-indigo-600/30 ring-1 ring-white/20 font-extrabold'
                       : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
@@ -179,12 +181,12 @@ export default function Header({
                       <span>My SafePass QR Code</span>
                     </Link>
                     <Link
-                      to="/safe-journey"
+                      to="/user-portal"
                       onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center space-x-2.5 px-4 py-2 text-xs text-slate-300 hover:text-white hover:bg-white/[0.06] transition-colors"
+                      className="flex items-center space-x-2.5 px-4 py-2 text-xs text-slate-300 hover:text-white hover:bg-white/[0.06] transition-colors font-semibold"
                     >
-                      <User className="w-4 h-4 text-cyan-400" />
-                      <span>Active Journey Corridor</span>
+                      <User className="w-4 h-4 text-emerald-400" />
+                      <span>User Portal & Credentials</span>
                     </Link>
                   </div>
                   <div className="border-t border-white/10 pt-1">
