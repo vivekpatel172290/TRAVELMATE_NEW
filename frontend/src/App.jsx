@@ -171,20 +171,20 @@ function AppLayout() {
               aria-label="Open Bhashini AI Multilingual Translator"
               title="Digital India Bhashini Multilingual AI Translator"
             >
-              {/* Glowing Ambient Aura Behind Bhashini Logo */}
-              <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-600 via-cyan-500 to-teal-400 opacity-40 group-hover:opacity-90 blur-md transition-all duration-300 pointer-events-none" />
+              {/* Glowing Ambient Multi-Color Aura */}
+              <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-600 via-cyan-500 to-teal-400 opacity-50 group-hover:opacity-100 blur-md transition-all duration-300 pointer-events-none" />
 
-              {/* Hardware Glass Frame */}
-              <div className="relative w-full h-full rounded-full bg-gradient-to-br from-[#1c2032] via-[#121624] to-[#0a0d16] border-2 border-cyan-500/40 group-hover:border-cyan-300 flex items-center justify-center p-1.5 shadow-lg shadow-black/70 overflow-hidden transition-all duration-200">
-                {/* Subtle Inner Gradient Accents */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/15 via-cyan-400/10 to-teal-400/15 pointer-events-none" />
-                <div className="absolute inset-1 rounded-full bg-white/[0.03] pointer-events-none" />
+              {/* Hardware Glass Disc with High Contrast */}
+              <div className="relative w-full h-full rounded-full bg-gradient-to-br from-[#1e253c] via-[#13192b] to-[#0c101d] border-2 border-cyan-400/70 group-hover:border-cyan-300 flex items-center justify-center p-1 shadow-lg shadow-black/70 overflow-hidden transition-all duration-200">
+                {/* Subtle Inner Radial Bloom */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 via-cyan-400/15 to-teal-400/20 pointer-events-none" />
+                <div className="absolute inset-0.5 rounded-full bg-white/[0.04] pointer-events-none" />
 
-                {/* Official Bhashini Logo Image */}
+                {/* Official Bhashini Logo Image (High Visibility & Smooth Vector Anti-Aliasing) */}
                 <img
                   src="/bhashini-logo.png"
-                  alt="Bhashini AI"
-                  className="w-full h-full object-contain relative z-10 group-hover:scale-115 transition-transform duration-300 filter drop-shadow-[0_0_5px_rgba(6,182,212,0.45)]"
+                  alt="Digital India Bhashini AI"
+                  className="w-full h-full object-contain relative z-10 p-0.5 group-hover:scale-115 transition-transform duration-300 filter drop-shadow-[0_0_5px_rgba(6,182,212,0.5)]"
                   onError={(e) => {
                     e.currentTarget.src = '/bhashini-logo.svg';
                   }}

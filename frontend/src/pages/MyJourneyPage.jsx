@@ -445,7 +445,7 @@ export default function MyJourneyPage() {
               {[
                 { id: 'all', label: 'All Records' },
                 { id: 'fares', label: `Fare Checks (${records?.fareChecks?.length || 0})` },
-                { id: 'evidence', label: `Evidence Vault (${records?.evidenceList?.length || 0})` },
+                { id: 'evidence', label: `RideSafe Vault (${records?.evidenceList?.length || 0})` },
                 { id: 'places', label: `Visited Places (${records?.visitedPlaces?.length || 0})` },
                 { id: 'reports', label: `Incident Reports (${records?.reports?.length || 0})` }
               ].map((pill) => (
@@ -522,10 +522,10 @@ export default function MyJourneyPage() {
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-teal-400 flex items-center space-x-2">
                     <Camera className="w-4 h-4" />
-                    <span>Logged Vehicle Plates & Evidence Vault</span>
+                    <span>Logged Vehicle Plates & RideSafe Vault</span>
                   </h4>
                   <Link to="/vault" className="text-xs text-teal-400 hover:underline font-semibold flex items-center space-x-1">
-                    <span>Open Evidence Vault</span>
+                    <span>Open RideSafe Vault</span>
                     <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>

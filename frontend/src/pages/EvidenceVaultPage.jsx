@@ -91,7 +91,7 @@ export default function EvidenceVaultPage() {
               <span>Private Pre-Transit Verification Layer</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-white">
-              RideSafe Evidence Vault & <span className="coder-text-gradient">Plate OCR</span>
+              RideSafe Vault & <span className="coder-text-gradient">Plate OCR</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
               Log your auto or taxi before boarding. Stored privately with mandatory human confirmation.

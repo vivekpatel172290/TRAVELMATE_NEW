@@ -741,7 +741,7 @@ export default function HomePage() {
                   </div>
                   <div className="flex items-center justify-between mb-2.5">
                     <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-amber-300 transition-colors">
-                      RideSafe Evidence Vault
+                      RideSafe Vault
                     </h3>
                     <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-wider">
                       OCR Plate Reader
@@ -755,13 +755,13 @@ export default function HomePage() {
                   to="/vault"
                   className="relative z-10 inline-flex items-center text-sm font-bold text-amber-400 hover:text-amber-300 group-hover:translate-x-1 transition-all pt-2 border-t border-white/[0.06]"
                 >
-                  <span>Open Evidence Vault</span>
+                  <span>Open RideSafe Vault</span>
                   <ArrowRight className="w-4 h-4 ml-1.5" />
                 </Link>
               </div>
             </div>
 
-            {/* Feature 6: TravelMate AI Assistant (Powered by Gemini) */}
+            {/* Feature 6: TM Chatbot (Powered by Gemini) */}
             <div className="relative group">
               {/* Ambient Multi-Color Glow Backdrop (signature glowing bg like hero animated section) */}
               <div className="absolute -inset-2 rounded-[30px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 group-hover:opacity-65 blur-2xl animate-pulse pointer-events-none transition-opacity duration-300" />
@@ -775,7 +775,7 @@ export default function HomePage() {
                   </div>
                   <div className="flex items-center justify-between mb-2.5">
                     <h3 className="text-xl sm:text-2xl font-extrabold text-white font-display tracking-tight group-hover:text-rose-300 transition-colors">
-                      TravelMate AI
+                      TM Chatbot
                     </h3>
                     <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 uppercase tracking-wider">
                       Gemini Grounded
@@ -792,7 +792,7 @@ export default function HomePage() {
                   }}
                   className="relative z-10 inline-flex items-center text-sm font-bold text-rose-400 hover:text-rose-300 group-hover:translate-x-1 transition-all text-left pt-2 border-t border-white/[0.06]"
                 >
-                  <span>Launch TravelMate AI</span>
+                  <span>Launch TM Chatbot</span>
                   <ArrowRight className="w-4 h-4 ml-1.5" />
                 </button>
               </div>
@@ -1162,7 +1162,7 @@ export default function HomePage() {
                 <li>
                   <Link to="/vault" className="text-slate-200 hover:text-cyan-300 font-medium transition-colors flex items-center space-x-2">
                     <span className="text-slate-400 font-bold">›</span>
-                    <span>RideSafe Vehicle Evidence Vault</span>
+                    <span>RideSafe Vault</span>
                   </Link>
                 </li>
                 <li>

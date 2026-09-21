@@ -30,12 +30,9 @@ export default function Header({
 
   const topNavLinks = [
     { to: '/', label: 'Home', exact: true },
-    { to: '/safe-pass', label: 'SafeVisit Pass' },
     { to: '/home', label: 'Verified Places' },
-    { to: '/planner', label: 'Trip Planner' },
-    { to: '/fare-meter', label: 'Fair Fare' },
-    { to: '/vault', label: 'Vault' },
-    { to: '/phrase-helper', label: 'Bhashini Translator' }
+    { to: '/safe-journey', label: 'Safe Route' },
+    { to: '/safe-pass', label: 'SafeVisit Pass' }
   ];
 
   return (
@@ -82,27 +79,25 @@ export default function Header({
           </Link>
         </div>
 
-        {/* Center: Permanently Fixed & Visible Top Navigation Links */}
+        {/* Center: Top Navigation Links (Equally Spaced & Centered) */}
         <nav
-          className="hidden md:flex items-center justify-center flex-1 max-w-5xl mx-2 lg:mx-4"
+          className="hidden md:flex items-center justify-center flex-1 max-w-xl lg:max-w-2xl mx-auto px-2"
           aria-label="Quick Top Navigation"
         >
-          <div className="grid grid-cols-7 gap-1 p-1.5 w-full bg-[#121622]/80 border border-white/[0.08] rounded-2xl shadow-xl shadow-black/30 backdrop-blur-md">
+          <div className="grid grid-cols-4 gap-2 lg:gap-3 p-1.5 w-full bg-[#121622]/90 border border-white/[0.08] rounded-2xl shadow-xl shadow-black/30 backdrop-blur-md">
             {topNavLinks.map((item) => {
               const isActive = item.exact
                 ? location.pathname === item.to
                 : (item.to === '/home' && (location.pathname === '/home' || location.pathname === '/discover' || location.pathname.startsWith('/place')))
                   || (item.to === '/safe-pass' && (location.pathname === '/safe-pass' || location.pathname === '/onboarding'))
-                  || (item.to === '/planner' && (location.pathname === '/planner' || location.pathname === '/trip-planner'))
-                  || (item.to === '/vault' && location.pathname === '/vault')
-                  || (item.to === '/phrase-helper' && (location.pathname === '/phrase-helper' || location.pathname === '/language'))
+                  || (item.to === '/safe-journey' && location.pathname === '/safe-journey')
                   || (location.pathname.startsWith(item.to) && (item.to !== '/' || location.pathname === '/'));
 
               return (
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`px-2 lg:px-3 py-2 rounded-xl text-[12px] lg:text-[13px] font-bold flex items-center justify-center text-center transition-all duration-200 whitespace-nowrap overflow-hidden text-ellipsis ${
+                  className={`px-3 py-2 rounded-xl text-xs sm:text-[13px] font-bold flex items-center justify-center text-center transition-all duration-200 whitespace-nowrap overflow-hidden text-ellipsis ${
                     isActive
                       ? 'bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 text-white shadow-md shadow-indigo-600/30 ring-1 ring-white/20 font-extrabold'
                       : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
