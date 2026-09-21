@@ -12,17 +12,45 @@ const { SUPPORTED_LANGUAGES, executeTranslation } = require('../services/bhashin
  * GET /api/bhashini/status
  * Returns health and configuration status of the Bhashini service
  */
-router.get('/status', (req, res) => {
+router.get('/status', async (req, res) => {
   const hasEnvKey = Boolean(process.env.BHASHINI_API_KEY && process.env.BHASHINI_USER_ID);
-  res.json({
+  
+  const statusData = {
     success: true,
     service: 'Digital India Bhashini (National Language Translation Mission)',
     status: 'active',
     hasEnvCredentials: hasEnvKey,
-    pipelineEndpoint: process.env.BHASHINI_PIPELINE_ENDPOINT || 'https://dhruva-api.bhashini.gov.in/services/inference/pipeline',
+    pipelineId: process.env.BHASHINI_PIPELINE_ID || '64392f96daac500b55c543cd',
     supportedLanguagesCount: SUPPORTED_LANGUAGES.length,
     timestamp: new Date().toISOString()
-  });
+  };
+
+  if (req.query.test === '1') {
+    const startTime = Date.now();
+    try {
+      const testResult = await executeTranslation({
+        text: 'Hello',
+        sourceLang: 'en',
+        targetLang: 'hi',
+        computeTTS: false
+      });
+      statusData.test = {
+        success: true,
+        latencyMs: Date.now() - startTime,
+        translated: testResult.translated,
+        source: testResult.source,
+        isLiveBhashini: testResult.isLiveBhashini
+      };
+    } catch (err) {
+      statusData.test = {
+        success: false,
+        latencyMs: Date.now() - startTime,
+        error: err.message
+      };
+    }
+  }
+
+  res.json(statusData);
 });
 
 /**

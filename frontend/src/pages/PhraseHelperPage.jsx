@@ -58,6 +58,7 @@ export default function PhraseHelperPage() {
   const [inputText, setInputText] = useState('');
   const [translationResult, setTranslationResult] = useState(null);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [translateError, setTranslateError] = useState(null);
   const [copied, setCopied] = useState(false);
 
   // Direct translator mic state
@@ -178,6 +179,7 @@ export default function PhraseHelperPage() {
 
     stopAudio();
     setIsTranslating(true);
+    setTranslateError(null);
     try {
       const result = await translateText({
         text: query,
@@ -189,6 +191,7 @@ export default function PhraseHelperPage() {
       handlePlayAudio(result.translated || result.hindi, tgt === 'auto' ? 'hi' : tgt, 'direct-result', result.ttsAudio);
     } catch (err) {
       console.error('Translation error:', err);
+      setTranslateError(err.message || 'Translation failed.');
     } finally {
       setIsTranslating(false);
     }
@@ -197,18 +200,22 @@ export default function PhraseHelperPage() {
   // Toggle Direct Speech-to-Speech in Interactive Cockpit
   const handleToggleSpeechDirect = async () => {
     setMicErrorMessage(null);
+    setTranslateError(null);
     stopAudio();
 
     if (isListeningDirect) {
       if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
         try { mediaRecorderRef.current.stop(); } catch (_) {}
       }
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch (_) {}
+      }
       setIsListeningDirect(false);
       return;
     }
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      setMicErrorMessage('Audio recording is not supported in this browser. Please type below.');
+      setTranslateError('Audio recording is not supported in this browser. Please type below.');
       return;
     }
 
@@ -217,6 +224,26 @@ export default function PhraseHelperPage() {
       activeStreamRef.current = stream;
       setIsListeningDirect(true);
       audioChunksRef.current = [];
+
+      let speechFallbackTranscript = '';
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRec) {
+        try {
+          const rec = new SpeechRec();
+          const sL = sourceLang === 'auto' ? 'en' : sourceLang;
+          const matchedLang = SUPPORTED_LANGUAGES.find((l) => l.code === sL);
+          rec.lang = matchedLang?.speechLang || (sL === 'hi' ? 'hi-IN' : 'en-IN');
+          rec.continuous = false;
+          rec.interimResults = false;
+          rec.onresult = (e) => {
+            const t = e.results?.[0]?.[0]?.transcript || '';
+            if (t) speechFallbackTranscript = t;
+          };
+          rec.onerror = () => {};
+          recognitionRef.current = rec;
+          rec.start();
+        } catch (_) {}
+      }
 
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
@@ -231,23 +258,43 @@ export default function PhraseHelperPage() {
         setIsListeningDirect(false);
         stream.getTracks().forEach((track) => track.stop());
         activeStreamRef.current = null;
+        if (recognitionRef.current) {
+          try { recognitionRef.current.stop(); } catch (_) {}
+        }
 
         if (audioChunksRef.current.length === 0) return;
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
 
         setIsTranslating(true);
+        setTranslateError(null);
         try {
-          const res = await translateAudio({
-            audioBlob,
-            sourceLang: sourceLang === 'auto' ? 'en' : sourceLang,
-            targetLang: targetLang === 'auto' ? 'hi' : targetLang,
-            computeTTS: true,
-          });
+          let res;
+          try {
+            res = await translateAudio({
+              audioBlob,
+              sourceLang: sourceLang === 'auto' ? 'en' : sourceLang,
+              targetLang: targetLang === 'auto' ? 'hi' : targetLang,
+              computeTTS: true,
+            });
+          } catch (asrErr) {
+            if (speechFallbackTranscript && speechFallbackTranscript.trim()) {
+              res = await translateText({
+                text: speechFallbackTranscript,
+                sourceLang: sourceLang === 'auto' ? 'en' : sourceLang,
+                targetLang: targetLang === 'auto' ? 'hi' : targetLang,
+                computeTTS: true,
+              });
+            } else {
+              throw asrErr;
+            }
+          }
+
           setInputText(res.original);
           setTranslationResult(res);
           handlePlayAudio(res.translated, targetLang === 'auto' ? 'hi' : targetLang, 'direct-result', res.ttsAudio);
         } catch (err) {
           console.error('Direct audio translation error:', err);
+          setTranslateError(err.message || 'Direct audio translation failed. Please type your phrase.');
         } finally {
           setIsTranslating(false);
         }
@@ -257,13 +304,14 @@ export default function PhraseHelperPage() {
     } catch (err) {
       console.warn('Direct mic start error:', err);
       setIsListeningDirect(false);
-      setMicErrorMessage('Microphone access denied. Please grant microphone permissions.');
+      setTranslateError('Microphone access denied. Please grant microphone permissions.');
     }
   };
 
   // Push-to-Talk Toggle in Live Conversation Mode (MediaRecorder + ULCA Speech Pipeline)
   const handleToggleConvoSpeaker = async (speakerType) => {
     setMicErrorMessage(null);
+    setTranslateError(null);
     stopAudio();
 
     // 1. IF ALREADY LISTENING: STOP RECORDING AND SEND AUDIO TO BHASHINI
@@ -274,6 +322,9 @@ export default function PhraseHelperPage() {
         } catch (err) {
           console.warn('Error stopping mediaRecorder:', err);
         }
+      }
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch (_) {}
       }
       return;
     }
@@ -291,6 +342,32 @@ export default function PhraseHelperPage() {
       setActiveSpeaker(speakerType);
       activeSpeakerRef.current = speakerType;
       audioChunksRef.current = [];
+
+      const sL = speakerType === 'tourist'
+        ? (sourceLang === 'auto' ? 'en' : sourceLang)
+        : (targetLang === 'auto' ? 'hi' : targetLang);
+      const tL = speakerType === 'tourist'
+        ? (targetLang === 'auto' ? 'hi' : targetLang)
+        : (sourceLang === 'auto' ? 'en' : sourceLang);
+
+      let speechFallbackTranscript = '';
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRec) {
+        try {
+          const rec = new SpeechRec();
+          const matchedLang = SUPPORTED_LANGUAGES.find((l) => l.code === sL);
+          rec.lang = matchedLang?.speechLang || (sL === 'hi' ? 'hi-IN' : 'en-IN');
+          rec.continuous = false;
+          rec.interimResults = false;
+          rec.onresult = (e) => {
+            const t = e.results?.[0]?.[0]?.transcript || '';
+            if (t) speechFallbackTranscript = t;
+          };
+          rec.onerror = () => {};
+          recognitionRef.current = rec;
+          rec.start();
+        } catch (_) {}
+      }
 
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
@@ -310,22 +387,37 @@ export default function PhraseHelperPage() {
         // Turn off microphone tracks immediately
         stream.getTracks().forEach((track) => track.stop());
         activeStreamRef.current = null;
+        if (recognitionRef.current) {
+          try { recognitionRef.current.stop(); } catch (_) {}
+        }
 
+        if (audioChunksRef.current.length === 0) {
+          setTranslatingSpeaker(null);
+          return;
+        }
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        const sL = speakerType === 'tourist'
-          ? (sourceLang === 'auto' ? 'en' : sourceLang)
-          : (targetLang === 'auto' ? 'hi' : targetLang);
-        const tL = speakerType === 'tourist'
-          ? (targetLang === 'auto' ? 'hi' : targetLang)
-          : (sourceLang === 'auto' ? 'en' : sourceLang);
 
         try {
-          const res = await translateAudio({
-            audioBlob,
-            sourceLang: sL,
-            targetLang: tL,
-            computeTTS: true,
-          });
+          let res;
+          try {
+            res = await translateAudio({
+              audioBlob,
+              sourceLang: sL,
+              targetLang: tL,
+              computeTTS: true,
+            });
+          } catch (asrErr) {
+            if (speechFallbackTranscript && speechFallbackTranscript.trim()) {
+              res = await translateText({
+                text: speechFallbackTranscript,
+                sourceLang: sL,
+                targetLang: tL,
+                computeTTS: true,
+              });
+            } else {
+              throw asrErr;
+            }
+          }
 
           const newMsg = {
             id: `voice-${Date.now()}`,
@@ -377,6 +469,7 @@ export default function PhraseHelperPage() {
     setTranslatingSpeaker('tourist');
     setTouristInput('');
     setMicErrorMessage(null);
+    setTranslateError(null);
 
     const sL = sourceLang === 'auto' ? 'en' : sourceLang;
     const tL = targetLang === 'auto' ? 'hi' : targetLang;
@@ -422,6 +515,7 @@ export default function PhraseHelperPage() {
     setTranslatingSpeaker('local');
     setLocalInput('');
     setMicErrorMessage(null);
+    setTranslateError(null);
 
     const sL = targetLang === 'auto' ? 'hi' : targetLang;
     const tL = sourceLang === 'auto' ? 'en' : sourceLang;
@@ -487,7 +581,8 @@ export default function PhraseHelperPage() {
       phonetic: phrase.phonetic,
       sourceLang: 'en',
       targetLang: 'hi',
-      source: 'Digital India Bhashini (Pre-loaded Official Phrase)',
+      source: 'Curated Delhi Phrase Dictionary',
+      isLiveBhashini: false,
       confidence: 1.0,
       timestamp: new Date().toISOString(),
     });
@@ -1473,6 +1568,22 @@ export default function PhraseHelperPage() {
                   )}
                 </button>
               </div>
+
+              {translateError && (
+                <div className="bg-rose-500/15 border border-rose-500/30 rounded-2xl p-3.5 text-rose-200 text-xs flex items-center justify-between animate-in fade-in">
+                  <div className="flex items-center space-x-2.5">
+                    <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0" />
+                    <span>{translateError}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setTranslateError(null)}
+                    className="text-xs font-bold text-rose-400 hover:text-rose-200 ml-3 underline cursor-pointer"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Output Column */}
@@ -1489,10 +1600,16 @@ export default function PhraseHelperPage() {
               {translationResult ? (
                 <div className="p-5 bg-[#0d0f15] border border-cyan-500/40 rounded-2xl space-y-4 animate-in fade-in duration-200">
                   <div className="flex items-start justify-between gap-2">
-                    <span className="text-[10px] font-bold text-cyan-300 uppercase tracking-wide bg-cyan-500/10 px-2.5 py-1 rounded-md border border-cyan-500/20 flex items-center space-x-1">
-                      <Sparkles className="w-3 h-3 text-cyan-400" />
-                      <span>{translationResult.source || 'Digital India Bhashini'}</span>
-                    </span>
+                    {translationResult.isLiveBhashini ? (
+                      <span className="text-[10px] font-bold text-emerald-300 uppercase tracking-wide bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20 flex items-center space-x-1">
+                        <Sparkles className="w-3 h-3 text-emerald-400" />
+                        <span>{translationResult.source || 'Digital India Bhashini (Official ULCA Engine)'}</span>
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wide bg-amber-500/10 px-2.5 py-1 rounded-md border border-amber-500/20 flex items-center space-x-1">
+                        <span>{translationResult.source || 'Google Translate (fallback)'}</span>
+                      </span>
+                    )}
 
                     <div className="flex items-center space-x-1">
                       <button

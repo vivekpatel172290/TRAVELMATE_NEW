@@ -18,7 +18,8 @@ import {
   Mic,
   MicOff,
   Languages,
-  Radio
+  Radio,
+  AlertCircle
 } from 'lucide-react';
 import offlinePhrases from '../../data/offlinePhrases.json';
 import { useTraveler } from '../../context/TravelerContext';
@@ -27,6 +28,7 @@ import {
   translateText,
   playAudioSpeech,
   stopAudioSpeech,
+  BHASHINI_CONFIG,
   PRELOADED_TOURIST_PHRASES
 } from '../../services/bhashiniService';
 
@@ -39,6 +41,7 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
   const [bhashiniInput, setBhashiniInput] = useState('');
   const [bhashiniResult, setBhashiniResult] = useState(null);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [modalError, setModalError] = useState(null);
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef(null);
 
@@ -74,21 +77,24 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
   const executeTranslation = async (textToTranslate, autoSpeak = false) => {
     if (!textToTranslate || !textToTranslate.trim()) return;
     setIsTranslating(true);
+    setModalError(null);
     try {
       const res = await translateText({ text: textToTranslate, sourceLang: 'en', targetLang: 'hi' });
       setBhashiniResult({
         original: textToTranslate,
         hindi: res.hindi,
-        transliteration: res.transliteration,
-        phonetic: res.phonetic,
+        transliteration: res.transliteration || '',
+        phonetic: res.phonetic || '',
         service: res.source,
-        confidence: `${Math.round(res.confidence * 100)}% Contextual Match`,
+        isLiveBhashini: Boolean(res.isLiveBhashini),
+        confidence: `${Math.round((res.confidence || 0.85) * 100)}% Contextual Match`,
       });
       if (autoSpeak && res.hindi) {
         setTimeout(() => playAudioSpeech(res.hindi, 'hi'), 250);
       }
     } catch (err) {
       console.error('Translation error:', err);
+      setModalError(err.message || 'Translation failed. Please try again.');
     } finally {
       setIsTranslating(false);
     }
@@ -194,9 +200,11 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
             <h2 className="text-3xl sm:text-5xl font-black text-white leading-tight font-display">
               {fullscreenPhrase.hindi}
             </h2>
-            <p className="text-lg sm:text-xl font-mono text-indigo-300">
-              "{fullscreenPhrase.transliteration}"
-            </p>
+            {Boolean(fullscreenPhrase.transliteration) && (
+              <p className="text-lg sm:text-xl font-mono text-indigo-300">
+                "{fullscreenPhrase.transliteration}"
+              </p>
+            )}
             <div className="pt-4 border-t border-white/10 text-xs text-slate-300">
               English: <strong>{fullscreenPhrase.english || fullscreenPhrase.original}</strong>
             </div>
@@ -263,6 +271,21 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
             </button>
           </div>
 
+          {modalError && (
+            <div className="flex items-center justify-between p-2.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 text-xs animate-in fade-in">
+              <div className="flex items-center space-x-2">
+                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                <span>{modalError}</span>
+              </div>
+              <button
+                onClick={() => setModalError(null)}
+                className="text-rose-400 hover:text-rose-200 ml-2 text-xs font-bold"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
+
           <div className="flex gap-2">
             <div className="relative flex-1">
               <input
@@ -304,9 +327,9 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
           {/* Digital India Bhashini Status Banner */}
           <div className="flex items-center justify-between text-[11px] text-slate-400 pt-0.5">
             <span className="flex items-center space-x-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 radar-pulse" />
+              <span className={`w-2 h-2 rounded-full ${BHASHINI_CONFIG.USE_MOCK ? 'bg-amber-400' : 'bg-emerald-400 radar-pulse'}`} />
               <strong className="text-cyan-300">Digital India Bhashini AI:</strong>
-              <span>{BHASHINI_CONFIG.USE_MOCK ? 'Contextual Engine (API Key Ready)' : 'Live ULCA Inference Pipeline'}</span>
+              <span>{BHASHINI_CONFIG.USE_MOCK ? 'Fallback Mode (API Key Optional)' : 'Live ULCA Inference Pipeline'}</span>
             </span>
             <span className="font-mono text-[10px] text-slate-500">MeitY NLTM</span>
           </div>
@@ -315,7 +338,13 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
           {bhashiniResult && (
             <div className="p-3 bg-surface border border-indigo-500/40 rounded-xl space-y-2 animate-in fade-in duration-150">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-bold text-cyan-400">{bhashiniResult.service}</span>
+                <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border ${
+                  bhashiniResult.isLiveBhashini
+                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                    : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                }`}>
+                  {bhashiniResult.service}
+                </span>
                 <button
                   onClick={() => setFullscreenPhrase(bhashiniResult)}
                   className="text-[11px] text-indigo-300 hover:text-white font-semibold flex items-center space-x-1"
@@ -325,9 +354,13 @@ export default function LanguageSupportModal({ isOpen, onClose, initialVoiceActi
                 </button>
               </div>
               <div className="text-base font-bold text-white">{bhashiniResult.hindi}</div>
-              <div className="text-xs font-mono text-cyan-300/90">{bhashiniResult.transliteration}</div>
+              {Boolean(bhashiniResult.transliteration) && (
+                <div className="text-xs font-mono text-cyan-300/90">{bhashiniResult.transliteration}</div>
+              )}
               <div className="flex items-center justify-between pt-1 text-[10px] text-slate-400">
-                <span>Pronunciation: {bhashiniResult.phonetic}</span>
+                {Boolean(bhashiniResult.phonetic) ? (
+                  <span>Pronunciation: {bhashiniResult.phonetic}</span>
+                ) : <span />}
                 <button
                   onClick={() => handleSpeak(bhashiniResult.hindi)}
                   className="text-cyan-400 hover:underline flex items-center space-x-1"
