@@ -173,8 +173,8 @@ export default function MyJourneyPage() {
         {/* Active Journey Overview Glass Card with Glowing Aura Backdrop */}
         <div className="relative group">
           {/* Ambient Glowing Multi-Color Aura Backdrop (Dual Layer) */}
-          <div className="absolute -inset-3 sm:-inset-4 rounded-[36px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-45 group-hover:opacity-85 blur-3xl aura-pulse pointer-events-none transition-all duration-500" />
-          <div className="absolute -inset-1 rounded-[30px] bg-gradient-to-r from-cyan-500 via-indigo-500 to-purple-600 opacity-40 group-hover:opacity-90 blur-md pointer-events-none transition-all duration-500" />
+          <div className="absolute -inset-3 sm:-inset-4 rounded-[36px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-55 group-hover:opacity-90 blur-3xl aura-pulse pointer-events-none transition-all duration-500" />
+          <div className="absolute -inset-1 rounded-[30px] bg-gradient-to-r from-cyan-500 via-indigo-500 to-purple-600 opacity-45 group-hover:opacity-95 blur-md pointer-events-none transition-all duration-500" />
 
           <div className="relative rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] border-2 border-[#2f323e]/80 group-hover:border-cyan-400/60 shadow-2xl transition-all duration-300 overflow-hidden">
             {/* Top reflective edge highlight */}
@@ -372,11 +372,10 @@ export default function MyJourneyPage() {
                       {getTimelineIcon(evt.type)}
                     </div>
 
-                    {/* Timeline Event Card with Glowing Dual-Layer Aura */}
+                    {/* Timeline Event Card with Soft Ambient Aura */}
                     <div className="relative group/card flex-1">
-                      {/* Ambient Glowing Aura Behind Card */}
-                      <div className="absolute -inset-1.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 group-hover/card:opacity-85 blur-xl pointer-events-none transition-all duration-300" />
-                      <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-indigo-500 opacity-20 group-hover/card:opacity-60 blur-sm pointer-events-none transition-all duration-300" />
+                      {/* Soft Ambient Aura Behind Card */}
+                      <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-15 group-hover/card:opacity-45 blur-lg pointer-events-none transition-all duration-300" />
 
                       <div className="relative p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] border-2 border-[#2f323e]/70 group-hover/card:border-cyan-400/70 transition-all duration-300 shadow-2xl group-hover/card:-translate-y-0.5 space-y-2.5 overflow-hidden">
                         {/* Top subtle highlight */}
@@ -485,9 +484,8 @@ export default function MyJourneyPage() {
                         key={fare.id || idx}
                         className="relative group/rec"
                       >
-                        {/* Ambient Glowing Aura Behind Card */}
-                        <div className="absolute -inset-1.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-indigo-600 opacity-35 group-hover/rec:opacity-85 blur-xl pointer-events-none transition-all duration-300" />
-                        <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 opacity-25 group-hover/rec:opacity-60 blur-sm pointer-events-none transition-all duration-300" />
+                        {/* Soft Ambient Glowing Aura Behind Card */}
+                        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-indigo-600 opacity-15 group-hover/rec:opacity-45 blur-md pointer-events-none transition-all duration-300" />
 
                         <div className="relative p-5 rounded-2xl bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] border-2 border-[#2f323e]/70 group-hover/rec:border-amber-400/60 transition-all duration-300 space-y-2 shadow-2xl group-hover/rec:-translate-y-0.5 overflow-hidden">
                           <div className="absolute -top-8 -right-8 w-24 h-24 bg-amber-500/15 rounded-full blur-2xl pointer-events-none" />
@@ -539,9 +537,8 @@ export default function MyJourneyPage() {
                         key={ev.id || idx}
                         className="relative group/ev"
                       >
-                        {/* Ambient Glowing Aura Behind Card */}
-                        <div className="absolute -inset-1.5 rounded-2xl bg-gradient-to-r from-teal-500 via-cyan-500 to-indigo-600 opacity-35 group-hover/ev:opacity-85 blur-xl pointer-events-none transition-all duration-300" />
-                        <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-teal-400 to-cyan-500 opacity-25 group-hover/ev:opacity-60 blur-sm pointer-events-none transition-all duration-300" />
+                        {/* Soft Ambient Glowing Aura Behind Card */}
+                        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-teal-500 via-cyan-500 to-indigo-600 opacity-15 group-hover/ev:opacity-45 blur-md pointer-events-none transition-all duration-300" />
 
                         <div className="relative p-5 rounded-2xl bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] border-2 border-[#2f323e]/70 group-hover/ev:border-teal-400/60 transition-all duration-300 space-y-2 shadow-2xl group-hover/ev:-translate-y-0.5 overflow-hidden">
                           <div className="absolute -top-8 -right-8 w-24 h-24 bg-teal-500/15 rounded-full blur-2xl pointer-events-none" />
@@ -592,9 +589,8 @@ export default function MyJourneyPage() {
                         key={pl.id || idx}
                         className="relative group/pl"
                       >
-                        {/* Ambient Glowing Aura Behind Card */}
-                        <div className="absolute -inset-1.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 opacity-35 group-hover/pl:opacity-85 blur-xl pointer-events-none transition-all duration-300" />
-                        <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-500 opacity-25 group-hover/pl:opacity-60 blur-sm pointer-events-none transition-all duration-300" />
+                        {/* Soft Ambient Glowing Aura Behind Card */}
+                        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 opacity-15 group-hover/pl:opacity-45 blur-md pointer-events-none transition-all duration-300" />
 
                         <div className="relative p-5 rounded-2xl bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] border-2 border-[#2f323e]/70 group-hover/pl:border-cyan-400/60 transition-all duration-300 space-y-2 shadow-2xl group-hover/pl:-translate-y-0.5 overflow-hidden">
                           <div className="absolute -top-8 -right-8 w-24 h-24 bg-cyan-500/15 rounded-full blur-2xl pointer-events-none" />
@@ -642,9 +638,8 @@ export default function MyJourneyPage() {
                         key={rep.id || idx}
                         className="relative group/rep"
                       >
-                        {/* Ambient Glowing Aura Behind Card */}
-                        <div className="absolute -inset-1.5 rounded-2xl bg-gradient-to-r from-rose-500 via-red-600 to-purple-600 opacity-35 group-hover/rep:opacity-85 blur-xl pointer-events-none transition-all duration-300" />
-                        <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-rose-400 to-red-500 opacity-25 group-hover/rep:opacity-60 blur-sm pointer-events-none transition-all duration-300" />
+                        {/* Soft Ambient Glowing Aura Behind Card */}
+                        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-rose-500 via-red-600 to-purple-600 opacity-15 group-hover/rep:opacity-45 blur-md pointer-events-none transition-all duration-300" />
 
                         <div className="relative p-5 rounded-2xl bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] border-2 border-[#2f323e]/70 group-hover/rep:border-rose-400/60 transition-all duration-300 space-y-2 shadow-2xl group-hover/rep:-translate-y-0.5 overflow-hidden">
                           <div className="absolute -top-8 -right-8 w-24 h-24 bg-rose-500/15 rounded-full blur-2xl pointer-events-none" />
@@ -701,14 +696,11 @@ export default function MyJourneyPage() {
                     {/* Glowing Aura Backdrop */}
                     {isActive ? (
                       <>
-                        <div className="absolute -inset-2.5 rounded-[32px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-65 group-hover/jrn:opacity-90 blur-2xl aura-pulse pointer-events-none transition-all duration-500" />
-                        <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-cyan-400 via-indigo-500 to-purple-500 opacity-50 blur-md pointer-events-none" />
+                        <div className="absolute -inset-1.5 rounded-[30px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-35 group-hover/jrn:opacity-65 blur-xl pointer-events-none transition-all duration-300" />
+                        <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-cyan-400 via-indigo-500 to-purple-500 opacity-25 blur-sm pointer-events-none" />
                       </>
                     ) : (
-                      <>
-                        <div className="absolute -inset-1.5 rounded-[30px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-30 group-hover/jrn:opacity-75 blur-xl pointer-events-none transition-all duration-300" />
-                        <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-indigo-500 to-cyan-500 opacity-0 group-hover/jrn:opacity-50 blur-sm pointer-events-none transition-all duration-300" />
-                      </>
+                      <div className="absolute -inset-1 rounded-[28px] bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-15 group-hover/jrn:opacity-40 blur-md pointer-events-none transition-all duration-300" />
                     )}
                     <div
                       className={`relative p-6 sm:p-7 rounded-3xl border-2 transition-all duration-300 overflow-hidden shadow-2xl ${

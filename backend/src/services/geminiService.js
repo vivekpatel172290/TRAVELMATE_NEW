@@ -8,7 +8,7 @@
 const config = require('../config/env');
 const { store } = require('../config/db');
 
-const SYSTEM_INSTRUCTION = `You are "TravelMate AI", an official AI Tourist Safety and Heritage Guide for tourists visiting New Delhi, India (developed under Ministry of Tourism & Delhi Police guidelines).
+const SYSTEM_INSTRUCTION = `You are "TM Chatbot", an official AI Tourist Safety and Heritage Guide for tourists visiting New Delhi, India (developed under Ministry of Tourism & Delhi Police guidelines).
 Your purpose is to provide 100% verified, grounded information regarding Delhi monuments, official entry ticketing (Archaeological Survey of India - ASI), opening/closing timings, metro transit lines, official auto-rickshaw fair fares, emergency helplines, and safety corridors.
 
 Guidelines:
@@ -154,7 +154,7 @@ function getGroundedFallbackResponse(query, travelerContext) {
 
   // General Delhi Travel Guidance
   return {
-    response: `Welcome to New Delhi! I am **TravelMate AI (Powered by Gemini)**. I can help you with:\n• **Official Monument Timings & Fees** (Red Fort, Qutub Minar, Humayun's Tomb, India Gate)\n• **Official Transport Fares** (Delhi STA auto-rickshaw meter benchmarks)\n• **Safety & Police Telemetry** (112 ERSS dispatch, Tourist Police beat stations)\n• **Multilingual Translation** via Digital India Bhashini AI\n\nAsk me any question or tap one of the quick options below!`,
+    response: `Welcome to New Delhi! I am **TM Chatbot (Powered by Gemini)**. I can help you with:\n• **Official Monument Timings & Fees** (Red Fort, Qutub Minar, Humayun's Tomb, India Gate)\n• **Official Transport Fares** (Delhi STA auto-rickshaw meter benchmarks)\n• **Safety & Police Telemetry** (112 ERSS dispatch, Tourist Police beat stations)\n• **Multilingual Translation** via Digital India Bhashini AI\n\nAsk me any question or tap one of the quick options below!`,
     grounded: true,
     source_label: "TravelMate Delhi Safety Core",
     confidence: "95% Grounded",

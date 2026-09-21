@@ -293,9 +293,9 @@ export const api = {
       return {
         success: true,
         data: {
-          response: `Welcome to New Delhi! I am **TravelMate AI** (powered by ${model.includes('pro') ? 'Gemini 3.1 Pro' : 'Gemini 3.8 Flash'}).\n\nHow can I help you today? You can ask about verified monuments, check auto-rickshaw fares, translate to Hindi, or track your journey.\n\n[action: /home | Explore Verified Places] [action: /planner | 1-Day Itinerary Planner] [action: /fare-meter | Fair Fare Meter] [action: /my-journey | My Journey Chain]`,
+          response: `Welcome to New Delhi! I am **TM Chatbot** (powered by ${model.includes('pro') ? 'Gemini 3.1 Pro' : 'Gemini 3.8 Flash'}).\n\nHow can I help you today? You can ask about verified monuments, check auto-rickshaw fares, translate to Hindi, or track your journey.\n\n[action: /home | Explore Verified Places] [action: /planner | 1-Day Itinerary Planner] [action: /fare-meter | Fair Fare Meter] [action: /my-journey | My Journey Chain]`,
           grounded: true,
-          source_label: model.includes('pro') ? "TravelMate AI • Gemini 3.1 Pro" : "TravelMate AI • Gemini 3.8 Flash",
+          source_label: model.includes('pro') ? "TM Chatbot • Gemini 3.1 Pro" : "TM Chatbot • Gemini 3.8 Flash",
           confidence: "Live Grounded Guide"
         }
       };

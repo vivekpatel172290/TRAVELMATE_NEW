@@ -138,19 +138,16 @@ function AppLayout() {
         >
           <div className="flex items-center space-x-2 bg-[#0c0e14]/90 backdrop-blur-xl p-1.5 rounded-full border border-white/10 shadow-2xl shadow-black/70 ring-1 ring-white/5">
             
-            {/* 1. TravelMate AI Assistant Button (Replaces Ask Claude AI) */}
+            {/* 1. TM Chatbot Button */}
             <button
               id="btn-floating-travelmate-ai"
               onClick={() => setIsChatOpen(true)}
-              className="group relative flex items-center space-x-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white px-3.5 py-2 rounded-full shadow-lg shadow-indigo-600/30 border border-indigo-400/40 transition-all duration-200 hover:scale-105 active:scale-95"
-              aria-label="Open TravelMate AI Tourist Assistant"
+              className="group relative flex items-center space-x-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white px-4 py-2 rounded-full shadow-lg shadow-indigo-600/30 border border-indigo-400/40 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+              aria-label="Open TM Chatbot"
             >
               <Bot className="w-4 h-4 text-cyan-300 group-hover:rotate-12 transition-transform animate-pulse" />
-              <span className="text-xs font-bold font-display tracking-wide hidden sm:inline">
-                TravelMate AI
-              </span>
-              <span className="hidden md:inline text-[9px] font-mono px-1.5 py-0.2 bg-white/20 rounded font-semibold text-white">
-                Gemini
+              <span className="text-xs font-bold font-display tracking-wide">
+                TM Chatbot
               </span>
             </button>
 
@@ -163,39 +160,18 @@ function AppLayout() {
               tabIndex={-1}
             />
 
-            {/* 2. Digital India Bhashini AI Multilingual Translate Button */}
+            {/* 2. Digital India Bhashini Multilingual Translator Icon Button */}
             <button
               id="btn-floating-bhashini-translate"
               onClick={() => {
                 navigate('/phrase-helper');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="group flex items-center space-x-1.5 bg-gradient-to-r from-[#6b30e3] to-[#8b5cf6] hover:from-[#7c3aed] hover:to-[#a78bfa] text-white px-3.5 py-2 rounded-full shadow-lg shadow-indigo-600/30 border border-indigo-400/40 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+              className="group flex items-center justify-center bg-gradient-to-r from-[#6b30e3] to-[#8b5cf6] hover:from-[#7c3aed] hover:to-[#a78bfa] text-white w-9 h-9 sm:w-10 sm:h-10 rounded-full shadow-lg shadow-indigo-600/30 border border-indigo-400/40 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
               aria-label="Open Bhashini AI Multilingual Translator"
               title="Digital India Bhashini Multilingual AI Translator"
             >
-              <Languages className="w-4 h-4 text-indigo-200 group-hover:scale-110 transition-transform" />
-              <span className="text-xs font-bold font-display tracking-wide hidden sm:inline">
-                Bhashini AI
-              </span>
-            </button>
-
-            {/* 3. Voice AI (Speech-to-Speech Translation) Button */}
-            <button
-              id="btn-floating-voice-translate"
-              onClick={() => {
-                navigate('/phrase-helper?voice=1');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="group flex items-center space-x-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-3 py-2 rounded-full shadow-lg shadow-cyan-600/30 border border-cyan-400/40 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
-              aria-label="Open Voice AI Speech Translation"
-              title="1-Tap Speech-to-Speech Voice Translation"
-            >
-              <Mic className="w-4 h-4 text-cyan-200 group-hover:animate-pulse transition-transform" />
-              <span className="text-xs font-bold font-display tracking-wide hidden sm:inline">
-                Voice AI
-              </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 animate-ping hidden sm:block" />
+              <Languages className="w-4 h-4 text-white group-hover:scale-110 transition-transform" />
             </button>
           </div>
         </div>
