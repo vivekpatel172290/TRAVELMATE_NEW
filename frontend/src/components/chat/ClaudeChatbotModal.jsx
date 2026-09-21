@@ -13,7 +13,12 @@ import {
   Zap,
   Brain,
   ArrowRight,
-  Loader2
+  Loader2,
+  Volume2,
+  VolumeX,
+  Copy,
+  Check,
+  Radio
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useTraveler } from '../../context/TravelerContext';
@@ -22,23 +27,115 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
   const { traveler } = useTraveler();
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
+  const recognitionRef = useRef(null);
 
   // Model selection: Flash 3.8 vs Pro 3.1
   const [selectedModel, setSelectedModel] = useState('gemini-3.8-flash');
 
-  // Initial welcome message with interactive action tags
-  const [messages, setMessages] = useState([
-    {
-      sender: 'bot',
-      text: `Namaste ${traveler?.name || 'traveler'}! I am **TM Chatbot**, powered by Google Gemini and grounded in official Delhi Tourism, ASI Heritage, and Emergency Databases.\n\nClick on any feature below or ask me about monument entry fees, timings, metro routes, or official auto fares!\n\n[action: /home | Explore Verified Places] [action: /planner | 1-Day Itinerary Planner] [action: /fare-meter | Fair Fare Meter] [action: /phrase-helper | Bhashini Translator] [action: /my-journey | My Journey Chain]`,
-      source: 'TM Chatbot Core • Powered by Google Gemini',
-      confidence: '100% Live Grounded'
-    }
-  ]);
+  // Speech synthesis & Voice controls
+  const [isAutoTTS, setIsAutoTTS] = useState(false);
+  const [speakingIndex, setSpeakingIndex] = useState(null);
+  const [copiedIndex, setCopiedIndex] = useState(null);
 
+  // Initial welcome message with interactive action tags
+  const initialWelcomeMessage = {
+    sender: 'bot',
+    text: `Namaste ${traveler?.name || 'traveler'}! I am **TM Chatbot**, powered by Google Gemini and grounded in official Delhi Tourism, ASI Heritage, and Emergency Databases.\n\nClick on any feature below or ask me about monument entry fees, timings, metro routes, or official auto fares!\n\n[action: /home | Explore Verified Places] [action: /planner | 1-Day Itinerary Planner] [action: /fare-meter | Fair Fare Meter] [action: /phrase-helper | Bhashini Translator] [action: /my-journey | My Journey Chain]`,
+    source: 'TM Chatbot Core • Powered by Google Gemini',
+    confidence: '100% Live Grounded'
+  };
+
+  const [messages, setMessages] = useState([initialWelcomeMessage]);
   const [inputQuery, setInputQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+
+  // Clean text for speech synthesis: strip markdown, format action labels
+  const cleanSpeechText = (text) => {
+    if (!text) return '';
+    const actionRegex = /\[action:\s*([^|\]]+)\s*\|\s*([^\]]+)\]/g;
+    const actionLabels = [];
+    let match;
+    while ((match = actionRegex.exec(text)) !== null) {
+      actionLabels.push(match[2].trim());
+    }
+
+    let clean = text
+      .replace(actionRegex, '')
+      .replace(/[*#_`~>•]/g, '')
+      .replace(/\n+/g, '. ')
+      .trim();
+
+    if (actionLabels.length > 0) {
+      clean += `. Click on ${actionLabels.join(', ')} to open this in the app!`;
+    }
+    return clean;
+  };
+
+  // Stop current Speech Synthesis audio
+  const stopSpeaking = () => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    setSpeakingIndex(null);
+  };
+
+  // Play Speech Synthesis audio for a message
+  const speakMessage = (text, index) => {
+    if (!('speechSynthesis' in window)) {
+      alert('Text-to-speech is not supported in this browser.');
+      return;
+    }
+
+    if (speakingIndex === index) {
+      stopSpeaking();
+      return;
+    }
+
+    stopSpeaking();
+
+    const spokenText = cleanSpeechText(text);
+    if (!spokenText) return;
+
+    const utterance = new SpeechSynthesisUtterance(spokenText);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+
+    // Pick best English voice (Indian English if available)
+    const voices = window.speechSynthesis.getVoices();
+    const inVoice = voices.find((v) => v.lang === 'en-IN' || v.lang.includes('IN'));
+    const enVoice = voices.find((v) => v.lang.startsWith('en'));
+    if (inVoice) {
+      utterance.voice = inVoice;
+    } else if (enVoice) {
+      utterance.voice = enVoice;
+    }
+
+    utterance.onstart = () => {
+      setSpeakingIndex(index);
+    };
+
+    utterance.onend = () => {
+      setSpeakingIndex(null);
+    };
+
+    utterance.onerror = () => {
+      setSpeakingIndex(null);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // Copy message text to clipboard
+  const handleCopyMessage = (text, idx) => {
+    const actionRegex = /\[action:\s*([^|\]]+)\s*\|\s*([^\]]+)\]/g;
+    const cleanText = text.replace(actionRegex, '').trim();
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(cleanText);
+    }
+    setCopiedIndex(idx);
+    setTimeout(() => setCopiedIndex(null), 2000);
+  };
 
   // Auto-scroll to bottom of messages container
   const scrollToBottom = () => {
@@ -50,6 +147,31 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
       scrollToBottom();
     }
   }, [messages, isOpen]);
+
+  // Clean up audio on unmount
+  useEffect(() => {
+    return () => {
+      stopSpeaking();
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (_) {}
+      }
+    };
+  }, []);
+
+  // Clean up audio on modal close
+  useEffect(() => {
+    if (!isOpen) {
+      stopSpeaking();
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (_) {}
+      }
+      setIsListening(false);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -91,16 +213,21 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
       } catch (_) {}
 
       setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          {
-            sender: 'bot',
-            text: `⚠️ **EMERGENCY ASSISTANCE ACTIVATED**\nYour message indicates an immediate safety concern. Emergency telemetry has been dispatched to Delhi Police Control Room 112.\n\n• **Dial 112 immediately** for Emergency Police Dispatch\n• **Dial 1363** for Ministry of Tourism Multi-lingual Infoline\n\n[action: /incident | Open Incident Report & Dispatch] [action: /safe-journey | View Safe Corridor]`,
-            source: 'Emergency 112 ERSS & Delhi Tourist Police',
-            confidence: 'Critical Safety Alert',
-            is_distress: true
+        const distressMsg = {
+          sender: 'bot',
+          text: `⚠️ **EMERGENCY ASSISTANCE ACTIVATED**\nYour message indicates an immediate safety concern. Emergency telemetry has been dispatched to Delhi Police Control Room 112.\n\n• **Dial 112 immediately** for Emergency Police Dispatch\n• **Dial 1363** for Ministry of Tourism Multi-lingual Infoline\n\n[action: /incident | Open Incident Report & Dispatch] [action: /safe-journey | View Safe Corridor]`,
+          source: 'Emergency 112 ERSS & Delhi Tourist Police',
+          confidence: 'Critical Safety Alert',
+          is_distress: true
+        };
+
+        setMessages((prev) => {
+          const next = [...prev, distressMsg];
+          if (isAutoTTS) {
+            setTimeout(() => speakMessage(distressMsg.text, next.length - 1), 150);
           }
-        ]);
+          return next;
+        });
         setLoading(false);
       }, 350);
       return;
@@ -109,36 +236,56 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
     try {
       const res = await api.askChatbot(query, traveler, selectedModel);
       if (res.success && res.data) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            sender: 'bot',
-            text: res.data.response || `Here are verified recommendations in TravelMate:\n\n[action: /home | Explore Verified Places] [action: /fare-meter | Check Fares]`,
-            source: res.data.source_label || (selectedModel.includes('pro') ? 'TM Chatbot • Gemini 3.1 Pro' : 'TM Chatbot • Gemini 3.8 Flash'),
-            confidence: res.data.confidence || (selectedModel.includes('pro') ? 'Deep Reasoning Grounded' : 'Official Grounded')
+        const botReply = {
+          sender: 'bot',
+          text: res.data.response || `Here are verified recommendations in TravelMate:\n\n[action: /home | Explore Verified Places] [action: /fare-meter | Check Fares]`,
+          source: res.data.source_label || (selectedModel.includes('pro') ? 'TM Chatbot • Gemini 3.1 Pro' : 'TM Chatbot • Gemini 3.8 Flash'),
+          confidence: res.data.confidence || (selectedModel.includes('pro') ? 'Deep Reasoning Grounded' : 'Official Grounded')
+        };
+
+        setMessages((prev) => {
+          const next = [...prev, botReply];
+          if (isAutoTTS) {
+            setTimeout(() => speakMessage(botReply.text, next.length - 1), 150);
           }
-        ]);
+          return next;
+        });
       } else {
         throw new Error('No reply from AI service');
       }
     } catch {
       // Intelligent Grounded Fallback
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: 'bot',
-          text: `Here is the verified information from Delhi Tourism & ASI Registry for your query:\n\n[action: /home | Explore Verified Places] [action: /fare-meter | Check Fare Meter] [action: /phrase-helper | Bhashini Translator] [action: /safe-journey | Safe Route Corridor]`,
-          source: selectedModel.includes('pro') ? 'TM Chatbot • Gemini 3.1 Pro' : 'TM Chatbot • Grounded Heritage Knowledge',
-          confidence: 'Verified Guide Active'
+      const fallbackReply = {
+        sender: 'bot',
+        text: `Here is the verified information from Delhi Tourism & ASI Registry for your query:\n\n[action: /home | Explore Verified Places] [action: /fare-meter | Check Fare Meter] [action: /phrase-helper | Bhashini Translator] [action: /safe-journey | Safe Route Corridor]`,
+        source: selectedModel.includes('pro') ? 'TM Chatbot • Gemini 3.1 Pro' : 'TM Chatbot • Grounded Heritage Knowledge',
+        confidence: 'Verified Guide Active'
+      };
+
+      setMessages((prev) => {
+        const next = [...prev, fallbackReply];
+        if (isAutoTTS) {
+          setTimeout(() => speakMessage(fallbackReply.text, next.length - 1), 150);
         }
-      ]);
+        return next;
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  // Voice Speech Recognition Input
+  // Voice Speech Recognition Input (Web Speech API)
   const handleVoiceInput = () => {
+    if (isListening) {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (_) {}
+      }
+      setIsListening(false);
+      return;
+    }
+
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       alert('Speech recognition is not supported in this browser. Please type your query.');
       return;
@@ -148,10 +295,15 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
     const recognition = new SpeechRec();
     recognition.lang = 'en-IN';
     recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognitionRef.current = recognition;
 
     recognition.onstart = () => setIsListening(true);
     recognition.onend = () => setIsListening(false);
-    recognition.onerror = () => setIsListening(false);
+    recognition.onerror = (e) => {
+      console.warn('Speech recognition error:', e.error);
+      setIsListening(false);
+    };
 
     recognition.onresult = (e) => {
       const transcript = e.results[0][0].transcript;
@@ -161,17 +313,24 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
       }
     };
 
-    recognition.start();
+    try {
+      recognition.start();
+    } catch (err) {
+      console.warn('Failed to start speech recognition:', err);
+      setIsListening(false);
+    }
   };
 
   // In-Chat Action Button Click Handler
   const handleActionClick = (path) => {
+    stopSpeaking();
     onClose();
     navigate(path);
   };
 
   // Reset conversation
   const handleResetChat = () => {
+    stopSpeaking();
     setMessages([
       {
         sender: 'bot',
@@ -244,7 +403,7 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
               <button
                 key={idx}
                 onClick={() => handleActionClick(act.path)}
-                className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-[13px] font-bold bg-gradient-to-r from-cyan-500/15 via-indigo-500/15 to-purple-500/15 hover:from-cyan-500/30 hover:to-indigo-500/30 text-cyan-300 border border-cyan-500/30 hover:border-cyan-400/60 transition-all hover:scale-105 active:scale-95 shadow-sm shadow-cyan-950/40"
+                className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-[13px] font-bold bg-gradient-to-r from-cyan-500/15 via-indigo-500/15 to-purple-500/15 hover:from-cyan-500/30 hover:to-indigo-500/30 text-cyan-300 border border-cyan-500/30 hover:border-cyan-400/60 transition-all hover:scale-105 active:scale-95 shadow-sm shadow-cyan-950/40 cursor-pointer"
               >
                 <span>{act.label}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-cyan-400" />
@@ -263,7 +422,9 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
     '1-Day Delhi itinerary plan?',
     'Emergency contact numbers?',
     'What is SafeVisit Pass?',
-    'How does My Journey chain work?'
+    'How does My Journey chain work?',
+    'Nearest police station to India Gate',
+    'Is metro safe at night?'
   ];
 
   return (
@@ -273,8 +434,8 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
         <div className="absolute -inset-2.5 rounded-[36px] bg-gradient-to-r from-purple-600/35 via-indigo-600/35 to-cyan-500/35 opacity-40 blur-2xl animate-pulse pointer-events-none transition-all duration-500" />
         <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-cyan-500 via-indigo-500 to-purple-600 opacity-30 blur-md pointer-events-none" />
 
-        {/* Chatbot Card Container: Balanced Height (No outer scroll required) */}
-        <div className="relative w-full bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] border-2 border-[#2f323e]/80 rounded-3xl shadow-2xl flex flex-col h-[560px] max-h-[85vh] overflow-hidden">
+        {/* Chatbot Card Container */}
+        <div className="relative w-full bg-gradient-to-br from-[#1c1d24] via-[#14161c] to-[#0c0e12] border-2 border-[#2f323e]/80 rounded-3xl shadow-2xl flex flex-col h-[580px] max-h-[88vh] overflow-hidden">
           {/* Top reflective edge highlight */}
           <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent pointer-events-none" />
 
@@ -304,10 +465,30 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
 
             {/* Header Right Action Controls */}
             <div className="flex items-center space-x-1">
+              {/* Auto Voice TTS Toggle */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (isAutoTTS) {
+                    stopSpeaking();
+                  }
+                  setIsAutoTTS(!isAutoTTS);
+                }}
+                className={`p-2 rounded-xl transition-all border ${
+                  isAutoTTS
+                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm shadow-cyan-500/20'
+                    : 'text-slate-400 hover:text-white border-transparent hover:bg-white/5'
+                }`}
+                title={isAutoTTS ? 'Auto Voice: ON (Click to mute)' : 'Auto Voice: OFF (Click to enable auto-speech)'}
+              >
+                {isAutoTTS ? <Volume2 className="w-4 h-4 text-cyan-300" /> : <VolumeX className="w-4 h-4" />}
+              </button>
+
               {/* Reset Conversation */}
               <button
+                type="button"
                 onClick={handleResetChat}
-                className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/5 transition-colors"
+                className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/5 transition-colors border border-transparent"
                 title="Reset Conversation"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -316,8 +497,12 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
               {/* Close Button */}
               <button
                 id="btn-close-tm-chatbot-modal"
-                onClick={onClose}
-                className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/5 transition-colors"
+                type="button"
+                onClick={() => {
+                  stopSpeaking();
+                  onClose();
+                }}
+                className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/5 transition-colors border border-transparent"
                 title="Close Chatbot"
               >
                 <X className="w-5 h-5" />
@@ -405,11 +590,57 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
                     </div>
                   )}
 
-                  {/* Bot Source Footer */}
+                  {/* Bot Message Actions & Footer */}
                   {msg.sender === 'bot' && (
-                    <div className="mt-3 pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
-                      <span className="truncate pr-2">{msg.source}</span>
-                      <span className="text-cyan-400 font-semibold shrink-0">{msg.confidence}</span>
+                    <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
+                      <div className="flex items-center space-x-1.5 overflow-hidden pr-2">
+                        <span className="truncate">{msg.source}</span>
+                        {speakingIndex === idx && (
+                          <span className="flex items-center space-x-0.5 px-1.5 py-0.5 bg-cyan-500/20 rounded border border-cyan-400/30 text-cyan-300 text-[10px] font-medium shrink-0">
+                            <Volume2 className="w-3 h-3 mr-1 animate-pulse text-cyan-300" />
+                            <span className="w-0.5 h-2 bg-cyan-400 rounded-full animate-bounce [animation-delay:0ms]" />
+                            <span className="w-0.5 h-3 bg-cyan-400 rounded-full animate-bounce [animation-delay:150ms]" />
+                            <span className="w-0.5 h-1.5 bg-cyan-400 rounded-full animate-bounce [animation-delay:300ms]" />
+                            <span className="ml-1 text-[10px] hidden sm:inline">Speaking</span>
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center space-x-2 shrink-0">
+                        {/* Speaker Voice Button */}
+                        <button
+                          type="button"
+                          onClick={() => speakMessage(msg.text, idx)}
+                          className={`p-1 rounded-md transition-colors ${
+                            speakingIndex === idx
+                              ? 'text-cyan-300 bg-cyan-500/20'
+                              : 'text-slate-400 hover:text-cyan-300 hover:bg-white/5'
+                          }`}
+                          title={speakingIndex === idx ? 'Stop Speaking' : 'Read Aloud (Voice TTS)'}
+                        >
+                          {speakingIndex === idx ? (
+                            <VolumeX className="w-3.5 h-3.5" />
+                          ) : (
+                            <Volume2 className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+
+                        {/* Copy Message Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleCopyMessage(msg.text, idx)}
+                          className="p-1 text-slate-400 hover:text-white rounded-md hover:bg-white/5 transition-colors"
+                          title="Copy text"
+                        >
+                          {copiedIndex === idx ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-400" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+
+                        <span className="text-cyan-400 font-semibold">{msg.confidence}</span>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -436,8 +667,9 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
             {quickPromptChips.map((prompt, idx) => (
               <button
                 key={idx}
+                type="button"
                 onClick={() => handleSend(prompt)}
-                className="text-xs sm:text-[12.5px] whitespace-nowrap px-3.5 py-1.5 bg-white/[0.04] hover:bg-cyan-500/15 border border-white/10 hover:border-cyan-500/30 rounded-full text-slate-300 hover:text-cyan-300 transition-colors shrink-0 font-medium"
+                className="text-xs sm:text-[12.5px] whitespace-nowrap px-3.5 py-1.5 bg-white/[0.04] hover:bg-cyan-500/15 border border-white/10 hover:border-cyan-500/30 rounded-full text-slate-300 hover:text-cyan-300 transition-colors shrink-0 font-medium cursor-pointer"
               >
                 {prompt}
               </button>
@@ -456,15 +688,15 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
             <button
               type="button"
               onClick={handleVoiceInput}
-              className={`p-2.5 rounded-xl border transition-all shrink-0 ${
+              className={`p-2.5 rounded-xl border transition-all shrink-0 cursor-pointer ${
                 isListening
                   ? 'bg-rose-500/20 border-rose-500/50 text-rose-400 animate-pulse shadow-md shadow-rose-500/20'
                   : 'bg-white/[0.04] border-white/10 text-slate-400 hover:text-white hover:bg-white/[0.08]'
               }`}
-              title={isListening ? 'Listening...' : 'Voice Input (Speak your query)'}
+              title={isListening ? 'Listening... (Click to stop)' : 'Voice Input (Speak your query)'}
             >
               {isListening ? (
-                <MicOff className="w-4 h-4" />
+                <MicOff className="w-4 h-4 text-rose-400" />
               ) : (
                 <Mic className="w-4 h-4" />
               )}
@@ -483,7 +715,7 @@ export default function ClaudeChatbotModal({ isOpen, onClose }) {
             <button
               type="submit"
               disabled={!inputQuery.trim() || loading}
-              className="p-2.5 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 disabled:opacity-40 disabled:hover:from-indigo-600 disabled:hover:to-cyan-600 text-white rounded-xl shadow-md shadow-indigo-600/30 transition-all active:scale-95 shrink-0"
+              className="p-2.5 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 disabled:opacity-40 disabled:hover:from-indigo-600 disabled:hover:to-cyan-600 text-white rounded-xl shadow-md shadow-indigo-600/30 transition-all active:scale-95 shrink-0 cursor-pointer"
               title="Send Query"
             >
               <Send className="w-4 h-4" />

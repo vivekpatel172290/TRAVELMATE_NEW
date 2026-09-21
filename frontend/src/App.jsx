@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { TravelerProvider } from './context/TravelerContext';
 import { JourneyProvider } from './context/JourneyContext';
 import { AuthProvider } from './context/AuthContext';
@@ -21,7 +21,6 @@ import FareMeterPage from './pages/FareMeterPage';
 import SafeJourneyPage from './pages/SafeJourneyPage';
 import EvidenceVaultPage from './pages/EvidenceVaultPage';
 import IncidentReportPage from './pages/IncidentReportPage';
-import AdminDashboardPage from './pages/AdminDashboardPage';
 import TripPlannerPage from './pages/TripPlannerPage';
 import PhraseHelperPage from './pages/PhraseHelperPage';
 import PlaceDetailPage from './pages/PlaceDetailPage';
@@ -127,7 +126,7 @@ function AppLayout() {
               <Route path="/profile" element={<UserPortalPage />} />
               <Route path="/database" element={<UserPortalPage defaultTab="database" />} />
               <Route path="/database-explorer" element={<UserPortalPage defaultTab="database" />} />
-              <Route path="/admin" element={<AdminDashboardPage />} />
+              <Route path="/admin" element={<Navigate to="/user-portal" replace />} />
             </Routes>
           </main>
         </div>

@@ -7,7 +7,6 @@ import {
   Navigation,
   Camera,
   AlertCircle,
-  LayoutDashboard,
   X,
   Home,
   QrCode,
@@ -130,7 +129,7 @@ export default function Sidebar({
       ]
     },
     {
-      title: 'Safety & Administration',
+      title: 'Safety & Grievances',
       dotColor: 'bg-rose-400',
       items: [
         {
@@ -139,13 +138,6 @@ export default function Sidebar({
           shortLabel: 'Incident',
           icon: AlertCircle,
           description: 'Direct authority complaint logging'
-        },
-        {
-          to: '/admin',
-          label: 'Admin Portal',
-          shortLabel: 'Admin',
-          icon: LayoutDashboard,
-          description: 'Supervisory monitoring & audits'
         }
       ]
     }
